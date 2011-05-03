@@ -21,7 +21,8 @@ when 'terminate'
   ec2.terminate_instances [ARGV[1]]
 when 'setup'
   instance_id = ARGV[1]
-  instance = ec2.describe_instances.find {|i| i[:aws_instance_id] == instance_id }.first
-  `HOSTS=#{instance[:dns_name]} cap setup`
+  instance = ec2.describe_instances.find {|i| i[:aws_instance_id] == instance_id }
+  ENV['HOSTS']=instance[:dns_name]
+  `cap setup`
 end
 

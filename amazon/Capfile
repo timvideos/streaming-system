@@ -1,6 +1,6 @@
 
 
-:set user, 'ubuntu'
+set :user, 'ubuntu'
 task :setup do
   # Update the packages
   run "#{sudo} aptitude update"
