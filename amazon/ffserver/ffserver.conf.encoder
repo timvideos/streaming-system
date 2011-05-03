@@ -19,7 +19,7 @@ MaxClients 100
 
 # This the maximum amount of kbit/sec that you are prepared to
 # consume when streaming to clients.
-MaxBandwidth 10000
+MaxBandwidth 80000
 
 # Access log file (uses standard Apache log file format)
 # '-' is the standard output.
@@ -45,7 +45,7 @@ File /tmp/incoming.ffm
 FileMaxSize 100M
 
 # FIXME: Once we have dynamic DNS setup, the encoder can startup the ffmpeg
-Launch ffmpeg -i http://$COLLECTOR/outgoing.mjpeg http://localhost:80/incoming.ffm
+Launch ffmpeg -i http://$COLLECTOR/outgoing.mjpeg 
 </Feed>
 
 
