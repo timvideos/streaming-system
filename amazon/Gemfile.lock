@@ -1,0 +1,20 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    activesupport (3.0.7)
+    aws (2.4.5)
+      activesupport
+      http_connection
+      uuidtools
+      xml-simple
+    http_connection (1.4.1)
+    json (1.5.1)
+    uuidtools (2.1.2)
+    xml-simple (1.0.15)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  aws
+  json

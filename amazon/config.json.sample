@@ -1,0 +1,8 @@
+{
+  "access_key": "FILL_ME_IN",
+  "secret_access_key": "FILL_ME_IN",
+  "ami": "ami-3202f25b",
+  "ssh_keypair": "default",
+  "security_groups": ["default"],
+  "instance_type": "t1.micro"
+}

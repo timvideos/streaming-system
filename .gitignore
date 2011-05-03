@@ -1,2 +1,3 @@
 *.pyc
 .*
+amazon/config.json
