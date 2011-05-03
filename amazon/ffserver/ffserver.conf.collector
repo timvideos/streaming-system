@@ -1,0 +1,83 @@
+# Port on which the server is listening. You must select a different
+# port from your standard HTTP web server if it is running on the same
+# computer.
+Port 80
+
+# Address on which the server is bound. Only useful if you have
+# several network interfaces.
+BindAddress 0.0.0.0
+
+# Number of simultaneous HTTP connections that can be handled. It has
+# to be defined *before* the MaxClients parameter, since it defines the
+# MaxClients maximum limit.
+MaxHTTPConnections 10
+
+# Number of simultaneous requests that can be handled. Since FFServer
+# is very fast, it is more likely that you will want to leave this high
+# and use MaxBandwidth, below.
+MaxClients 5
+
+# This the maximum amount of kbit/sec that you are prepared to
+# consume when streaming to clients.
+MaxBandwidth 10000
+
+# Access log file (uses standard Apache log file format)
+# '-' is the standard output.
+CustomLog -
+
+# Suppress that if you want to launch ffserver as a daemon.
+#NoDaemon
+
+<Stream status>
+Format status
+</Stream>
+
+
+<Redirect index.html>
+URL http://tims-video.appengine.com/
+</Redirect>
+
+
+<Feed incoming.ffm>
+File /tmp/incoming.ffm
+FileMaxSize 8G
+</Feed>
+
+
+<Stream outgoing.mjpeg>
+Feed incoming.ffm
+
+Format mpjpeg
+
+# VideoCodec jpg
+VideoSize hd720
+VideoFrameRate 24
+VideoBitRate 22000
+AVOptionVideo qcomp 1.0
+AVOptionVideo flags +global_header
+
+AudioCodec flac
+AudioBitRate 192
+AudioChannels 2
+AudioSampleRate 44100
+AVOptionAudio flags +global_header
+</Stream>
+
+
+<Stream console.mjpeg>
+Feed incoming.ffm
+
+Format mpjpeg
+
+# VideoCodec jpg
+VideoSize 320x240
+VideoFrameRate 6
+VideoBitRate 200
+AVOptionVideo flags +global_header
+
+AudioCodec flac
+AudioBitRate 32
+AudioChannels 1
+AudioSampleRate 22050
+AVOptionAudio flags +global_header
+</Stream>

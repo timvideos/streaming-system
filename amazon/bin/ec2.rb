@@ -22,7 +22,18 @@ when 'terminate'
 when 'setup'
   instance_id = ARGV[1]
   instance = ec2.describe_instances.find {|i| i[:aws_instance_id] == instance_id }
-  ENV['HOSTS']=instance[:dns_name]
-  `cap setup`
+  if ARGV[2] == "encoder"
+    collector_id = ARGV[3]
+    collector = ec2.describe_instances.find {|i| i[:aws_instance_id] == instance_id }
+    cmd = "./setupserver.sh %s encoder %s" % [instance[:dns_name], collector[:dns_name]]
+    puts "# run"
+    puts cmd
+  elsif ARGV[2] == "collector"
+    cmd = "./setupserver.sh %s collector" % [instance[:dns_name],]
+    puts "# run"
+    puts cmd
+  else
+    puts "No such server type"
+  end
 end
 
