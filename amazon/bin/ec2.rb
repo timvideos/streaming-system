@@ -24,7 +24,7 @@ when 'setup'
   instance = ec2.describe_instances.find {|i| i[:aws_instance_id] == instance_id }
   if ARGV[2] == "encoder"
     collector_id = ARGV[3]
-    collector = ec2.describe_instances.find {|i| i[:aws_instance_id] == instance_id }
+    collector = ec2.describe_instances.find {|i| i[:aws_instance_id] == collector_id }
     cmd = "./setupserver.sh %s encoder %s" % [instance[:dns_name], collector[:dns_name]]
     puts "# run"
     puts cmd
