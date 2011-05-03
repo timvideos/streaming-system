@@ -12,5 +12,5 @@ task :setup do
   run "#{sudo} aptitude update"
 
   # ffmpeg
-  run "#{sudo} aptitude install ffmpeg"
+  run "#{sudo} aptitude install -y ffmpeg"
 end

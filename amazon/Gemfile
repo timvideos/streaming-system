@@ -2,3 +2,5 @@ source :rubygems
 
 gem 'aws'
 gem 'json'
+gem 'i18n'
+gem 'capistrano'

@@ -7,8 +7,23 @@ GEM
       http_connection
       uuidtools
       xml-simple
+    capistrano (2.5.21)
+      highline
+      net-scp (>= 1.0.0)
+      net-sftp (>= 2.0.0)
+      net-ssh (>= 2.0.14)
+      net-ssh-gateway (>= 1.0.0)
+    highline (1.6.1)
     http_connection (1.4.1)
+    i18n (0.5.0)
     json (1.5.1)
+    net-scp (1.0.4)
+      net-ssh (>= 1.99.1)
+    net-sftp (2.0.5)
+      net-ssh (>= 2.0.9)
+    net-ssh (2.1.4)
+    net-ssh-gateway (1.1.0)
+      net-ssh (>= 1.99.1)
     uuidtools (2.1.2)
     xml-simple (1.0.15)
 
@@ -17,4 +32,6 @@ PLATFORMS
 
 DEPENDENCIES
   aws
+  capistrano
+  i18n
   json
