@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
-. common.sh
+source common.sh
 
 # Setup a connection
 rm /home/tansell/.ssh/tmp/master-$USER@$SERVER:22
