@@ -45,7 +45,7 @@ File /tmp/incoming.ffm
 FileMaxSize 100M
 
 # FIXME: Once we have dynamic DNS setup, the encoder can startup the ffmpeg
-Launch ffmpeg -i http://$COLLECTOR/outgoing.mjpeg 
+Launch ffmpeg -r 24 -i http://$COLLECTOR/outgoing.dv
 </Feed>
 
 

@@ -4,7 +4,7 @@ source common.sh
 
 # Setup a connection
 rm /home/tansell/.ssh/tmp/master-$USER@$SERVER:22
-ssh $USER@$SERVER sleep 300 &
+ssh $USER@$SERVER sleep 300 >/dev/null 2>&1 < /dev/null &
 SSHPID=$!
 echo "Primary SSH connection is $SSHPID"
 # Wait for the connection to come up

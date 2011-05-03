@@ -46,16 +46,17 @@ FileMaxSize 8G
 </Feed>
 
 
-<Stream outgoing.mjpeg>
+<Stream outgoing.mpg>
 Feed incoming.ffm
 
-Format mpjpeg
+Format mpegts
 
-# VideoCodec jpg
+VideoCodec mjpeg
 VideoSize hd720
 VideoFrameRate 24
 # 22Mbits/s -> 2.7 megabyte/s -> 162 megabytes/minute -> 9.7gb/hour @ $0.10 -> 97cents per hour 
-VideoBitRate 22000 
+VideoBitRate 22000
+VideoIntraOnly
 AVOptionVideo qcomp 1.0
 AVOptionVideo flags +global_header
 
@@ -67,20 +68,20 @@ AVOptionAudio flags +global_header
 </Stream>
 
 
-<Stream console.mjpeg>
-Feed incoming.ffm
-
-Format mpjpeg
-
-# VideoCodec jpg
-VideoSize 320x240
-VideoFrameRate 6
-VideoBitRate 200
-AVOptionVideo flags +global_header
-
-AudioCodec flac
-AudioBitRate 32
-AudioChannels 1
-AudioSampleRate 22050
-AVOptionAudio flags +global_header
-</Stream>
+#<Stream console.dv>
+#Feed incoming.ffm
+#
+#Format dv
+#
+#VideoCodec mjpeg
+#VideoSize 320x240
+#VideoFrameRate 6
+#VideoBitRate 200
+#AVOptionVideo flags +global_header
+#
+#AudioCodec flac
+#AudioBitRate 32
+#AudioChannels 1
+#AudioSampleRate 22050
+#AVOptionAudio flags +global_header
+#</Stream>
