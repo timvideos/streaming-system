@@ -30,12 +30,13 @@ $SUDO "aptitude update"
 $SUDO "aptitude full-upgrade -y"
 
 # Install ffmpeg
+$SUDO "dpkg --remove ffmpeg"
 scp ../debs/ffmpeg/* $USER@$SERVER:/tmp
 $SUDO "dpkg --install /tmp/*.deb"
 $SUDO "rm /tmp/*.deb"
 
 # Install any deps ffmpeg needs
-$SUDO "apt-get install -y libxvidcore4 libvorbisenc2 libtheora0 libopencore-amrwb0 libopencore-amrnb0 libfaac0 libxfixes3 libasound2"
+$SUDO "apt-get install -y libxvidcore4 libvorbisenc2 libtheora0 libopencore-amrwb0 libopencore-amrnb0 libfaac0 libxfixes3 libasound2 libx264-85"
 $SUDO "apt-get -f install"
 
 . updateconfig.sh $1 $2 $3
