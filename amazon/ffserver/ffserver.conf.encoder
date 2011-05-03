@@ -60,7 +60,7 @@ VideoFrameRate 24
 VideoBitRate 800
 AVOptionVideo flags +global_header
 
-AudioCodec vorbis
+AudioCodec libvorbis
 AudioBitRate 128
 AudioChannels 2
 AudioSampleRate 44100
@@ -74,12 +74,12 @@ Feed incoming.ffm
 Format webm
 
 VideoCodec libvpx
-VideoSize 736x414
+VideoSize 768x432
 VideoFrameRate 6
 VideoBitRate 300
 AVOptionVideo flags +global_header
 
-AudioCodec vorbis
+AudioCodec libvorbis
 AudioBitRate 32
 AudioChannels 1
 AudioSampleRate 22050
@@ -92,13 +92,13 @@ Feed incoming.ffm
 
 Format webm
 
-VideoCodec theora
+VideoCodec libtheora
 VideoSize hd720
 VideoFrameRate 24
 VideoBitRate 800
 AVOptionVideo flags +global_header
 
-AudioCodec vorbis
+AudioCodec libvorbis
 AudioBitRate 128
 AudioChannels 2
 AudioSampleRate 44100
@@ -111,13 +111,13 @@ Feed incoming.ffm
 
 Format webm
 
-VideoCodec theora
-VideoSize 736x414
+VideoCodec libtheora
+VideoSize 768x432
 VideoFrameRate 6
 VideoBitRate 300
 AVOptionVideo flags +global_header
 
-AudioCodec vorbis
+AudioCodec libvorbis
 AudioBitRate 32
 AudioChannels 1
 AudioSampleRate 22050
@@ -130,13 +130,13 @@ Feed incoming.ffm
 
 Format mp4
 
-VideoCodec x264
+VideoCodec libx264
 VideoSize hd720
 VideoFrameRate 24
 VideoBitRate 800
 AVOptionVideo flags +global_header
 
-AudioCodec mp3
+AudioCodec libfaac
 AudioBitRate 128
 AudioChannels 2
 AudioSampleRate 44100
@@ -149,13 +149,13 @@ Feed incoming.ffm
 
 Format mp4
 
-VideoCodec x264
-VideoSize 736x414
+VideoCodec libx264
+VideoSize 768x432
 VideoFrameRate 6
 VideoBitRate 300
 AVOptionVideo flags +global_header
 
-AudioCodec mp3
+AudioCodec libfaac
 AudioBitRate 32
 AudioChannels 1
 AudioSampleRate 22050
@@ -168,13 +168,13 @@ Feed incoming.ffm
 
 Format flv
 
-VideoCodec vp6
-VideoSize 736x414
+VideoCodec flv
+VideoSize 768x432
 VideoFrameRate 6
 VideoBitRate 300
 AVOptionVideo flags +global_header
 
-AudioCodec mp3
+AudioCodec libmp3lame
 AudioBitRate 32
 AudioChannels 1
 AudioSampleRate 22050
