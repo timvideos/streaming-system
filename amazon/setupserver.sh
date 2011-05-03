@@ -1,20 +1,6 @@
 #!/bin/sh
 
-SERVER=$1
-
-TYPE=$2
-TYPE=${TYPE:="encoder"}
-
-COLLECTOR=$3
-if [ x$COLLECTOR == x ]; then
-	echo "Must specify the collector to connect this encoder too."
-fi
-
-USER=ubuntu
-RUN="ssh $USER@$SERVER"
-SUDO="$RUN sudo"
-
-echo "Setting up $1 as $TYPE"
+. common.sh
 
 # Setup a connection
 rm /home/tansell/.ssh/tmp/master-$USER@$SERVER:22
@@ -52,11 +38,6 @@ $SUDO "rm /tmp/*.deb"
 $SUDO "apt-get install -y libxvidcore4 libvorbisenc2 libtheora0 libopencore-amrwb0 libopencore-amrnb0 libfaac0"
 $SUDO "apt-get -f install"
 
-# Copy the ffserver config up
-FFSERVERCONF=/tmp/$SERVER.ffserver.conf
-cat ffserver/ffserver.conf.$TYPE | sed -e"s/\$COLLECTOR/$COLLECTOR/" > $FFSERVERCONF
-scp $FFSERVERCONF $USER@$SERVER:/tmp/ffserver.conf
-$SUDO mv /tmp/ffserver.conf /etc/ffserver.conf
-rm $FFSERVERCONF
+. updateconfig.sh
 
-kill $SSHPID
+kill $SSHPID $1 $2 $3
