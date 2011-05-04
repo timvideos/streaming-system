@@ -9,18 +9,43 @@
                project="flumotion"
                version="0.8.1">
       <property name="username">phqCIZdJkjnx</property>
-      <property name="socket-path">flu-hBvjLW.socket</property>
+      <property name="socket-path">flu-8080.socket</property>
       <property name="password">ffDtYpfsEvOK</property>
       <property name="port">8080</property>
+    </component>
+    <component name="porter-loop"
+               type="porter"
+               label="porter-loop"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <property name="username">phqCIZdJkjnx</property>
+      <property name="socket-path">flu-8081.socket</property>
+      <property name="password">ffDtYpfsEvOK</property>
+      <property name="interface">127.0.0.1</property>
+      <property name="port">8081</property>
     </component>
     
   </atmosphere>
   
   <flow name="default">
-
-    <component name="producer-audio"
+    <!-- Program to show when not on the air -->
+    <component name="producer-test-video"
+               type="videotest-producer"
+               label="producer-test-video"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <property name="pattern">0</property>
+      <property name="framerate">24/1</property>
+      <property name="pixel-aspect-ratio">1</property>
+      <property name="width">1280</property>
+      <property name="height">720</property>
+      <clock-master>false</clock-master>
+    </component>
+    <component name="producer-test-audio"
                type="audiotest-producer"
-               label="producer-audio"
+               label="producer-test-audio"
                worker="localhost"
                project="flumotion"
                version="0.8.1">
@@ -29,36 +54,143 @@
       <property name="frequency">440</property>
       <clock-master>true</clock-master>
     </component>
-    <component name="producer-video"
-               type="videotest-producer"
-               label="producer-video"
+    <component name="producer-test-audio-stereo"
+               project="flumotion"
+               type="pipeline-converter"
+               worker="localhost">
+      <eater name="default"><feed>producer-test-audio</feed></eater>
+      <property name="pipeline">audioconvert ! audio/x-raw-int, channels=2</property>
+    </component>
+
+    <!-- Program to show when on the air -->
+    <component name="producer-http-src"
+               project="flumotion"
+               type="pipeline-producer"
+               worker="localhost">
+      <property name="pipeline">souphttpsrc location=http://$COLLECTOR/outgoing.flv</property>
+    </component>
+    <component name="producer-http-decoder"
+               project="flumotion"
+               type="av-generic-decoder"
+               worker="localhost">
+      <eater name="default"><feed>http</feed></eater>
+    </component>
+
+    <component name="switch"
+               project="flumotion"
+               type="av-basic-watchdog-combiner"
+               worker="localhost">
+      <eater name="video-master"><feed>producer-http-decoder:video</feed></eater>
+      <eater name="video-backup"><feed>producer-test-video</feed></eater>
+      <eater name="audio-master"><feed>producer-http-decoder:audio</feed></eater>
+      <eater name="audio-backup"><feed>producer-test-audio-stereo</feed></eater>
+      <property name="video-pixel-aspect-ratio">1</property>
+      <property name="video-framerate">24/1</property>
+      <property name="video-width">1280</property>
+      <property name="video-height">720</property>
+      <property name="audio-channels">2</property>
+      <property name="audio-samplerate">44100</property>
+    </component>
+
+
+    <!-- Scale the video -->
+    <component name="scaler-video"
+               project="flumotion"
+               type="pipeline-converter"
+               worker="localhost">
+      <eater name="default"><feed>switch:video</feed></eater>
+      <property name="pipeline">videoscale ! video/x-raw-yuv,width=768,height=432</property>
+    </component>
+    <component name="scaler-audio"
+               project="flumotion"
+               type="pipeline-converter"
+               worker="localhost">
+      <eater name="default"><feed>switch:audio</feed></eater>
+      <property name="pipeline">audioconvert ! audioresample ! audio/x-raw-int, channels=1</property>
+    </component>
+
+    <!-- ============================================================= -->
+    <!-- = High Quality stream for saving / loop into non-gstreamer stuff = -->
+    <!-- ============================================================= -->
+
+    <component name="encoder-video-loop"
+               type="x264-encoder"
+               label="encoder-video-loop"
                worker="localhost"
                project="flumotion"
                version="0.8.1">
-      <property name="pattern">0</property>
-      <property name="framerate">24/1</property>
-      <property name="width">1280</property>
-      <property name="height">720</property>
+      <eater name="default">
+        <feed alias="default">switch:video</feed>
+      </eater>
+      <property name="keyframe-maxdistance">24</property>
+      <property name="bitrate">2200000</property>
+      <clock-master>false</clock-master>
+    </component>
+    <component name="encoder-audio-loop"
+               type="faac-encoder"
+               label="encoder-audio-loop"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">switch:audio</feed>
+      </eater>
+      <property name="bitrate">192000</property>
       <clock-master>false</clock-master>
     </component>
 
-    <!-- Scale the video -->
-    <component name="producer-video-small"
+    <component name="muxer-loop"
+               type="gst-flv-muxer"
+               label="muxer-loop"
+               worker="localhost"
                project="flumotion"
-               type="pipeline-converter"
-               worker="localhost">
-      <eater name="default"><feed>producer-video</feed></eater>
-      <property name="pipeline">videoscale ! video/x-raw-yuv,width=768,height=432</property>
-    </component>
-    <component name="producer-audio-small"
-               project="flumotion"
-               type="pipeline-converter"
-               worker="localhost">
-      <eater name="default"><feed>producer-audio</feed></eater>
-      <property name="pipeline">audioconvert ! audioresample ! audio/x-raw-int, rate=22050, channels=1</property>
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">encoder-audio-loop:default</feed>
+        <feed alias="default-bis">encoder-video-loop:default</feed>
+      </eater>
+      <clock-master>false</clock-master>
     </component>
 
+    <component name="disk-loop"
+               type="disk-consumer"
+               label="disk-loop"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">muxer-loop:default</feed>
+      </eater>
+      <property name="directory">/mnt/video.webm</property>
+      <property name="rotate-type">none</property>
+      <property name="start-recording">False</property>
+      <clock-master>false</clock-master>
+      <plugs>
+      </plugs>
+    </component>
 
+    <component name="http-loop"
+               type="http-streamer"
+               label="http-loop"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">muxer-loop:default</feed>
+      </eater>
+      <property name="porter-username">phqCIZdJkjnx</property>
+      <property name="mount-point">/loop.raw</property>
+      <property name="burst-on-connect">True</property>
+      <property name="port">8081</property>
+      <property name="bandwidth-limit">10000000</property>
+      <property name="type">slave</property>
+      <property name="client-limit">1</property>
+      <property name="porter-socket-path">flu-8081.socket</property>
+      <property name="porter-password">ffDtYpfsEvOK</property>
+      <clock-master>false</clock-master>
+      <plugs>
+      </plugs>
+    </component>
     <!-- ============================================================= -->
     <!-- = Video Encoding                                            = -->
     <!-- ============================================================= -->
@@ -70,7 +202,7 @@
                project="flumotion"
                version="0.8.1">
       <eater name="default">
-        <feed alias="default">producer-video:default</feed>
+        <feed alias="default">switch:video</feed>
       </eater>
       <property name="keyframe-maxdistance">24</property>
       <property name="bitrate">800000</property>
@@ -83,7 +215,7 @@
                project="flumotion"
                version="0.8.1">
       <eater name="default">
-        <feed alias="default">producer-video-small:default</feed>
+        <feed alias="default">scaler-video</feed>
       </eater>
       <property name="keyframe-maxdistance">24</property>
       <property name="bitrate">300000</property>
@@ -98,7 +230,7 @@
                project="flumotion"
                version="0.8.1">
       <eater name="default">
-        <feed alias="default">producer-video:default</feed>
+        <feed alias="default">switch:video</feed>
       </eater>
       <property name="keyframe-maxdistance">24</property>
       <property name="bitrate">800000</property>
@@ -111,7 +243,7 @@
                project="flumotion"
                version="0.8.1">
       <eater name="default">
-        <feed alias="default">producer-video-small:default</feed>
+        <feed alias="default">scaler-video</feed>
       </eater>
       <property name="keyframe-maxdistance">24</property>
       <property name="bitrate">300000</property>
@@ -126,7 +258,7 @@
                project="flumotion"
                version="0.8.1">
       <eater name="default">
-        <feed alias="default">producer-video:default</feed>
+        <feed alias="default">switch:video</feed>
       </eater>
       <property name="keyframe-maxdistance">24</property>
       <property name="bitrate">800000</property>
@@ -139,21 +271,21 @@
                project="flumotion"
                version="0.8.1">
       <eater name="default">
-        <feed alias="default">producer-video-small:default</feed>
+        <feed alias="default">scaler-video</feed>
       </eater>
       <property name="keyframe-maxdistance">24</property>
       <property name="bitrate">300000</property>
       <clock-master>false</clock-master>
     </component>
 
-    <!-- vp6 Video Encoding -->
+    <!-- vp6 Video Encoding
     <component name="encoder-video-vp6-low"
                project="flumotion"
                type="pipeline-converter"
                worker="localhost">
-      <eater name="default"><feed>producer-video</feed></eater>
+      <eater name="default"><feed>switch:audio</feed></eater>
       <property name="pipeline">ffmpegcolorspace ! ffenc_flv bitrate=300000</property>
-    </component>
+    </component> -->
 
     <!-- ============================================================= -->
     <!-- = Audio Encoding                                            = -->
@@ -166,7 +298,7 @@
                project="flumotion"
                version="0.8.1">
       <eater name="default">
-        <feed alias="default">producer-audio:default</feed>
+        <feed alias="default">switch:audio</feed>
       </eater>
       <property name="bitrate">128000</property>
       <clock-master>false</clock-master>
@@ -178,7 +310,7 @@
                project="flumotion"
                version="0.8.1">
       <eater name="default">
-        <feed alias="default">producer-audio-small:default</feed>
+        <feed alias="default">scaler-audio</feed>
       </eater>
       <property name="bitrate">64000</property>
       <clock-master>false</clock-master>
@@ -192,7 +324,7 @@
                project="flumotion"
                version="0.8.1">
       <eater name="default">
-        <feed alias="default">producer-audio:default</feed>
+        <feed alias="default">switch:audio</feed>
       </eater>
       <property name="bitrate">128000</property>
       <clock-master>false</clock-master>
@@ -204,22 +336,22 @@
                project="flumotion"
                version="0.8.1">
       <eater name="default">
-        <feed alias="default">producer-audio-small:default</feed>
+        <feed alias="default">scaler-audio</feed>
       </eater>
       <property name="bitrate">64000</property>
       <clock-master>false</clock-master>
     </component>
 
-    <!-- MP3  Audio Encoding - Only do a low quality version -->
+    <!-- MP3  Audio Encoding - Only do a low quality version
     <component name="encoder-audio-mp3-low"
                type="pipeline-converter"
                label="encoder-audio-mp3-low"
                worker="localhost"
                project="flumotion"
                version="0.8.1">
-      <source>producer-audio-small:default</source>
+      <source>scaler-audio</source>
       <property name="pipeline">lame bitrate=48</property>
-    </component>
+    </component> -->
    
     <!-- ============================================================= -->
     <!-- = MUX Video & Audio Together                                = -->
@@ -302,7 +434,7 @@
       <clock-master>false</clock-master>
     </component>
 
-    <!-- vp6 muxing -->
+    <!-- vp6 muxing 
     <component name="muxer-vp6-low"
                type="gst-flv-muxer"
                label="muxer-vp6-low"
@@ -314,7 +446,7 @@
         <feed alias="default-bis">encoder-video-vp6-low:default</feed>
       </eater>
       <clock-master>false</clock-master>
-    </component>
+    </component> -->
 
     <!-- ============================================================= -->
     <!-- = Outputting the Streams on a HTTP server                   = -->
@@ -337,7 +469,7 @@
       <property name="bandwidth-limit">10000000</property>
       <property name="type">slave</property>
       <property name="client-limit">10</property>
-      <property name="porter-socket-path">flu-hBvjLW.socket</property>
+      <property name="porter-socket-path">flu-8080.socket</property>
       <property name="porter-password">ffDtYpfsEvOK</property>
       <clock-master>false</clock-master>
       <plugs>
@@ -359,7 +491,7 @@
       <property name="bandwidth-limit">10000000</property>
       <property name="type">slave</property>
       <property name="client-limit">10</property>
-      <property name="porter-socket-path">flu-hBvjLW.socket</property>
+      <property name="porter-socket-path">flu-8080.socket</property>
       <property name="porter-password">ffDtYpfsEvOK</property>
       <clock-master>false</clock-master>
       <plugs>
@@ -383,7 +515,7 @@
       <property name="bandwidth-limit">10000000</property>
       <property name="type">slave</property>
       <property name="client-limit">10</property>
-      <property name="porter-socket-path">flu-hBvjLW.socket</property>
+      <property name="porter-socket-path">flu-8080.socket</property>
       <property name="porter-password">ffDtYpfsEvOK</property>
       <clock-master>false</clock-master>
       <plugs>
@@ -405,7 +537,7 @@
       <property name="bandwidth-limit">10000000</property>
       <property name="type">slave</property>
       <property name="client-limit">10</property>
-      <property name="porter-socket-path">flu-hBvjLW.socket</property>
+      <property name="porter-socket-path">flu-8080.socket</property>
       <property name="porter-password">ffDtYpfsEvOK</property>
       <clock-master>false</clock-master>
       <plugs>
@@ -429,7 +561,7 @@
       <property name="bandwidth-limit">10000000</property>
       <property name="type">slave</property>
       <property name="client-limit">10</property>
-      <property name="porter-socket-path">flu-hBvjLW.socket</property>
+      <property name="porter-socket-path">flu-8080.socket</property>
       <property name="porter-password">ffDtYpfsEvOK</property>
       <clock-master>false</clock-master>
       <plugs>
@@ -451,14 +583,14 @@
       <property name="bandwidth-limit">10000000</property>
       <property name="type">slave</property>
       <property name="client-limit">10</property>
-      <property name="porter-socket-path">flu-hBvjLW.socket</property>
+      <property name="porter-socket-path">flu-8080.socket</property>
       <property name="porter-password">ffDtYpfsEvOK</property>
       <clock-master>false</clock-master>
       <plugs>
       </plugs>
     </component>
 
-    <!-- vp6 -->
+    <!-- vp6
     <component name="http-vp6-low"
                type="http-streamer"
                label="http-vp6-low"
@@ -475,12 +607,12 @@
       <property name="bandwidth-limit">10000000</property>
       <property name="type">slave</property>
       <property name="client-limit">100</property>
-      <property name="porter-socket-path">flu-hBvjLW.socket</property>
+      <property name="porter-socket-path">flu-8080.socket</property>
       <property name="porter-password">ffDtYpfsEvOK</property>
       <clock-master>false</clock-master>
       <plugs>
       </plugs>
-    </component>
+    </component> -->
     
   </flow>
   

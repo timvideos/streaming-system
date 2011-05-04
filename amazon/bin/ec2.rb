@@ -13,7 +13,7 @@ when 'launch'
   if ARGV[1] == "encoder"
     type = "c1.large"
   else
-    type = "t1.tiny"
+    type = "t1.micro"
   end
   instance = ec2.launch_instances config['ami'], :group_ids => config['security_groups'], :key_name => config['ssh_keypair'], :instance_type => type
   puts "Launched"

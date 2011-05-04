@@ -34,4 +34,14 @@ $SUDO "aptitude full-upgrade -y"
 
 $SUDO "apt-get install -y flumotion flumotion-ugly"
 
+# Setup Streaming to justin.tv
+$SUDO "apt-get install -y vlc.*"
+$SUDO "apt-get install git"
+$RUN "cd /tmp; git clone git://github.com/justintv/jtvlc.git"
+
+
+# cvlc -vv http://localhost:8081/loop.raw --sout='#rtp{dst=127.0.0.1,port=1234,sdp=file:///tmp/vlc.sdp}' 
+# Key found at - http://www.justin.tv/broadcast/adv_other
+# python ./jtvlc.py mithro1 live_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX /tmp/vlc.sdp
+
 kill $SSHPID
