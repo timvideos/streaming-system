@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<planet name="planet">
+  
+  <atmosphere>
+    <component name="porter-http"
+               type="porter"
+               label="porter-http"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <property name="username">phqCIZdJkjnx</property>
+      <property name="socket-path">flu-hBvjLW.socket</property>
+      <property name="password">ffDtYpfsEvOK</property>
+      <property name="port">8080</property>
+    </component>
+    
+  </atmosphere>
+  
+  <flow name="default">
+
+    <component name="producer-audio"
+               type="audiotest-producer"
+               label="producer-audio"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <property name="volume">1.0</property>
+      <property name="samplerate">44100</property>
+      <property name="frequency">440</property>
+      <clock-master>true</clock-master>
+    </component>
+    <component name="producer-video"
+               type="videotest-producer"
+               label="producer-video"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <property name="pattern">0</property>
+      <property name="framerate">24/1</property>
+      <property name="width">1280</property>
+      <property name="height">720</property>
+      <clock-master>false</clock-master>
+    </component>
+
+    <!-- Scale the video -->
+    <component name="producer-video-small"
+               project="flumotion"
+               type="pipeline-converter"
+               worker="localhost">
+      <eater name="default"><feed>producer-video</feed></eater>
+      <property name="pipeline">videoscale ! video/x-raw-yuv,width=768,height=432</property>
+    </component>
+    <component name="producer-audio-small"
+               project="flumotion"
+               type="pipeline-converter"
+               worker="localhost">
+      <eater name="default"><feed>producer-audio</feed></eater>
+      <property name="pipeline">audioconvert ! audioresample ! audio/x-raw-int, rate=22050, channels=1</property>
+    </component>
+
+
+    <!-- ============================================================= -->
+    <!-- = Video Encoding                                            = -->
+    <!-- ============================================================= -->
+    <!-- Theora Video Encoding -->
+    <component name="encoder-video-theora-high"
+               type="theora-encoder"
+               label="encoder-video-theora-high"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">producer-video:default</feed>
+      </eater>
+      <property name="keyframe-maxdistance">24</property>
+      <property name="bitrate">800000</property>
+      <clock-master>false</clock-master>
+    </component>
+    <component name="encoder-video-theora-low"
+               type="theora-encoder"
+               label="encoder-video-theora-low"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">producer-video-small:default</feed>
+      </eater>
+      <property name="keyframe-maxdistance">24</property>
+      <property name="bitrate">300000</property>
+      <clock-master>false</clock-master>
+    </component>
+
+    <!-- WebM (VP8) Video Encoding -->
+    <component name="encoder-video-webm-high"
+               type="vp8-encoder"
+               label="encoder-video-webm-high"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">producer-video:default</feed>
+      </eater>
+      <property name="keyframe-maxdistance">24</property>
+      <property name="bitrate">800000</property>
+      <clock-master>false</clock-master>
+    </component>
+    <component name="encoder-video-webm-low"
+               type="vp8-encoder"
+               label="encoder-video-webm-low"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">producer-video-small:default</feed>
+      </eater>
+      <property name="keyframe-maxdistance">24</property>
+      <property name="bitrate">300000</property>
+      <clock-master>false</clock-master>
+    </component>
+
+    <!-- h264 Video Encoding -->
+    <component name="encoder-video-h264-high"
+               type="x264-encoder"
+               label="encoder-video-h264-high"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">producer-video:default</feed>
+      </eater>
+      <property name="keyframe-maxdistance">24</property>
+      <property name="bitrate">800000</property>
+      <clock-master>false</clock-master>
+    </component>
+    <component name="encoder-video-h264-low"
+               type="x264-encoder"
+               label="encoder-video-h264-low"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">producer-video-small:default</feed>
+      </eater>
+      <property name="keyframe-maxdistance">24</property>
+      <property name="bitrate">300000</property>
+      <clock-master>false</clock-master>
+    </component>
+
+    <!-- vp6 Video Encoding -->
+    <component name="encoder-video-vp6-low"
+               project="flumotion"
+               type="pipeline-converter"
+               worker="localhost">
+      <eater name="default"><feed>producer-video</feed></eater>
+      <property name="pipeline">ffmpegcolorspace ! ffenc_flv bitrate=300000</property>
+    </component>
+
+    <!-- ============================================================= -->
+    <!-- = Audio Encoding                                            = -->
+    <!-- ============================================================= -->
+    <!-- Ogg Vorbis Audio Encoding -->
+    <component name="encoder-audio-vorbis-high"
+               type="vorbis-encoder"
+               label="encoder-audio-vorbis-high"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">producer-audio:default</feed>
+      </eater>
+      <property name="bitrate">128000</property>
+      <clock-master>false</clock-master>
+    </component>
+    <component name="encoder-audio-vorbis-low"
+               type="vorbis-encoder"
+               label="encoder-audio-vorbis-low"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">producer-audio-small:default</feed>
+      </eater>
+      <property name="bitrate">64000</property>
+      <clock-master>false</clock-master>
+    </component>
+
+    <!-- AAC Audio Encoding -->
+    <component name="encoder-audio-aac-high"
+               type="faac-encoder"
+               label="encoder-audio-aac-high"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">producer-audio:default</feed>
+      </eater>
+      <property name="bitrate">128000</property>
+      <clock-master>false</clock-master>
+    </component>
+    <component name="encoder-audio-aac-low"
+               type="faac-encoder"
+               label="encoder-audio-aac-low"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">producer-audio-small:default</feed>
+      </eater>
+      <property name="bitrate">64000</property>
+      <clock-master>false</clock-master>
+    </component>
+
+    <!-- MP3  Audio Encoding - Only do a low quality version -->
+    <component name="encoder-audio-mp3-low"
+               type="pipeline-converter"
+               label="encoder-audio-mp3-low"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <source>producer-audio-small:default</source>
+      <property name="pipeline">lame bitrate=48</property>
+    </component>
+   
+    <!-- ============================================================= -->
+    <!-- = MUX Video & Audio Together                                = -->
+    <!-- ============================================================= -->
+    <!-- webm muxing -->
+    <component name="muxer-webm-high"
+               type="webm-muxer"
+               label="muxer-webm-high"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">encoder-audio-vorbis-high:default</feed>
+        <feed alias="default-bis">encoder-video-webm-high:default</feed>
+      </eater>
+      <clock-master>false</clock-master>
+    </component>
+    <component name="muxer-webm-low"
+               type="webm-muxer"
+               label="muxer-webm-low"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">encoder-audio-vorbis-low:default</feed>
+        <feed alias="default-bis">encoder-video-webm-low:default</feed>
+      </eater>
+      <clock-master>false</clock-master>
+    </component>
+
+    <!-- ogv muxing -->
+    <component name="muxer-ogv-high"
+               type="ogg-muxer"
+               label="muxer-ogv-high"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">encoder-audio-vorbis-high:default</feed>
+        <feed alias="default-bis">encoder-video-theora-high:default</feed>
+      </eater>
+      <clock-master>false</clock-master>
+    </component>
+    <component name="muxer-ogv-low"
+               type="ogg-muxer"
+               label="muxer-ogv-low"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">encoder-audio-vorbis-low:default</feed>
+        <feed alias="default-bis">encoder-video-theora-low:default</feed>
+      </eater>
+      <clock-master>false</clock-master>
+    </component>
+
+    <!-- flv muxing -->
+    <component name="muxer-flv-high"
+               type="gst-flv-muxer"
+               label="muxer-flv-high"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">encoder-audio-aac-high:default</feed>
+        <feed alias="default-bis">encoder-video-h264-high:default</feed>
+      </eater>
+      <clock-master>false</clock-master>
+    </component>
+    <component name="muxer-flv-low"
+               type="gst-flv-muxer"
+               label="muxer-flv-low"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">encoder-audio-aac-low:default</feed>
+        <feed alias="default-bis">encoder-video-h264-low:default</feed>
+      </eater>
+      <clock-master>false</clock-master>
+    </component>
+
+    <!-- vp6 muxing -->
+    <component name="muxer-vp6-low"
+               type="gst-flv-muxer"
+               label="muxer-vp6-low"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">encoder-audio-mp3-low:default</feed>
+        <feed alias="default-bis">encoder-video-vp6-low:default</feed>
+      </eater>
+      <clock-master>false</clock-master>
+    </component>
+
+    <!-- ============================================================= -->
+    <!-- = Outputting the Streams on a HTTP server                   = -->
+    <!-- ============================================================= -->
+
+    <!-- webm -->
+    <component name="http-webm-high"
+               type="http-streamer"
+               label="http-webm-high"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">muxer-webm-high:default</feed>
+      </eater>
+      <property name="porter-username">phqCIZdJkjnx</property>
+      <property name="mount-point">/webcast-high.webm</property>
+      <property name="burst-on-connect">True</property>
+      <property name="port">8080</property>
+      <property name="bandwidth-limit">10000000</property>
+      <property name="type">slave</property>
+      <property name="client-limit">10</property>
+      <property name="porter-socket-path">flu-hBvjLW.socket</property>
+      <property name="porter-password">ffDtYpfsEvOK</property>
+      <clock-master>false</clock-master>
+      <plugs>
+      </plugs>
+    </component>
+    <component name="http-webm-low"
+               type="http-streamer"
+               label="http-webm-low"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">muxer-webm-low:default</feed>
+      </eater>
+      <property name="porter-username">phqCIZdJkjnx</property>
+      <property name="mount-point">/webcast-low.webm</property>
+      <property name="burst-on-connect">True</property>
+      <property name="port">8080</property>
+      <property name="bandwidth-limit">10000000</property>
+      <property name="type">slave</property>
+      <property name="client-limit">10</property>
+      <property name="porter-socket-path">flu-hBvjLW.socket</property>
+      <property name="porter-password">ffDtYpfsEvOK</property>
+      <clock-master>false</clock-master>
+      <plugs>
+      </plugs>
+    </component>
+
+    <!-- ogv -->
+    <component name="http-ogv-high"
+               type="http-streamer"
+               label="http-ogv-high"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">muxer-ogv-high:default</feed>
+      </eater>
+      <property name="porter-username">phqCIZdJkjnx</property>
+      <property name="mount-point">/webcast-high.ogv</property>
+      <property name="burst-on-connect">True</property>
+      <property name="port">8080</property>
+      <property name="bandwidth-limit">10000000</property>
+      <property name="type">slave</property>
+      <property name="client-limit">10</property>
+      <property name="porter-socket-path">flu-hBvjLW.socket</property>
+      <property name="porter-password">ffDtYpfsEvOK</property>
+      <clock-master>false</clock-master>
+      <plugs>
+      </plugs>
+    </component>
+    <component name="http-ogv-low"
+               type="http-streamer"
+               label="http-ogv-low"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">muxer-ogv-low:default</feed>
+      </eater>
+      <property name="porter-username">phqCIZdJkjnx</property>
+      <property name="mount-point">/webcast-low.ogv</property>
+      <property name="burst-on-connect">True</property>
+      <property name="port">8080</property>
+      <property name="bandwidth-limit">10000000</property>
+      <property name="type">slave</property>
+      <property name="client-limit">10</property>
+      <property name="porter-socket-path">flu-hBvjLW.socket</property>
+      <property name="porter-password">ffDtYpfsEvOK</property>
+      <clock-master>false</clock-master>
+      <plugs>
+      </plugs>
+    </component>
+
+    <!-- flv -->
+    <component name="http-flv-high"
+               type="http-streamer"
+               label="http-flv-high"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">muxer-flv-high:default</feed>
+      </eater>
+      <property name="porter-username">phqCIZdJkjnx</property>
+      <property name="mount-point">/webcast-high.flv</property>
+      <property name="burst-on-connect">True</property>
+      <property name="port">8080</property>
+      <property name="bandwidth-limit">10000000</property>
+      <property name="type">slave</property>
+      <property name="client-limit">10</property>
+      <property name="porter-socket-path">flu-hBvjLW.socket</property>
+      <property name="porter-password">ffDtYpfsEvOK</property>
+      <clock-master>false</clock-master>
+      <plugs>
+      </plugs>
+    </component>
+    <component name="http-flv-low"
+               type="http-streamer"
+               label="http-flv-low"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">muxer-flv-low:default</feed>
+      </eater>
+      <property name="porter-username">phqCIZdJkjnx</property>
+      <property name="mount-point">/webcast-low.flv</property>
+      <property name="burst-on-connect">True</property>
+      <property name="port">8080</property>
+      <property name="bandwidth-limit">10000000</property>
+      <property name="type">slave</property>
+      <property name="client-limit">10</property>
+      <property name="porter-socket-path">flu-hBvjLW.socket</property>
+      <property name="porter-password">ffDtYpfsEvOK</property>
+      <clock-master>false</clock-master>
+      <plugs>
+      </plugs>
+    </component>
+
+    <!-- vp6 -->
+    <component name="http-vp6-low"
+               type="http-streamer"
+               label="http-vp6-low"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">muxer-vp6-low:default</feed>
+      </eater>
+      <property name="porter-username">phqCIZdJkjnx</property>
+      <property name="mount-point">/webcast-vp6.flv</property>
+      <property name="burst-on-connect">True</property>
+      <property name="port">8080</property>
+      <property name="bandwidth-limit">10000000</property>
+      <property name="type">slave</property>
+      <property name="client-limit">100</property>
+      <property name="porter-socket-path">flu-hBvjLW.socket</property>
+      <property name="porter-password">ffDtYpfsEvOK</property>
+      <clock-master>false</clock-master>
+      <plugs>
+      </plugs>
+    </component>
+    
+  </flow>
+  
+</planet>

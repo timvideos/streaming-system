@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<planet name="planet">
+  
+  <atmosphere>
+    <component name="porter-http"
+               type="porter"
+               label="porter-http"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <property name="username">phqCIZdJkjnx</property>
+      <property name="socket-path">flu-hBvjLW.socket</property>
+      <property name="password">ffDtYpfsEvOK</property>
+      <property name="port">8800</property>
+    </component>
+    
+  </atmosphere>
+  
+  <flow name="default">
+    <component name="producer-audio"
+               type="audiotest-producer"
+               label="producer-audio"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <property name="volume">1.0</property>
+      <property name="samplerate">44100</property>
+      <property name="frequency">440</property>
+      <clock-master>true</clock-master>
+    </component>
+    <component name="producer-video"
+               type="videotest-producer"
+               label="producer-video"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <property name="pattern">0</property>
+      <property name="framerate">24/1</property>
+      <property name="width">1024</property>
+      <property name="height">768</property>
+      <clock-master>false</clock-master>
+    </component>
+    
+    <component name="encoder-video"
+               type="theora-encoder"
+               label="encoder-video"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">producer-video:default</feed>
+      </eater>
+      <property name="keyframe-maxdistance">24</property>
+      <property name="sharpness">0</property>
+      <property name="bitrate">2200000</property>
+      <property name="noise-sensitivity">1</property>
+      <clock-master>false</clock-master>
+    </component>
+    
+    <component name="encoder-audio"
+               type="vorbis-encoder"
+               label="encoder-audio"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">producer-audio:default</feed>
+      </eater>
+      <property name="bitrate">192000</property>
+      <clock-master>false</clock-master>
+    </component>
+    
+    <component name="muxer-audio-video"
+               type="ogg-muxer"
+               label="muxer-audio-video"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">encoder-audio:default</feed>
+        <feed alias="default-bis">encoder-video:default</feed>
+      </eater>
+      <clock-master>false</clock-master>
+    </component>
+    
+    <component name="http-audio-video"
+               type="http-streamer"
+               label="http-audio-video"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">muxer-audio-video:default</feed>
+      </eater>
+      <property name="porter-username">phqCIZdJkjnx</property>
+      <property name="mount-point">/outgoing.ogv</property>
+      <property name="burst-on-connect">True</property>
+      <property name="port">8800</property>
+      <property name="bandwidth-limit">10000000</property>
+      <property name="type">slave</property>
+      <property name="client-limit">10</property>
+      <property name="porter-socket-path">flu-hBvjLW.socket</property>
+      <property name="porter-password">ffDtYpfsEvOK</property>
+      <clock-master>false</clock-master>
+      <plugs>
+      </plugs>
+    </component>
+    
+  </flow>
+  
+</planet>
