@@ -45,7 +45,7 @@ File /tmp/incoming.ffm
 FileMaxSize 100M
 
 # FIXME: Once we have dynamic DNS setup, the encoder can startup the ffmpeg
-Launch ffmpeg -r 24 -i http://$COLLECTOR/outgoing.dv
+#Launch ffmpeg -i http://$COLLECTOR/outgoing.flv
 </Feed>
 
 
@@ -60,7 +60,7 @@ VideoFrameRate 24
 VideoBitRate 800
 AVOptionVideo flags +global_header
 
-AudioCodec libvorbis
+AudioCodec libmp3lame
 AudioBitRate 128
 AudioChannels 2
 AudioSampleRate 44100
@@ -74,7 +74,7 @@ Feed incoming.ffm
 Format webm
 
 VideoCodec libvpx
-VideoSize 768x432
+VideoSize 720x-1
 VideoFrameRate 6
 VideoBitRate 300
 AVOptionVideo flags +global_header
@@ -87,42 +87,42 @@ AVOptionAudio flags +global_header
 </Stream>
 
 
-<Stream webcast-800.ogv>
-Feed incoming.ffm
-
-Format webm
-
-VideoCodec libtheora
-VideoSize hd720
-VideoFrameRate 24
-VideoBitRate 800
-AVOptionVideo flags +global_header
-
-AudioCodec libvorbis
-AudioBitRate 128
-AudioChannels 2
-AudioSampleRate 44100
-AVOptionAudio flags +global_header
-</Stream>
-
-
-<Stream webcast-300.ogv>
-Feed incoming.ffm
-
-Format webm
-
-VideoCodec libtheora
-VideoSize 768x432
-VideoFrameRate 6
-VideoBitRate 300
-AVOptionVideo flags +global_header
-
-AudioCodec libvorbis
-AudioBitRate 32
-AudioChannels 1
-AudioSampleRate 22050
-AVOptionAudio flags +global_header
-</Stream>
+##<Stream webcast-800.ogv>
+##Feed incoming.ffm
+##
+##Format ogg
+##
+##VideoCodec libtheora
+##VideoSize hd720
+##VideoFrameRate 24
+##VideoBitRate 800
+##AVOptionVideo flags +global_header
+##
+##AudioCodec libmp3lame
+##AudioBitRate 128
+##AudioChannels 2
+##AudioSampleRate 44100
+##AVOptionAudio flags +global_header
+##</Stream>
+##
+##
+##<Stream webcast-300.ogv>
+##Feed incoming.ffm
+##
+##Format ogg
+##
+##VideoCodec libtheora
+##VideoSize 720x-1
+##VideoFrameRate 6
+##VideoBitRate 300
+##AVOptionVideo flags +global_header
+##
+##AudioCodec libvorbis
+##AudioBitRate 32
+##AudioChannels 1
+##AudioSampleRate 22050
+##AVOptionAudio flags +global_header
+##</Stream>
 
 
 <Stream webcast-800.mp4>
@@ -134,6 +134,7 @@ VideoCodec libx264
 VideoSize hd720
 VideoFrameRate 24
 VideoBitRate 800
+AVPresetVideo baseline
 AVOptionVideo flags +global_header
 
 AudioCodec libfaac
@@ -150,9 +151,10 @@ Feed incoming.ffm
 Format mp4
 
 VideoCodec libx264
-VideoSize 768x432
+VideoSize 720x-1
 VideoFrameRate 6
 VideoBitRate 300
+AVPresetVideo baseline
 AVOptionVideo flags +global_header
 
 AudioCodec libfaac
@@ -169,7 +171,7 @@ Feed incoming.ffm
 Format flv
 
 VideoCodec flv
-VideoSize 768x432
+VideoSize 640x-1
 VideoFrameRate 6
 VideoBitRate 300
 AVOptionVideo flags +global_header

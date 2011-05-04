@@ -42,7 +42,7 @@ URL http://tims-video.appengine.com/
 
 <Feed incoming.ffm>
 File /tmp/incoming.ffm
-FileMaxSize 8G
+FileMaxSize 100M
 </Feed>
 
 

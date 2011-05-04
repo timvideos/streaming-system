@@ -10,12 +10,17 @@ ec2  = Aws::Ec2.new config['access_key'], config['secret_access_key'], :connecti
 
 case ARGV[0]
 when 'launch'
-  instance = ec2.launch_instances config['ami'], :group_ids => config['security_groups'], :key_name => config['ssh_keypair'], :instance_type => config['instance_type']
+  if ARGV[1] == "encoder"
+    type = "c1.large"
+  else
+    type = "t1.tiny"
+  end
+  instance = ec2.launch_instances config['ami'], :group_ids => config['security_groups'], :key_name => config['ssh_keypair'], :instance_type => type
   puts "Launched"
   puts instance
 when 'list'
   ec2.describe_instances.each do |i|
-    puts "#{i[:aws_instance_id]} #{i[:dns_name]} #{i[:aws_state]}"
+    puts "#{i[:aws_instance_id]} #{i[:dns_name]} #{i[:aws_state]} #{i[:aws_instance_type]}"
   end
 when 'terminate'
   ec2.terminate_instances [ARGV[1]]
