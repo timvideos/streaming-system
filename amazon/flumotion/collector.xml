@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <planet name="planet">
   
   <atmosphere>
@@ -8,39 +7,68 @@
                worker="localhost"
                project="flumotion"
                version="0.8.1">
-      <property name="username">phqCIZdJkjnx</property>
-      <property name="socket-path">flu-hBvjLW.socket</property>
-      <property name="password">ffDtYpfsEvOK</property>
+      <property name="username">pMEUjzeXaBJJ</property>
+      <property name="socket-path">flu-DUwiBh.socket</property>
+      <property name="password">egMLHlXjuUgt</property>
       <property name="port">8800</property>
     </component>
     
   </atmosphere>
   
   <flow name="default">
-    <component name="producer-audio"
-               type="audiotest-producer"
-               label="producer-audio"
+    <!-- 
+    <component name="producer-firewire"
+               type="pipeline-producer"
+               label="producer-firewire"
                worker="localhost"
                project="flumotion"
                version="0.8.1">
-      <property name="volume">1.0</property>
-      <property name="samplerate">44100</property>
-      <property name="frequency">440</property>
+      <property name="pipeline">hdv1394src</property>
+      <clock-master>true</clock-master>
+    </component> 
+
+    <component name="producer-decoder"
+               type="av-generic-decoder"
+               label="producer-decoder"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <clock-master>false</clock-master>
+      <eater name="default">
+        <feed alias="default">producer-firewire:default</feed>
+      </eater>
+    </component> -->
+
+    <component name="producer-hd-firewire"
+               type="firewire-producer"
+               label="producer-audio-video"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <property name="deinterlace-mode">auto</property>
+      <property name="is-square">True</property>
+      <property name="deinterlace-method">ffmpeg</property>
+      <property name="framerate">25/1</property>
+      <property name="height">0</property>
+      <property name="width">1920</property>
+      <property name="decoder">ffdec_dvvideo</property>
+      <property name="guid">576537722488116858</property>
       <clock-master>true</clock-master>
     </component>
-    <component name="producer-video"
-               type="videotest-producer"
-               label="producer-video"
+    <component name="scaler-video"
+               type="pipeline-converter"
+               label="scaler-video"
                worker="localhost"
                project="flumotion"
                version="0.8.1">
-      <property name="pattern">0</property>
-      <property name="framerate">24/1</property>
-      <property name="width">1024</property>
-      <property name="height">768</property>
+      <eater name="default">
+        <feed alias="default">producer-hd-firewire:video</feed>
+      </eater>
+      <property name="pipeline">videoscale ! video/x-raw-yuv, width=1280, height=720</property>
       <clock-master>false</clock-master>
     </component>
-    
+		   
+
     <component name="encoder-video"
                type="theora-encoder"
                label="encoder-video"
@@ -48,11 +76,11 @@
                project="flumotion"
                version="0.8.1">
       <eater name="default">
-        <feed alias="default">producer-video:default</feed>
+        <feed alias="default">scaler-video:video</feed>
       </eater>
-      <property name="keyframe-maxdistance">24</property>
+      <property name="keyframe-maxdistance">25</property>
       <property name="sharpness">0</property>
-      <property name="bitrate">2200000</property>
+      <property name="bitrate">22000000</property>
       <property name="noise-sensitivity">1</property>
       <clock-master>false</clock-master>
     </component>
@@ -64,7 +92,7 @@
                project="flumotion"
                version="0.8.1">
       <eater name="default">
-        <feed alias="default">producer-audio:default</feed>
+        <feed alias="default">producer-decoder:audio</feed>
       </eater>
       <property name="bitrate">192000</property>
       <clock-master>false</clock-master>
@@ -82,7 +110,7 @@
       </eater>
       <clock-master>false</clock-master>
     </component>
-    
+   
     <component name="http-audio-video"
                type="http-streamer"
                label="http-audio-video"
@@ -92,18 +120,29 @@
       <eater name="default">
         <feed alias="default">muxer-audio-video:default</feed>
       </eater>
-      <property name="porter-username">phqCIZdJkjnx</property>
-      <property name="mount-point">/outgoing.ogv</property>
-      <property name="burst-on-connect">True</property>
+      <property name="porter-username">pMEUjzeXaBJJ</property>
+      <property name="mount-point">/output</property>
+      <property name="burst-on-connect">False</property>
       <property name="port">8800</property>
-      <property name="bandwidth-limit">10000000</property>
       <property name="type">slave</property>
-      <property name="client-limit">10</property>
-      <property name="porter-socket-path">flu-hBvjLW.socket</property>
-      <property name="porter-password">ffDtYpfsEvOK</property>
+      <property name="porter-socket-path">flu-DUwiBh.socket</property>
+      <property name="porter-password">egMLHlXjuUgt</property>
       <clock-master>false</clock-master>
       <plugs>
       </plugs>
+    </component>
+
+    <component name="consumer-sender"
+               type="pipeline-consumer"
+               label="consumer-sender"
+               worker="localhost"
+               project="flumotion"
+               version="0.8.1">
+      <eater name="default">
+        <feed alias="default">muxer-audio-video:default</feed>
+      </eater>
+      <property name="pipeline">gdppay | tcpclientsink host=ec2-50-19-36-221.compute-1.amazonaws.com</property>
+      <clock-master>false</clock-master>
     </component>
     
   </flow>
