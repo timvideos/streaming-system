@@ -75,7 +75,7 @@
                project="flumotion"
                version="0.8.1">
       <eater name="default">
-        <feed alias="default">scaler-video:video</feed>
+        <feed alias="default">scaler-video:default</feed>
       </eater>
       <property name="keyframe-maxdistance">25</property>
       <property name="sharpness">0</property>
@@ -91,7 +91,7 @@
                project="flumotion"
                version="0.8.1">
       <eater name="default">
-        <feed alias="default">producer-decoder:audio</feed>
+        <feed alias="default">producer-hd-firewire:audio</feed>
       </eater>
       <property name="bitrate">192000</property>
       <clock-master>false</clock-master>
