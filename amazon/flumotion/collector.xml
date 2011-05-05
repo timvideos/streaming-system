@@ -41,7 +41,7 @@
 
     <component name="producer-hd-firewire"
                type="firewire-producer"
-               label="producer-audio-video"
+               label="producer-hd-firewire"
                worker="localhost"
                project="flumotion"
                version="0.8.1">
@@ -68,7 +68,6 @@
       <clock-master>false</clock-master>
     </component>
 		   
-
     <component name="encoder-video"
                type="theora-encoder"
                label="encoder-video"

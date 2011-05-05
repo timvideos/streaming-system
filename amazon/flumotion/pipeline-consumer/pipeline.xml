@@ -1,0 +1,53 @@
+<registry>
+
+  <components>
+    <component type="pipeline-consumer"
+               base="flumotion/component/consumers/pipeline"
+               _description="A generic GStreamer pipeline converter.">
+      <source location="flumotion.component.consumers.pipeline.pipeline" />
+      <eater name="default" />
+      <entries>
+        <entry type="component" location="pipeline.py"
+               function="Producer" />
+      </entries>
+
+      <synchronization required="yes" />
+
+      <properties>
+        <property name="pipeline" type="string" required="yes"
+                  _description="The partial GStreamer pipeline to use." />
+      </properties>
+    </component>
+  </components>
+
+
+  <bundles>
+
+    <bundle name="pipeline-consumer-base">
+        <dependencies>
+            <dependency name="component-base" />
+        </dependencies>
+
+        <directories>
+            <directory name="flumotion/component/consumers/pipeline">
+                <filename location="__init__.py" />
+            </directory>
+        </directories>
+    </bundle>
+
+    <bundle name="pipeline-consumer-component">
+        <dependencies>
+            <dependency name="component" />
+            <dependency name="pipeline-consumer-base" />
+        </dependencies>
+
+        <directories>
+            <directory name="flumotion/component/consumers/pipeline">
+                <filename location="pipeline.py" />
+            </directory>
+        </directories>
+    </bundle>
+
+  </bundles>
+
+</registry>
