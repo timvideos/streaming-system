@@ -58,7 +58,7 @@ body {
   height: 60px;
   background: #000000;
   z-index: 100;
-  background-image: url(http://localhost:8080/static/third_party/jwplayer/skin/display/background.png);
+  background-image: url(/static/third_party/jwplayer/skin/display/background.png);
   color: #ffffff;
   text-align: center;
   vertical-align: middle;
