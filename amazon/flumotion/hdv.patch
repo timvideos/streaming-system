@@ -1,0 +1,82 @@
+Index: flumotion/component/encoders/vp8/vp8.py
+===================================================================
+--- flumotion/component/encoders/vp8/vp8.py	(revision 8845)
++++ flumotion/component/encoders/vp8/vp8.py	(working copy)
+@@ -34,7 +34,7 @@
+     checkOffset = True
+
+     def get_pipeline_string(self, properties):
+-        return "ffmpegcolorspace ! vp8enc speed=2 name=encoder"
++        return "ffmpegcolorspace ! vp8enc threads=4 speed=2 name=encoder"
+
+     def configure_pipeline(self, pipeline, properties):
+         element = pipeline.get_by_name('encoder')
+Index: flumotion/component/producers/firewire/wizard_gtk.py
+===================================================================
+--- flumotion/component/producers/firewire/wizard_gtk.py	(revision 8845)
++++ flumotion/component/producers/firewire/wizard_gtk.py	(working copy)
+@@ -199,7 +199,7 @@
+         self.wizard.add_msg(msg)
+         d = self.runInWorker('flumotion.worker.checks.device',
+                              'fetchDevices', 'firewire-check',
+-                             ['dv1394src'], 'guid')
++                             ['hdv1394src',], 'guid')
+
+         def firewireCheckDone(devices):
+             self.wizard.clear_msg('firewire-check')
+Index: flumotion/worker/checks/gst010.py
+===================================================================
+--- flumotion/worker/checks/gst010.py	(revision 8845)
++++ flumotion/worker/checks/gst010.py	(working copy)
+@@ -163,7 +163,7 @@
+     result = messages.Result()
+
+     def do_check(demux):
+-        pad = demux.get_pad('video')
++        pad = demux.get_pad('src')
+
+         if not pad or pad.get_negotiated_caps() == None:
+             raise errors.GStreamerError('Pipeline failed to negotiate?')
+@@ -172,13 +172,13 @@
+         s = caps.get_structure(0)
+         w = s['width']
+         h = s['height']
+-        par = s['pixel-aspect-ratio']
+-        result = dict(width=w, height=h, par=(par.num, par.denom))
++#        par = s['pixel-aspect-ratio']
++        result = dict(width=w, height=h, par=(4.0/3.0, 1.0))
+         log.debug('check', 'returning dict %r' % result)
+         return result
+
+     pipeline = \
+-        'dv1394src guid=%s ! dvdemux name=demux .video ! fakesink' % guid
++        'hdv1394src guid=%s ! mpegtsdemux ! mpeg2dec name=demux .src ! fakesink' % guid
+
+     d = do_element_check(pipeline, 'demux', do_check)
+
+Index: flumotion/component/producers/firewire/firewire.py
+===================================================================
+--- flumotion/component/producers/firewire/firewire.py	(revision 8845)
++++ flumotion/component/producers/firewire/firewire.py	(working copy)
+@@ -96,17 +96,17 @@
+         # replace it with videotestsrc of the same size and PAR, so we can
+         # unittest the pipeline
+         # need a queue in case tcpserversink blocks somehow
+-        template = ('dv1394src %s'
++        template = ('hdv1394src %s'
+                     '    ! tee name=t'
+                     '    ! queue leaky=2 max-size-time=1000000000'
+-                    '    ! dvdemux name=demux'
+-                    '  demux. ! queue ! %s name=decoder'
++                    '    ! mpegtsdemux name=demux'
++                    '  demux. ! queue ! mpeg2dec name=decoder'
+                     '    ! @feeder:video@'
+-                    '  demux. ! queue ! audio/x-raw-int '
++                    '  demux. ! queue ! mad ! audio/x-raw-int '
+                     '    ! volume name=setvolume'
+                     '    ! level name=volumelevel message=true '
+                     '    ! @feeder:audio@'
+-                    '    t. ! queue ! @feeder:dv@' % (guid, decoder))
++                    '    t. ! queue ! @feeder:dv@' % (guid,))
+ 
+         return template
