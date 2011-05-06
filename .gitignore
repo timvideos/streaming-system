@@ -1,3 +1,4 @@
+amazon/config.json
+amazon/default.pem
 *.pyc
 .*
-amazon/config.json
