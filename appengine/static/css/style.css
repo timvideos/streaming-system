@@ -88,5 +88,18 @@ body {
 }
 
 #twitter-cell {
-  height: 8em;
+  height: 1%;
+}
+
+#twitter-cell .related-tweets {
+  border: 0;
+  background: white;
+}
+
+#twitter-search {
+  color: white;
+}
+#twitter-search a {
+  color: #999999;
+  text-decoration: none;
 }

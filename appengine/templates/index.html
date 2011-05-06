@@ -2,8 +2,10 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/third_party/jquery-extra/jquery.relatedtweets-1.0.min.js"></script>
     <script type="text/javascript" src="/static/third_party/jwplayer/jwplayer.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/tweet.css">
     <title>Tim's Video Streaming for {{ group|upper }}</title>
   </head>
 <body>
@@ -29,7 +31,10 @@
       <td id="twitter-cell" colspan=2>
         <div id="twitter-container" class="container">
           <div id="twitter-sizer" class="sizer">
-            Twitter goes here
+            <div class="related-tweets" options="{debug: true}">Related tweets loading....</div>
+            <div id="twitter-search">Search on Twitter:
+              <a class=tag href="http://search.twitter.com/search?q=%23{{ hashtag|urlencode }}" rel="tag">{{ hashtag }}</a>
+            </div>
           </div>
         </div>
       </td>

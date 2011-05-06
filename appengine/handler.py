@@ -16,7 +16,7 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 import index
 
 application = webapp.WSGIApplication(
-  [('/', index.StaticTemplate)],
+  [('/(.*)', index.StaticTemplate)],
   debug=True)
 
 

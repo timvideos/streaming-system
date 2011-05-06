@@ -14,13 +14,22 @@ from google.appengine.ext import webapp
 # Our App imports
 from utils.render import render as r
 
+twitter = {'slug': 'sydlug'}
 
 class StaticTemplate(webapp.RequestHandler):
     """Handler which shows a map of how to get to slug."""
-    def get(self, filename='index'):
-        template = 'templates/%s.html' % filename
-        if os.path.exists(template):
-            self.response.headers['Content-Type'] = 'text/html'
-            self.response.out.write(r(template, {}))
+    def get(self, group):
+        if not group:
+            group = 'slug'
+
+        if '/' in group:
+            group, hashtag = group.split('/', 1)
         else:
-            self.redirect('/')
+            hashtag = group
+
+        if hashtag in twitter:
+            hashtag = twitter[hashtag]
+
+        template = 'templates/index.html'
+        self.response.headers['Content-Type'] = 'text/html'
+        self.response.out.write(r(template, locals()))
