@@ -1,0 +1,92 @@
+* {
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+html {
+	width: 100%;
+	height: 100%;
+	border: 0;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	background-color:#fff;	
+	font-family:"Lucida Grande","bitstream vera sans","trebuchet ms",verdana,arial;
+	text-align:center;
+	padding: 10px;
+}
+
+#body-table {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: 0;
+  padding: 1;
+  margin: 1;
+}
+
+#body-table td {
+  margin: 0;
+  border: 0;
+}
+
+.container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: #111111;
+  text-align:left;
+  border-radius: 20px;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#112233', endColorstr='#111111'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from(#112233), to(#111111)); /* for webkit browsers */
+  background: -moz-linear-gradient(top,  #112233,  #111111); /* for firefox 3.6+ */
+}
+
+.sizer {
+  padding: 10px;
+}
+
+#player-hd {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+  width: 15%;
+  height: 15%;
+  background: #ffffff;
+  z-index: 100;
+  opacity: 0.8;
+  filter:alpha(opacity=80);
+}
+
+#player-sizer {
+  display:block;
+  width:100%;
+  height:100%;
+  margin: 0 auto;
+}
+
+#chat-cell {
+  width: 40%;
+}
+
+#chat-sizer {
+  width: 100%;
+  height: 100%;
+}
+
+#chat-frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+#twitter-cell {
+  height: 8em;
+}
