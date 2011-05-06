@@ -85,10 +85,10 @@ var player = jwplayer("player").setup({
   },
   skin: '/static/third_party/jwplayer/skin/glow.zip',
   modes: [
-    {type: "flash", src: "/static/third_party/jwplayer/player.swf",
-      config: {levels: flash_auto}},
     {type: "html5",
       config: {levels: html5_high}},
+    {type: "flash", src: "/static/third_party/jwplayer/player.swf",
+      config: {levels: flash_auto}},
     {type: "download",
       config: {file: offline}},
   ]
