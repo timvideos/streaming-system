@@ -53,16 +53,34 @@ body {
   padding: 10px;
 }
 
+.button {
+  width: 60px;
+  height: 60px;
+  background: #000000;
+  z-index: 100;
+  background-image: url(http://localhost:8080/static/third_party/jwplayer/skin/display/background.png);
+  color: #ffffff;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.button div {
+  display: table-cell;
+  vertical-align: middle;
+  height: 60px;
+  width: 60px;
+}
+
 #player-hd {
   position: absolute;
-  top: 40px;
-  right: 40px;
-  width: 15%;
-  height: 15%;
-  background: #ffffff;
-  z-index: 100;
-  opacity: 0.8;
-  filter:alpha(opacity=80);
+  top: 20px;
+  right: 20px;
+}
+
+#player-mode {
+  position: absolute;
+  top: 100px;
+  right: 20px;
 }
 
 #player-sizer {

@@ -14,7 +14,8 @@
     <tr>
       <td id="player-cell">
         <div id="player-container" class="container">
-          <div id="player-hd">HD</div>
+          <div id="player-hd" class="button"><div id="player-hd-center">HD<br>auto</div></div>
+          <!-- <div id="player-mode" class="button"><div id="player-mode-center"></div></div> -->
           <div id="player-sizer" class="sizer">
             <a href="" id="player"></a>
           </div>
@@ -42,6 +43,13 @@
   </table>
 
 <script type="text/javascript">
+/**
+ * Get Unix timestamp
+ */
+function time () {
+  return new Date().getTime();
+}
+
 // Server which is doing the streaming
 var streamer="http://ec2-50-19-36-221.compute-1.amazonaws.com:8080/";
 
@@ -103,22 +111,9 @@ player.onReady(fit_player);
 $(window).resize(fit_player);
 
 /**
- * Show and hide the HD icon
+ * HD stream toggle
  */
 var player_hd = $('#player-hd');
-
-var player_hd_show = 0;
-function hd_show () {
-  player_hd.stop(true,true);
-  player_hd.fadeIn('slow');
-  player_hd_show = time();
-  window.setTimeout(hd_hide, 200);
-}
-function hd_hide () {
-  if ((time() - player_hd_show) > 150) {
-    player_hd.fadeOut('slow');
-  }
-}
 function hd_toggle () {
   if (player_hd.text() != 'HD on') {
     hd_on();
@@ -126,14 +121,13 @@ function hd_toggle () {
     hd_off();
   }
 }
-
 function hd_on () {
   if (player.renderingMode == 'html5') {
     player.load({levels: html5_high});
   } else {
     player.load({levels: flash_high});
   }
-  player_hd.text('HD on');
+  $('#player-hd-center').text('HD on');
 }
 function hd_off () {
   if (player.renderingMode == 'html5') {
@@ -141,18 +135,95 @@ function hd_off () {
   } else {
     player.load({levels: flash_low});
   }
-  player_hd.text('HD off');
+  $('#player-hd-center').text('HD off');
 }
 
-var player_setVisiblity = player._setVisiblity;
-console.log(player_setVisiblity);
-/*player._setVisiblity = function () {
-  console.log("_setVisbility", this._hiding);
-  player_setVisibility();
-}*/
-
 player_hd.click(hd_toggle);
-player_sizer.mousemove(hd_show);
+
+
+/**
+ * Flash/HTML5 mode toggle
+ */
+/*
+function mode_toggle () {
+  // Stop and delete the current player
+  player.stop();
+  player = null;
+  $('#player').empty();
+
+  options = {
+    autostart: true,
+    plugins: {
+      qualitymonitor: {}
+    },
+    skin: '/static/third_party/jwplayer/skin/glow.zip',
+  };
+
+  if (player_mode.text()  == 'Flash') {
+    //Converting to auto
+    options.modes = [
+      {type: "html5",
+        config: {levels: html5_high}},
+      {type: "flash", src: "/static/third_party/jwplayer/player.swf",
+        config: {levels: flash_auto}},
+      {type: "download",
+        config: {file: offline}},
+    ];
+    $('#player-mode-center').('<h1>Auto</h1><h2>HTML5</h2>');
+
+  } else if (player_mode.text() == 'Auto') {
+    // Converting to HTML5
+    options.modes = [
+      {type: "html5",
+        config: {levels: html5_high}},
+      {type: "download",
+        config: {file: offline}},
+      ],
+    });
+    $('#player-mode-center').('<h1>HTML5</h1><h2></h2>');
+
+  } else {
+    // Converting to Flash
+    options.modes = [
+      modes: [
+        {type: "flash", src: "/static/third_party/jwplayer/player.swf",
+          config: {levels: flash_auto}},
+        {type: "download",
+          config: {file: offline}},
+      ],
+    });
+    $('#player-mode-center').text('Flash');
+  }
+  player = jwplayer("player").setup(options);
+}
+*/
+
+/**
+ * Show and hide the extra buttons
+ */
+var buttons_hd_show = 0;
+function buttons_show () {
+  player_hd.stop(true,true);
+  player_hd.fadeIn('slow');
+//  player_mode.stop(true,true);
+//  player_mode.fadeIn('slow');
+
+  buttons_hd_show = time();
+  window.setTimeout(buttons_hide, 2000);
+}
+function buttons_hide () {
+  if ((time() - buttons_hd_show) > 1900) {
+    var player_state = player.getState()
+    if (player_state == "IDLE" || player_state == "PAUSED") {
+      window.setTimeout(buttons_hide, 2000);
+    } else {
+      player_hd.fadeOut('slow');
+//    player_mode.fadeOut('slow');
+    }
+  }
+}
+
+player_sizer.mousemove(buttons_show);
 
     </script>
 </body>
