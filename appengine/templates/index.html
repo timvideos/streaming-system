@@ -9,13 +9,36 @@
   </head>
 <body>
 
-  <div id="page">
-    <div id="sizer-player" style="display:block;width:100%;height:100%;margin: 0 auto;">
-      <a href="" id="player"></a>
-    </div>
-  </div>
+  <table id="body-table">
+    <tr>
+      <td id="player-cell">
+        <div id="player-container" class="container">
+          <div id="player-hd">HD</div>
+          <div id="player-sizer" class="sizer">
+            <a href="" id="player"></a>
+          </div>
+        </div>
+      </td>
+      <td id="chat-cell">
+        <div id="chat-container" class="container">
+          <div id="chat-sizer" class="sizer">
+            <iframe id="chat-frame" src="http://webchat.freenode.net?channels=slug&uio=MTA9dHJ1ZQ49"></iframe>
+          </div>
+        </div>
+      </td>
+    </tr><tr>
+      <td id="twitter-cell" colspan=2>
+        <div id="twitter-container" class="container">
+          <div id="twitter-sizer" class="sizer">
+            Twitter goes here
+          </div>
+        </div>
+      </td>
+    </tr>
+  </table>
 
 <script type="text/javascript">
+// Server which is doing the streaming
 var streamer="http://ec2-50-19-36-221.compute-1.amazonaws.com:8080/";
 
 // Offline streaming
@@ -34,40 +57,100 @@ var html5_low = [
 ];
 // Flash streaming
 var flash_high = [
-  { bitrate: 800, file: streamer+'webcast-high.flv', width: 720 }
+  { bitrate: "800", file: streamer+'webcast-high.flv', width: "720" }
 ];
 var flash_low = [
-  { bitrate: 300, file: streamer+'webcast-low.flv', width: 432 },
+  { bitrate: "300", file: streamer+'webcast-low.flv', width: "432" },
 ];
 // Flash Streaming - with automatic format switching
-var flash_auto = flash_high+flash_low;
+var flash_auto = flash_high.concat(flash_low);
 
-var all = html5_high+flash_auto;
+console.log(flash_auto);
 
-jwplayer("player").setup({
+// Create the jwplayer
+var player = jwplayer("player").setup({
   autostart: true,
   plugins: {
     qualitymonitor: {}
   },
   skin: '/static/third_party/jwplayer/skin/glow.zip',
   modes: [
-    {type: "html5",
-      config: {levels: html5_high}},
     {type: "flash", src: "/static/third_party/jwplayer/player.swf",
       config: {levels: flash_auto}},
+    {type: "html5",
+      config: {levels: html5_high}},
     {type: "download",
       config: {file: offline}},
   ]
 });
 
+/**
+ * Resize the player to fit the window.
+ */
+var player_sizer = $("#player-sizer");
 function fit_player () {
-  var p = $("#sizer-player");
-  console.log("fit_player", p.width(), p.height());
-  jwplayer("player").resize(p.width(), p.height());
+  // Turn off HD
+  if (player_sizer.height() < 432) {
+    hd_off();
+  }
+  jwplayer("player").resize(player_sizer.width(), player_sizer.height());
+}
+player.onReady(fit_player);
+
+// When the window's size changes, so does ours.
+$(window).resize(fit_player);
+
+/**
+ * Show and hide the HD icon
+ */
+var player_hd = $('#player-hd');
+
+var player_hd_show = 0;
+function hd_show () {
+  player_hd.stop(true,true);
+  player_hd.fadeIn('slow');
+  player_hd_show = time();
+  window.setTimeout(hd_hide, 200);
+}
+function hd_hide () {
+  if ((time() - player_hd_show) > 150) {
+    player_hd.fadeOut('slow');
+  }
+}
+function hd_toggle () {
+  if (player_hd.text() != 'HD on') {
+    hd_on();
+  } else {
+    hd_off();
+  }
 }
 
-$(window).resize(fit_player);
-fit_player();
+function hd_on () {
+  if (player.renderingMode == 'html5') {
+    player.load({levels: html5_high});
+  } else {
+    player.load({levels: flash_high});
+  }
+  player_hd.text('HD on');
+}
+function hd_off () {
+  if (player.renderingMode == 'html5') {
+    player.load({levels: html5_low});
+  } else {
+    player.load({levels: flash_low});
+  }
+  player_hd.text('HD off');
+}
+
+var player_setVisiblity = player._setVisiblity;
+console.log(player_setVisiblity);
+/*player._setVisiblity = function () {
+  console.log("_setVisbility", this._hiding);
+  player_setVisibility();
+}*/
+
+player_hd.click(hd_toggle);
+player_sizer.mousemove(hd_show);
 
     </script>
 </body>
