@@ -18,32 +18,57 @@
 <script type="text/javascript">
 var streamer="http://ec2-50-19-36-221.compute-1.amazonaws.com:8080/";
 
-flowplayer("player",
-{
-        src: "/static/third_party/flowplayer/flowplayer-3.2.7.swf",
-        wmode: "transparent"
-},
-{
-        clip: {
-                url: streamer +'webcast-low.flv',
-                scaling: "fit",
-                bufferLength: "0"
-        },
-        plugins: {
-                content: {
-                        backgroundGradient: [1.0, 0.0],
-                        backgroundColor: '#111111',
-                },
-                controls: null,
-                gatracker: {
-                        url: "/static/third_party/flowplayer/flowplayer.analytics-3.2.2.swf",
-                        events: {
-                                all: true
-                        },
-                        accountId: "UA-23123757-1" // your Google Analytics id here
-                }
-        }
+// Offline streaming
+var offline = streamer+'webcast-low.ogv';
+
+// HTML5 streaming
+var html5_high = [
+  { file: streamer+'webcast-high.webm' },
+  { file: streamer+'webcast-high.ogv' },
+  //{ file: streamer+'webcast-high.mp4' },
+];
+var html5_low = [
+  { file: streamer+'webcast-low.webm' },
+  { file: streamer+'webcast-low.ogv' },
+  //{ file: streamer+'webcast-low.mp4' },
+];
+// Flash streaming
+var flash_high = [
+  { bitrate: 800, file: streamer+'webcast-high.flv', width: 720 }
+];
+var flash_low = [
+  { bitrate: 300, file: streamer+'webcast-low.flv', width: 432 },
+];
+// Flash Streaming - with automatic format switching
+var flash_auto = flash_high+flash_low;
+
+var all = html5_high+flash_auto;
+
+jwplayer("player").setup({
+  autostart: true,
+  plugins: {
+    qualitymonitor: {}
+  },
+  skin: '/static/third_party/jwplayer/skin/glow.zip',
+  modes: [
+    {type: "html5",
+      config: {levels: html5_high}},
+    {type: "flash", src: "/static/third_party/jwplayer/player.swf",
+      config: {levels: flash_auto}},
+    {type: "download",
+      config: {file: offline}},
+  ]
 });
+
+function fit_player () {
+  var p = $("#sizer-player");
+  console.log("fit_player", p.width(), p.height());
+  jwplayer("player").resize(p.width(), p.height());
+}
+
+$(window).resize(fit_player);
+fit_player();
+
     </script>
 </body>
 </html>
