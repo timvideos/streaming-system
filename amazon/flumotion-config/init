@@ -1,0 +1,170 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          flumotion
+# Required-Start:    $local_fs $remote_fs
+# Required-Stop:     $local_fs $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Flumotion Streaming Server
+# Description:       Flumotion is a streaming server for audio and video.
+#                    See http://www.fluendo.com for details.
+### END INIT INFO
+
+# Author: Loic Minier <lool@dooz.org>
+
+# Do NOT "set -e"
+
+# PATH should only include /usr/* if it runs after the mountnfs.sh script
+PATH="/usr/sbin:/usr/bin:/sbin:/bin"
+DESC="Flumotion Streaming Server"
+NAME="flumotion"
+LOGFILE="/var/log/flumotion/service.log"
+DAEMON="/usr/sbin/$NAME"
+DAEMON_ARGS="-d 3 -l $LOGFILE"
+SCRIPTNAME="/etc/init.d/$NAME"
+
+# Exit if the package is not installed
+[ -x "$DAEMON" ] || exit 0
+
+# Read configuration variable file if it is present
+[ -r "/etc/default/$NAME" ] && . "/etc/default/$NAME"
+
+# Load the VERBOSE setting and other rcS variables
+[ -f /etc/default/rcS ] && . /etc/default/rcS
+
+# Define LSB log_* functions.
+# Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
+. /lib/lsb/init-functions
+
+user_do() {
+	# set an umask for log files
+	# unset HOME as otherwise flumotion uses $HOME/.flumotion as its cache
+	# dir
+	su -s /bin/sh -c "umask 026; unset HOME; $1" flumotion
+	return "$?"
+}
+
+#
+# Function that starts all instances
+#
+do_start()
+{
+	# Return
+	#   0 if all instances could be started
+	#   1 if one or more instances could not be started
+	if [ "x$*" != "x" ]; then
+		start_instance $*
+		return "$?"
+	fi
+
+	list="`user_do "$DAEMON status" | cut -f1,2 -d' ' | tr ' ' @`"
+	RETVAL="0"
+	for line in $list; do
+		type="`echo "$line" | cut -f1 -d'@'`"
+		name="`echo "$line" | cut -f2 -d'@'`"
+		start_instance "$type" "$name" || RETVAL=1
+	done
+	return "$RETVAL"
+}
+
+start_instance() {
+	type="$1"
+	name="$2"
+	user_do "$DAEMON $DAEMON_ARGS start $type $name"
+	return "$?"
+}
+
+#
+# Function that stops all instances
+#
+do_stop()
+{
+	# Return
+	#   0 if all instances could be stopped
+	#   1 if one or more instances could not be stopped
+	if [ "x$*" != "x" ]; then
+		stop_instance $*
+		return "$?"
+	fi
+
+	list="`user_do "$DAEMON status" | cut -f1,2 -d' ' | tr ' ' @`"
+	RETVAL="0"
+	for line in $list; do
+		type="`echo $line | cut -f1 -d'@'`"
+		name="`echo $line | cut -f2 -d'@'`"
+		stop_instance "$type" "$name" || RETVAL=1
+	done
+	return "$RETVAL"
+}
+
+stop_instance() {
+	type="$1"
+	name="$2"
+	user_do "$DAEMON $DAEMON_ARGS stop $type $name"
+	return "$?"
+}
+
+do_status() {
+	user_do "$DAEMON status"
+}
+
+do_clean() {
+	user_do "$DAEMON clean"
+}
+
+do_list() {
+	user_do "$DAEMON list"
+}
+
+# Create flumotion's home dir on startup as it might be a tmpfs
+if [ ! -d /var/run/flumotion ]; then
+	mkdir /var/run/flumotion
+	chown flumotion:flumotion /var/run/flumotion
+fi
+
+case "$1" in
+  start)
+	shift
+	[ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC" "$NAME"
+	do_start $*
+	case "$?" in
+		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+  stop)
+	shift
+	[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC" "$NAME"
+	do_stop $*
+	case "$?" in
+		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+  restart|force-reload)
+	shift
+	log_daemon_msg "Restarting $DESC" "$NAME"
+	do_stop $*
+	do_start $*
+	case "$?" in
+		0) log_end_msg 0 ;;
+		1) log_end_msg 1 ;; # Old process is still running
+		*) log_end_msg 1 ;; # Failed to start
+	esac
+	;;
+  status)
+	do_status
+	;;
+  clean)
+	do_clean
+	;;
+  list)
+	do_list
+	;;
+  *)
+	echo "Usage: $SCRIPTNAME {start|stop|restart|force-reload|status|clean|list}" >&2
+	exit 3
+	;;
+esac
+
+:
