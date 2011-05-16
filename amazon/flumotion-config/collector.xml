@@ -132,15 +132,18 @@
     </component>
 
     <component name="consumer-sender"
-               type="pipeline-consumer"
+               type="fgdp-consumer"
                label="consumer-sender"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">muxer-audio-video:default</feed>
       </eater>
-      <property name="pipeline">gdppay | tcpclientsink host=ec2-50-19-36-221.compute-1.amazonaws.com</property>
+      <property name="username">user</property>
+      <property name="password">test</property>
+      <property name="host">49.156.19.78</property>
+      <property name="port">15000</property>
       <clock-master>false</clock-master>
     </component>
     

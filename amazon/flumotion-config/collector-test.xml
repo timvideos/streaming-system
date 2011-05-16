@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<planet name="admin">
+  
+  <atmosphere>
+  </atmosphere>
+  
+  <flow name="default">
+    <component name="producer-audio"
+               type="audiotest-producer"
+               label="producer-audio"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <property name="volume">1.0</property>
+      <property name="samplerate">44100</property>
+      <property name="frequency">440</property>
+      <clock-master>true</clock-master>
+    </component>
+    
+    <component name="producer-video"
+               type="videotest-producer"
+               label="producer-video"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <property name="pattern">1</property>
+      <property name="framerate">25/1</property>
+      <property name="width">1280</property>
+      <property name="height">720</property>
+      <clock-master>false</clock-master>
+    </component>
+    
+    <component name="encoder-video"
+               type="theora-encoder"
+               label="encoder-video"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">producer-video:default</feed>
+      </eater>
+      <property name="keyframe-maxdistance">50</property>
+      <property name="speed">3</property>
+      <property name="bitrate">2200000</property>
+      <clock-master>false</clock-master>
+    </component>
+    
+    <component name="encoder-audio"
+               type="vorbis-encoder"
+               label="encoder-audio"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">producer-audio:default</feed>
+      </eater>
+      <property name="bitrate">192000</property>
+      <clock-master>false</clock-master>
+    </component>
+    
+    <component name="muxer-audio-video"
+               type="ogg-muxer"
+               label="muxer-audio-video"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">encoder-audio:default</feed>
+        <feed alias="default-bis">encoder-video:default</feed>
+      </eater>
+      <clock-master>false</clock-master>
+    </component>
+    
+    <component name="fgdp-audio-video"
+               type="fgdp-consumer"
+               label="fgdp-audio-video"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">muxer-audio-video:default</feed>
+      </eater>
+      <property name="username">user</property>
+      <property name="host">49.156.19.78</property>
+      <property name="password">test</property>
+      <property name="port">15000</property>
+      <clock-master>false</clock-master>
+    </component>
+    
+  </flow>
+  
+</planet>
