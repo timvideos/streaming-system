@@ -15,16 +15,16 @@
 # Do NOT "set -e"
 
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
-PATH="/usr/sbin:/usr/bin:/sbin:/bin"
+PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 DESC="Flumotion Streaming Server"
 NAME="flumotion"
-LOGFILE="/var/log/flumotion/service.log"
-DAEMON="/usr/sbin/$NAME"
+LOGFILE="/usr/local/var/log/flumotion/service.log"
+DAEMON="/usr/local/sbin/$NAME"
 DAEMON_ARGS="-d 3 -l $LOGFILE"
 SCRIPTNAME="/etc/init.d/$NAME"
 
 # Exit if the package is not installed
-[ -x "$DAEMON" ] || exit 0
+[ -x "$DAEMON" ] || (echo "$DAEMON not executable"; exit 0)
 
 # Read configuration variable file if it is present
 [ -r "/etc/default/$NAME" ] && . "/etc/default/$NAME"
@@ -56,8 +56,8 @@ do_start()
 		start_instance $*
 		return "$?"
 	fi
-
 	list="`user_do "$DAEMON status" | cut -f1,2 -d' ' | tr ' ' @`"
+	echo $list
 	RETVAL="0"
 	for line in $list; do
 		type="`echo "$line" | cut -f1 -d'@'`"
@@ -70,6 +70,7 @@ do_start()
 start_instance() {
 	type="$1"
 	name="$2"
+	echo "$DAEMON $DAEMON_ARGS start $type $name"
 	user_do "$DAEMON $DAEMON_ARGS start $type $name"
 	return "$?"
 }
@@ -117,10 +118,18 @@ do_list() {
 }
 
 # Create flumotion's home dir on startup as it might be a tmpfs
-if [ ! -d /var/run/flumotion ]; then
-	mkdir /var/run/flumotion
-	chown flumotion:flumotion /var/run/flumotion
+if [ ! -d /usr/local/var/run/flumotion ]; then
+	mkdir /usr/local/var/run/flumotion
+	chown -R flumotion:flumotion /usr/local/var/run/flumotion
 fi
+if [ ! -d /usr/local/var/cache/flumotion ]; then
+	mkdir /usr/local/var/cache/flumotion
+	chown -R flumotion:flumotion /usr/local/var/cache/flumotion
+fi
+if [ -e $LOGFILE ]; then
+	chown -R flumotion:flumotion $(dirname $LOGFILE)
+fi
+
 
 case "$1" in
   start)
