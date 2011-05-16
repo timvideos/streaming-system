@@ -1,0 +1,6 @@
+[submodule "amazon/flumotion-ugly"]
+	path = amazon/flumotion-ugly
+	url = git://github.com/mithro/flumotion-ugly.git
+[submodule "amazon/flumotion"]
+	path = amazon/flumotion
+	url = git://github.com/mithro/flumotion.git
