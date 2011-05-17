@@ -6,7 +6,7 @@
                label="porter-http"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <property name="username">pMEUjzeXaBJJ</property>
       <property name="socket-path">flu-DUwiBh.socket</property>
       <property name="password">egMLHlXjuUgt</property>
@@ -22,7 +22,7 @@
                label="producer-firewire"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <property name="pipeline">hdv1394src</property>
       <clock-master>true</clock-master>
     </component> 
@@ -32,7 +32,7 @@
                label="producer-decoder"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <clock-master>false</clock-master>
       <eater name="default">
         <feed alias="default">producer-firewire:default</feed>
@@ -44,7 +44,7 @@
                label="producer-hd-firewire"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <property name="deinterlace-mode">auto</property>
       <property name="is-square">True</property>
       <property name="deinterlace-method">ffmpeg</property>
@@ -60,7 +60,7 @@
                label="scaler-video"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">producer-hd-firewire:video</feed>
       </eater>
@@ -73,14 +73,13 @@
                label="encoder-video"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">scaler-video:default</feed>
       </eater>
       <property name="keyframe-maxdistance">25</property>
       <property name="sharpness">0</property>
       <property name="bitrate">22000000</property>
-      <property name="noise-sensitivity">1</property>
       <clock-master>false</clock-master>
     </component>
     
@@ -89,7 +88,7 @@
                label="encoder-audio"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">producer-hd-firewire:audio</feed>
       </eater>
@@ -102,7 +101,7 @@
                label="muxer-audio-video"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">encoder-audio:default</feed>
         <feed alias="default-bis">encoder-video:default</feed>
@@ -115,7 +114,7 @@
                label="http-audio-video"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">muxer-audio-video:default</feed>
       </eater>
