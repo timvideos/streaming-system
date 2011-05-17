@@ -131,9 +131,9 @@
       </plugs>
     </component>
 
-    <component name="consumer-sender"
+    <component name="fgdp-audio-video"
                type="fgdp-consumer"
-               label="consumer-sender"
+               label="fgdp-audio-video"
                worker="localhost"
                project="flumotion"
                version="0.9.0.1">
@@ -141,12 +141,12 @@
         <feed alias="default">muxer-audio-video:default</feed>
       </eater>
       <property name="username">user</property>
-      <property name="password">test</property>
       <property name="host">49.156.19.78</property>
+      <property name="password">test</property>
       <property name="port">15000</property>
       <clock-master>false</clock-master>
     </component>
-    
+ 
   </flow>
   
 </planet>
