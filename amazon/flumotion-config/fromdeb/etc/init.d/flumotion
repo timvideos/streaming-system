@@ -57,7 +57,6 @@ do_start()
 		return "$?"
 	fi
 	list="`user_do "$DAEMON status" | cut -f1,2 -d' ' | tr ' ' @`"
-	echo $list
 	RETVAL="0"
 	for line in $list; do
 		type="`echo "$line" | cut -f1 -d'@'`"
@@ -70,7 +69,6 @@ do_start()
 start_instance() {
 	type="$1"
 	name="$2"
-	echo "$DAEMON $DAEMON_ARGS start $type $name"
 	user_do "$DAEMON $DAEMON_ARGS start $type $name"
 	return "$?"
 }
