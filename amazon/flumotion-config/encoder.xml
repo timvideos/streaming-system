@@ -7,7 +7,7 @@
                label="porter-http"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <property name="username">phqCIZdJkjnx</property>
       <property name="socket-path">flu-8080.socket</property>
       <property name="password">ffDtYpfsEvOK</property>
@@ -18,7 +18,7 @@
                label="porter-loop"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <property name="username">phqCIZdJkjnx</property>
       <property name="socket-path">flu-8081.socket</property>
       <property name="password">ffDtYpfsEvOK</property>
@@ -35,7 +35,7 @@
                label="producer-test-video"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <property name="pattern">0</property>
       <property name="framerate">25/1</property>
       <property name="pixel-aspect-ratio">1</property>
@@ -48,7 +48,7 @@
                label="producer-test-audio"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <property name="volume">1.0</property>
       <property name="samplerate">44100</property>
       <property name="frequency">440</property>
@@ -63,21 +63,38 @@
     </component>
 
     <!-- Program to show when on the air -->
-    <component name="producer-http-src"
+    <component name="producer-src"
                project="flumotion"
-               type="pipeline-producer"
+               type="fgdp-producer"
                worker="localhost">
-      <property name="pipeline">souphttpsrc location="http://ec2-184-73-7-51.compute-1.amazonaws.com/outgoing.flv" ! decodebin2 </property>
+      <property name="username">user</property>
+      <property name="password">test</property>
+      <property name="host">0.0.0.0</property>
+      <property name="port">15000</property>
+    </component>
+    <component name="producer-decoder"
+               type="av-generic-decoder"
+               label="producer-decoder"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default"><feed>producer-src</feed></eater>
+      <clock-master>false</clock-master>
+      <property name="is-square">1</property>
+      <property name="framerate">25/1</property>
+      <property name="width">1280</property>
+      <property name="height">720</property>
+      <property name="samplerate">44100</property>
     </component>
 
     <component name="aa-controller-switch"
                project="flumotion"
                type="av-basic-watchdog-combiner"
                worker="localhost">
-      <eater name="video-master"><feed>producer-http-src</feed></eater>
+      <eater name="video-master"><feed>producer-decoder:video</feed></eater>
       <eater name="video-backup"><feed>producer-test-video</feed></eater>
-      <eater name="audio-master"><feed>producer-test-audio-stereo</feed></eater>
-      <eater name="audio-backup"><feed>producer-test-audio-stereo</feed></eater>
+      <eater name="audio-master"><feed>producer-decoder:audio</feed></eater>
+      <eater name="audio-backup"><feed>producer-test-audio</feed></eater>
       <property name="video-pixel-aspect-ratio">1</property>
       <property name="video-framerate">25/1</property>
       <property name="video-width">1280</property>
@@ -112,7 +129,7 @@
                label="encoder-video-loop"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">aa-controller-switch:video</feed>
       </eater>
@@ -125,7 +142,7 @@
                label="encoder-audio-loop"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">aa-controller-switch:audio</feed>
       </eater>
@@ -138,7 +155,7 @@
                label="muxer-loop"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">encoder-audio-loop:default</feed>
         <feed alias="default-bis">encoder-video-loop:default</feed>
@@ -151,7 +168,7 @@
                label="disk-loop"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">muxer-loop:default</feed>
       </eater>
@@ -168,7 +185,7 @@
                label="http-loop"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">muxer-loop:default</feed>
       </eater>
@@ -194,7 +211,7 @@
                label="encoder-video-theora-high"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">aa-controller-switch:video</feed>
       </eater>
@@ -207,7 +224,7 @@
                label="encoder-video-theora-low"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">scaler-video</feed>
       </eater>
@@ -222,7 +239,7 @@
                label="encoder-video-webm-high"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">aa-controller-switch:video</feed>
       </eater>
@@ -235,7 +252,7 @@
                label="encoder-video-webm-low"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">scaler-video</feed>
       </eater>
@@ -250,7 +267,7 @@
                label="encoder-video-h264-high"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">aa-controller-switch:video</feed>
       </eater>
@@ -263,7 +280,7 @@
                label="encoder-video-h264-low"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">scaler-video</feed>
       </eater>
@@ -290,7 +307,7 @@
                label="encoder-audio-vorbis-high"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">aa-controller-switch:audio</feed>
       </eater>
@@ -302,7 +319,7 @@
                label="encoder-audio-vorbis-low"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">scaler-audio</feed>
       </eater>
@@ -316,7 +333,7 @@
                label="encoder-audio-aac-high"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">aa-controller-switch:audio</feed>
       </eater>
@@ -328,7 +345,7 @@
                label="encoder-audio-aac-low"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">scaler-audio</feed>
       </eater>
@@ -342,7 +359,7 @@
                label="encoder-audio-mp3-low"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <source>scaler-audio</source>
       <property name="pipeline">lame bitrate=48</property>
     </component> -->
@@ -356,7 +373,7 @@
                label="muxer-webm-high"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">encoder-audio-vorbis-high:default</feed>
         <feed alias="default-bis">encoder-video-webm-high:default</feed>
@@ -368,7 +385,7 @@
                label="muxer-webm-low"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">encoder-audio-vorbis-low:default</feed>
         <feed alias="default-bis">encoder-video-webm-low:default</feed>
@@ -382,7 +399,7 @@
                label="muxer-ogv-high"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">encoder-audio-vorbis-high:default</feed>
         <feed alias="default-bis">encoder-video-theora-high:default</feed>
@@ -394,7 +411,7 @@
                label="muxer-ogv-low"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">encoder-audio-vorbis-low:default</feed>
         <feed alias="default-bis">encoder-video-theora-low:default</feed>
@@ -408,7 +425,7 @@
                label="muxer-flv-high"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">encoder-audio-aac-high:default</feed>
         <feed alias="default-bis">encoder-video-h264-high:default</feed>
@@ -420,7 +437,7 @@
                label="muxer-flv-low"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">encoder-audio-aac-low:default</feed>
         <feed alias="default-bis">encoder-video-h264-low:default</feed>
@@ -434,7 +451,7 @@
                label="muxer-vp6-low"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">encoder-audio-mp3-low:default</feed>
         <feed alias="default-bis">encoder-video-vp6-low:default</feed>
@@ -452,7 +469,7 @@
                label="http-webm-high"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">muxer-webm-high:default</feed>
       </eater>
@@ -474,7 +491,7 @@
                label="http-webm-low"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">muxer-webm-low:default</feed>
       </eater>
@@ -498,7 +515,7 @@
                label="http-ogv-high"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">muxer-ogv-high:default</feed>
       </eater>
@@ -520,7 +537,7 @@
                label="http-ogv-low"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">muxer-ogv-low:default</feed>
       </eater>
@@ -544,7 +561,7 @@
                label="http-flv-high"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">muxer-flv-high:default</feed>
       </eater>
@@ -566,7 +583,7 @@
                label="http-flv-low"
                worker="localhost"
                project="flumotion"
-               version="0.8.1">
+               version="0.9.0.1">
       <eater name="default">
         <feed alias="default">muxer-flv-low:default</feed>
       </eater>
