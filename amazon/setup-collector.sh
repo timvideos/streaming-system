@@ -45,6 +45,13 @@ apt-get install -y build-essential python-dev autoconf libtool subversion
 # Dependencies to run flumotion
 apt-get install -y python-kiwi
 
+# Copy the config files to /etc
+cp -rf timsvideo/amazon/flumotion-config/fromdeb/etc/* /usr/local/etc/
+ln -s /usr/local/etc/init.d/flumotion /etc/init.d/flumotion
+
+# Add a flumotion user
+adduser --system flumotion --group --home /tmp --no-create-home
+
 ###############################################################################
 # Get the latest gstreamer we need.
 ###############################################################################
@@ -69,6 +76,8 @@ fi
 apt-get update
 apt-get install -y gstreamer0.10.* python-gst0.10 gstreamer-tools
 apt-get upgrade
+
+rm /etc/apt/sources.list.d/gstreamer-developers-ppa-lucid.list
 
 ###############################################################################
 # Give access to the firewire ports

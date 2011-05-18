@@ -117,12 +117,16 @@ do_list() {
 
 # Create flumotion's home dir on startup as it might be a tmpfs
 if [ ! -d /usr/local/var/run/flumotion ]; then
-	mkdir /usr/local/var/run/flumotion
+	mkdir -p /usr/local/var/run/flumotion
 	chown -R flumotion:flumotion /usr/local/var/run/flumotion
 fi
 if [ ! -d /usr/local/var/cache/flumotion ]; then
-	mkdir /usr/local/var/cache/flumotion
+	mkdir -p /usr/local/var/cache/flumotion
 	chown -R flumotion:flumotion /usr/local/var/cache/flumotion
+fi
+if [ ! -d /usr/local/var/log/flumotion ]; then
+	mkdir -p /usr/local/var/log/flumotion
+	chown -R flumotion:flumotion /usr/local/var/log/flumotion
 fi
 if [ -e $LOGFILE ]; then
 	chown -R flumotion:flumotion $(dirname $LOGFILE)
