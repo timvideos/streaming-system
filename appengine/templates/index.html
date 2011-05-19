@@ -32,7 +32,7 @@
       <td id="twitter-cell" colspan=2>
         <div id="twitter-container" class="container">
           <div id="twitter-sizer" class="sizer">
-            <div class="related-tweets" options="{debug: true}">Related tweets loading....</div>
+            <div class="related-tweets" options="{debug: false}">Related tweets loading....</div>
             <div id="twitter-search">Search on Twitter:
               <a class=tag href="http://search.twitter.com/search?q=%23{{ hashtag|urlencode }}" rel="tag">{{ hashtag }}</a>
             </div>
@@ -85,8 +85,10 @@ var player = jwplayer("player").setup({
   },
   skin: '/static/third_party/jwplayer/skin/glow.zip',
   modes: [
+{% if html5 %}
     {type: "html5",
       config: {levels: html5_high}},
+{% endif %}
     {type: "flash", src: "/static/third_party/jwplayer/player.swf",
       config: {levels: flash_auto}},
     {type: "download",
@@ -139,7 +141,10 @@ function hd_off () {
 }
 
 player_hd.click(hd_toggle);
-
+{% if hdoff %}
+hd_toggle();
+hd_toggle();
+{% endif %}
 
 /**
  * Flash/HTML5 mode toggle
