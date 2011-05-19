@@ -124,6 +124,10 @@ if [ ! -d /usr/local/var/cache/flumotion ]; then
 	mkdir /usr/local/var/cache/flumotion
 	chown -R flumotion:flumotion /usr/local/var/cache/flumotion
 fi
+if [ ! -d /tmp/flumotion ]; then
+	mkdir /tmp/flumotion
+	chown -R flumotion:flumotion /tmp/flumotion
+fi
 if [ -e $LOGFILE ]; then
 	chown -R flumotion:flumotion $(dirname $LOGFILE)
 fi
