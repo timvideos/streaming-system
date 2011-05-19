@@ -85,8 +85,10 @@ var player = jwplayer("player").setup({
   },
   skin: '/static/third_party/jwplayer/skin/glow.zip',
   modes: [
+{% if html5 %}
     {type: "html5",
       config: {levels: html5_high}},
+{% endif %}
     {type: "flash", src: "/static/third_party/jwplayer/player.swf",
       config: {levels: flash_auto}},
     {type: "download",
@@ -139,7 +141,10 @@ function hd_off () {
 }
 
 player_hd.click(hd_toggle);
-
+{% if hdoff %}
+hd_toggle();
+hd_toggle();
+{% endif %}
 
 /**
  * Flash/HTML5 mode toggle
