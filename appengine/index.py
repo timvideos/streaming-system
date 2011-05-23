@@ -7,6 +7,7 @@
 
 # Python imports
 import os
+import logging
 
 # AppEngine Imports
 from google.appengine.ext import webapp
@@ -29,6 +30,18 @@ class StaticTemplate(webapp.RequestHandler):
 
         if hashtag in twitter:
             hashtag = twitter[hashtag]
+
+        html5str = self.request.get('flashonly', 'False')
+        if html5str.lower()[0] in ('y', 't'):
+            html5 = False
+        else:
+            html5 = True
+
+        hdoffstr = self.request.get('hdoff', 'False')
+        if hdoffstr.lower()[0] in ('y', 't'):
+            hdoff = True
+        else:
+            hdoff = False
 
         template = 'templates/index.html'
         self.response.headers['Content-Type'] = 'text/html'

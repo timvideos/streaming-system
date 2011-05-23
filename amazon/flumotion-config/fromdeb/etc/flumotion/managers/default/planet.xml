@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<planet>
+
+  
+<manager name="planet">
+    <host>0.0.0.0</host>
+<!--
+    <port></port>
+    <transport></transport>
+    <certificate></certificate>
+-->
+<!--
+FIXME: would be nice if we find a way to have this be overridden by either
+env var or cmd line option
+    <debug>5</debug>
+-->
+<!--
+Sample crypt(3) password:
+-->
+    <component name="manager-bouncer" type="htpasswdcrypt-bouncer">
+      <property name="data">
+user:PSfNpHTkpTx1M
+</property>
+    </component>
+  </manager>
+
+</planet>
