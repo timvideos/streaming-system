@@ -98,7 +98,11 @@ var player = jwplayer("player").setup({
   autostart: true,
   plugins: {
     qualitymonitor: {},
-    'gapro-2': {}
+    'gapro-2': {
+      'trackstarts': true,
+      'trackpercentage': false,
+      'trackseconds': false
+    }
   },
   skin: '/static/third_party/jwplayer/skin/glow.zip',
   modes: [
