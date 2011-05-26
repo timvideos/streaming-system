@@ -1,3 +1,7 @@
+{% comment %}
+-*- coding: utf-8 -*-
+vim: set ts=2 sw=2 et sts=2 ai:
+{% endcomment %}
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -7,6 +11,19 @@
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <link rel="stylesheet" type="text/css" href="/static/css/tweet.css">
     <title>Tim's Video Streaming for {{ group|upper }}</title>
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-23123757-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
   </head>
 <body>
 
@@ -32,7 +49,7 @@
       <td id="twitter-cell" colspan=2>
         <div id="twitter-container" class="container">
           <div id="twitter-sizer" class="sizer">
-            <div class="related-tweets" options="{debug: true}">Related tweets loading....</div>
+            <div class="related-tweets" options="{debug: false}">Related tweets loading....</div>
             <div id="twitter-search">Search on Twitter:
               <a class=tag href="http://search.twitter.com/search?q=%23{{ hashtag|urlencode }}" rel="tag">{{ hashtag }}</a>
             </div>
@@ -41,7 +58,6 @@
       </td>
     </tr>
   </table>
-
 <script type="text/javascript">
 /**
  * Get Unix timestamp
@@ -81,12 +97,15 @@ var flash_auto = flash_high.concat(flash_low);
 var player = jwplayer("player").setup({
   autostart: true,
   plugins: {
-    qualitymonitor: {}
+    qualitymonitor: {},
+    'gapro-2': {}
   },
   skin: '/static/third_party/jwplayer/skin/glow.zip',
   modes: [
+{% if html5 %}
     {type: "html5",
       config: {levels: html5_high}},
+{% endif %}
     {type: "flash", src: "/static/third_party/jwplayer/player.swf",
       config: {levels: flash_auto}},
     {type: "download",
@@ -139,7 +158,10 @@ function hd_off () {
 }
 
 player_hd.click(hd_toggle);
-
+{% if hdoff %}
+hd_toggle();
+hd_toggle();
+{% endif %}
 
 /**
  * Flash/HTML5 mode toggle
