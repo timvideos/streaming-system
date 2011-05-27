@@ -69,7 +69,7 @@
     </component>
 		   
     <component name="encoder-video"
-               type="theora-encoder"
+               type="vp8-encoder"
                label="encoder-video"
                worker="localhost"
                project="flumotion"
@@ -78,8 +78,8 @@
         <feed alias="default">scaler-video:default</feed>
       </eater>
       <property name="keyframe-maxdistance">25</property>
-      <property name="sharpness">0</property>
       <property name="bitrate">22000000</property>
+      <property name="threads">16</property>
       <clock-master>false</clock-master>
     </component>
     
@@ -108,7 +108,24 @@
       </eater>
       <clock-master>false</clock-master>
     </component>
-   
+  
+    <component name="disk-loop"
+               type="disk-consumer"
+               label="disk-loop"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">muxer-audio-video:default</feed>
+      </eater>
+      <property name="directory">/tmp/flumotion</property>
+      <property name="rotate-type">none</property>
+      <property name="start-recording">False</property>
+      <clock-master>false</clock-master>
+      <plugs>
+      </plugs>
+    </component>
+ 
     <component name="http-audio-video"
                type="http-streamer"
                label="http-audio-video"
