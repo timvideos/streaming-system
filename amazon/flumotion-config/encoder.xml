@@ -172,7 +172,7 @@
       <eater name="default">
         <feed alias="default">muxer-loop:default</feed>
       </eater>
-      <property name="directory">/mnt/video.webm</property>
+      <property name="directory">/tmp/flumotion</property>
       <property name="rotate-type">none</property>
       <property name="start-recording">False</property>
       <clock-master>false</clock-master>
