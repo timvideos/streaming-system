@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd ~tansell/
+cd ~/
 
 apt-get install vim vim-gnome htop
 
@@ -94,6 +94,7 @@ fi
 apt-cache policy gstreamer-tools 
 apt-get update
 apt-get install -y gstreamer0.10.* python-gst0.10 gstreamer-tools
+apt-get -f install
 apt-get upgrade
 
 rm /etc/apt/sources.list.d/gstreamer-developers-ppa-lucid.list
