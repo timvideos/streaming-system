@@ -17,34 +17,19 @@
   
   <flow name="default">
 
-    <component name="producer-hd-firewire"
-               type="firewire-producer"
-               label="producer-hd-firewire"
+    <component name="producer-sdi"
+               type="blackmagic-producer"
+               label="producer-sdi"
                worker="localhost"
                project="flumotion"
                version="0.9.0.1">
       <property name="deinterlace-mode">auto</property>
-      <property name="is-square">True</property>
       <property name="deinterlace-method">ffmpeg</property>
-      <property name="framerate">25/1</property>
-      <property name="height">0</property>
-      <property name="width">1920</property>
-      <property name="decoder">ffdec_dvvideo</property>
-      <property name="guid">576537722488116858</property>
+      <property name="width">1280</property>
+      <property name="height">720</property>
+      <!-- HD_1080i_50      - 1920 x 1080, 25       FPS -->
+      <property name="video-format">8</property>
       <clock-master>true</clock-master>
-    </component>
-
-    <component name="scaler-video"
-               type="pipeline-converter"
-               label="scaler-video"
-               worker="localhost"
-               project="flumotion"
-               version="0.9.0.1">
-      <eater name="default">
-        <feed alias="default">producer-hd-firewire:video</feed>
-      </eater>
-      <property name="pipeline">videoscale ! video/x-raw-yuv, width=1280, height=720</property>
-      <clock-master>false</clock-master>
     </component>
 		   
     <component name="encoder-video"
@@ -54,7 +39,7 @@
                project="flumotion"
                version="0.9.0.1">
       <eater name="default">
-        <feed alias="default">scaler-video:default</feed>
+        <feed alias="default">producer-sdi:video</feed>
       </eater>
       <property name="keyframe-maxdistance">25</property>
       <property name="bitrate">22000000</property>
@@ -70,7 +55,7 @@
                project="flumotion"
                version="0.9.0.1">
       <eater name="default">
-        <feed alias="default">producer-hd-firewire:audio</feed>
+        <feed alias="default">producer-sdi:audio</feed>
       </eater>
       <property name="bitrate">192000</property>
       <clock-master>false</clock-master>
