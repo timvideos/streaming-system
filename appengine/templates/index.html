@@ -12,6 +12,7 @@
 
   <table id="body-table">
     <tr>
+{% if video %}
       <td id="player-cell">
         <div id="player-container" class="container">
           <div id="player-hd" class="button"><div id="player-hd-center">HD<br>auto</div></div>
@@ -21,6 +22,7 @@
           </div>
         </div>
       </td>
+{% endif %}
       <td id="chat-cell">
         <div id="chat-container" class="container">
           <div id="chat-sizer" class="sizer">

@@ -31,6 +31,12 @@ class StaticTemplate(webapp.RequestHandler):
         if hashtag in twitter:
             hashtag = twitter[hashtag]
 
+        novideo = self.request.get('novideo', 'False')
+        if novideo.lower()[0] in ('y', 't'):
+            video = False
+        else:
+            video = True
+
         html5str = self.request.get('flashonly', 'False')
         if html5str.lower()[0] in ('y', 't'):
             html5 = False
