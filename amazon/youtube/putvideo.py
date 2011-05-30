@@ -3,9 +3,10 @@
 """Uploads videos in a directory to Youtube's SFTP server."""
 
 import os
+import libssh2
 import logging.config
 import sys
-import paramiko
+import socket
 import time
 
 HOSTPORT = ("googlefosssydney.xfer.youtube.com", 22)
@@ -51,6 +52,48 @@ def guess_event(date):
           }
 
 
+def sftp_listdir(sftp, dirname):
+  handle = sftp.open_dir(dirname)
+  if not handle:
+    return
+
+  details = {}
+  while True:
+    d = sftp.read_dir(handle)
+    if not d:
+      break
+    childname, stats = d
+    if childname in ('.', '..'):
+      continue
+    details[childname] = stats
+  return details
+
+
+def sftp_put(sftp, infilename, outfilename, progress):
+  infile = file(infilename, 'rb')
+  size = os.stat(infilename).st_size
+  outfile = sftp.open(outfilename, 'wb')
+
+  uploaded = 0
+  while True:
+    block = infile.read(1024*1024)
+    if not block:
+      break
+
+    sftp.write(outfile, block)
+
+    uploaded += len(block)
+    progress(uploaded, size)
+  infile.close()
+  sftp.close(outfile)
+
+
+def sftp_write(sftp, filename, data):
+  handle = sftp.open(filename, 'wb')
+  sftp.write(handle, data)
+  sftp.close(handle)
+
+
 PREVIOUS=None
 def progress(b, total):
   global PREVIOUS
@@ -84,18 +127,25 @@ def main(argv):
       len(unchanged), len(files_end)-len(unchanged))
 
   # Connect to youtube's SFTP server
-  transport = paramiko.Transport(HOSTPORT)
-  transport.connect(
-      username=USERNAME.lower(), pkey=paramiko.DSSKey.from_private_key_file(PRIVATE_KEY))
-  sftp = paramiko.SFTPClient.from_transport(transport)
+  sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+  sock.connect(HOSTPORT)
+  sock.setblocking(1)
 
-  transport.renegotiate_keys()
+  session = libssh2.Session()
+  session.startup(sock)
+  logging.info('%r %r %r', USERNAME, PRIVATE_KEY+'.pub', PRIVATE_KEY)
+  session.userauth_publickey_fromfile(
+      USERNAME.lower(), PRIVATE_KEY+'.pub', PRIVATE_KEY, '')
+
+  # open a SFTP channel
+  sftp = session.sftp()
 
   sftp_dirs = {}
-  for dirname in sftp.listdir():
+
+  for dirname, stats in sftp_listdir(sftp, '/').items():
     files = {}
-    for filename in sftp.listdir(dirname):
-      files[filename] = sftp.stat(dirname+'/'+filename).st_size
+    for filename, stats in sftp_listdir(sftp, dirname).items():
+      files[filename] = stats[0]
     sftp_dirs[dirname] = files
 
   for filename, size in unchanged.iteritems():
@@ -148,8 +198,7 @@ def main(argv):
       info['password'] = PASSWORD
       print "Guessing the event is", info['shortname']
 
-      x = file(xmlfilename, 'w')
-      x.write("""\
+      sftp_write(sftp, basename+'/'+xmlfilename, """\
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0"
  xmlns:media="http://search.yahoo.com/mrss"
@@ -192,27 +241,20 @@ in the past -->
    </item>
 </channel>
 """ % info)
-      x.close()
-      print xmlfilename, "uploading metadata"
-      sftp.put(xmlfilename, basename+'/'+xmlfilename, progress)
-      print xmlfilename, "uploading metadata"
+      print xmlfilename, "uploaded metadata"
 
     if upload:
       print filename, "uploading."
-      sftp.put(filename, basename+'/'+filename, progress)
+      sftp_put(sftp, path+'/'+filename, basename+'/'+filename, progress)
       print filename, " uploaded."
 
     if success:
       deliveryname = "delivery.complete"
 
-      d = file(deliveryname, 'w')
-      d.close()
       print deliveryname, "uploading completion file"
-      sftp.put(deliveryname, basename+'/'+deliveryname, progress)
+      sftp_write(sftp, basename+'/'+deliveryname, '')
       print deliveryname, "uploading completion file"
 
-  sftp.close()
-  transport.close()
   print 'Upload done.'
 
 
