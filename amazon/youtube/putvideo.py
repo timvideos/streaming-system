@@ -3,16 +3,22 @@
 """Uploads videos in a directory to Youtube's SFTP server."""
 
 import os
-import libssh2
 import logging.config
+import pexpect
+import re
 import sys
 import socket
 import time
+import tempfile
 
-HOSTPORT = ("googlefosssydney.xfer.youtube.com", 22)
+HOST = "googlefosssydney.xfer.youtube.com"
 USERNAME = os.environ['YOUTUBE_USER']
 PRIVATE_KEY = os.path.expanduser("~/.ssh/youtube")
 PASSWORD = os.environ['YOUTUBE_PASSWORD']
+
+PROMPT = 'sftp> '
+LS_REGEX = re.compile(r'^(?P<type>.)(?P<permissions_user>...)(?P<permissions_group>...)(?P<permissions_other>...)\s+(?P<number>[0-9]+)\s(?P<user>[^ ]+)\s+(?P<group>[^ ]+)\s+(?P<size>[^ ]+)\s+(?P<date>............) (?P<filename>.+)$')
+PROGRESS_REGEX = re.compile(r'^(?P<filename>[^ ]*)\s+(?P<percentage>[0-9]+)%\s+(?P<uploaded>[0-9]+)(?P<uploaded_type>[^ ]+)\s+(?P<speed>[^ ]+)\s+(?P<eta>[^ ]+)(\s+)?(ETA)?$')
 
 def getfiles(path):
   files = {}
@@ -53,55 +59,72 @@ def guess_event(date):
 
 
 def sftp_listdir(sftp, dirname):
-  handle = sftp.open_dir(dirname)
-  if not handle:
-    return
+  logging.info('Listing %s', dirname)
+  sftp.sendline("ls -l %s" % dirname)
+  sftp.expect(PROMPT)
+
+  lines = sftp.before.split("\n")[1:]
 
   details = {}
-  while True:
-    d = sftp.read_dir(handle)
-    if not d:
-      break
-    childname, stats = d
-    if childname in ('.', '..'):
+  for line in lines:
+    if not line:
       continue
-    details[childname] = stats
+    m = LS_REGEX.match(line)
+    if not m:
+      logging.warn('Regex did not match %r!', line)
+      continue
+    g = m.groupdict()
+    details[g['filename'].strip()] = long(g['size'].strip())
+  logging.info('Found following files %s', details)
   return details
 
 
+def sftp_mkdir(sftp, dirname):
+  logging.info('Making dir %s', dirname)
+  sftp.sendline("mkdir %s" % dirname)
+  sftp.expect(PROMPT)
+  logging.info('Result: %s', sftp.before)
+
+
 def sftp_put(sftp, infilename, outfilename, progress):
-  infile = file(infilename, 'rb')
   size = os.stat(infilename).st_size
-  outfile = sftp.open(outfilename, 'wb')
+  logging.info('Uploading %s (%sMB) to %s', infilename, size/1e6, outfilename)
 
-  uploaded = 0
+  t = {'GB': 1e9,
+       'MB': 1e6,
+       'KB': 1e3}
+
+  sftp.sendline("put %s %s" % (infilename, outfilename))
+
   while True:
-    block = infile.read(1024*1024)
-    if not block:
-      break
+    sftp.expect([PROMPT, '\r'])
 
-    sftp.write(outfile, block)
+    if sftp.after == '\r':
+      m = PROGRESS_REGEX.match(sftp.before.strip())
+      if not m:
+        logging.warn('Progress regex did not match %r', sftp.before.strip())
+        continue
 
-    uploaded += len(block)
-    progress(uploaded, size)
-  infile.close()
-  sftp.close(outfile)
+      d = m.groupdict()
+      progress(**d)
+
+    elif sftp.after == PROMPT:
+      logging.info('Uploaded!')
+      return
 
 
 def sftp_write(sftp, filename, data):
-  handle = sftp.open(filename, 'wb')
-  sftp.write(handle, data)
-  sftp.close(handle)
+  logging.info('Writing to %s', filename)
+  logging.debug(data)
+  f = tempfile.NamedTemporaryFile('w+', delete=False)
+  f.write(data)
+  f.close()
+  sftp_put(sftp, f.name, filename, lambda **kw: None)
+  os.unlink(f.name)
 
 
-PREVIOUS=None
-def progress(b, total):
-  global PREVIOUS
-  next = "%5.2f%%" % (b*1.0/total*100)
-  if next == PREVIOUS:
-    return
-  print next, '%10.2fmb' % (b/1e6)
-  PREVIOUS = next
+def progress(filename, percentage, speed, **kw):
+  print "%s %s%% @ %s" % (filename, percentage, speed)
 
 
 def main(argv):
@@ -123,29 +146,21 @@ def main(argv):
     if start_size == end_size:
       unchanged[filename] = end_size
 
-  print "Found %s files to possibly upload (%s changing)" % (
+  logging.info("Found %s files to possibly upload (%s changing)",
       len(unchanged), len(files_end)-len(unchanged))
 
   # Connect to youtube's SFTP server
-  sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-  sock.connect(HOSTPORT)
-  sock.setblocking(1)
-
-  session = libssh2.Session()
-  session.startup(sock)
-  logging.info('%r %r %r', USERNAME, PRIVATE_KEY+'.pub', PRIVATE_KEY)
-  session.userauth_publickey_fromfile(
-      USERNAME.lower(), PRIVATE_KEY+'.pub', PRIVATE_KEY, '')
+  sftp = pexpect.spawn("sftp -oIdentityFile=%s %s@%s" % (
+      PRIVATE_KEY, USERNAME.lower(), HOST))
+  sftp.expect(PROMPT)
 
   # open a SFTP channel
-  sftp = session.sftp()
-
   sftp_dirs = {}
 
-  for dirname, stats in sftp_listdir(sftp, '/').items():
+  for dirname, size in sftp_listdir(sftp, '/').items():
     files = {}
-    for filename, stats in sftp_listdir(sftp, dirname).items():
-      files[filename] = stats[0]
+    for filename, size in sftp_listdir(sftp, dirname).items():
+      files[filename] = size
     sftp_dirs[dirname] = files
 
   for filename, size in unchanged.iteritems():
@@ -161,18 +176,18 @@ def main(argv):
 
     # Create the directory
     if basename not in sftp_dirs:
-      sftp.mkdir(basename)
+      sftp_mkdir(sftp, basename)
       sftp_dirs[basename] = {}
 
     files = sftp_dirs[basename]
 
     # Check if the we have a completion status report
     if filename+".status" in files:
-      print filename, "already uploaded and processed."
+      logging.info("%s already uploaded and processed.", filename)
       continue
 
     if "delivery.complete" in files:
-      print filename, "already uploaded and awaiting processing."
+      logging.info("%s already uploaded and awaiting processing.", filename)
       continue
 
     # Upload the actual video
@@ -182,6 +197,8 @@ def main(argv):
 
     elif files[filename] != size:
       upload = True
+
+    success = False
 
     # Create the metadata
     if basename+".xml" not in files:
@@ -196,9 +213,9 @@ def main(argv):
       info['filename'] = filename
       info['username'] = USERNAME
       info['password'] = PASSWORD
-      print "Guessing the event is", info['shortname']
+      logging.info("Guessing the event is %s", info['shortname'])
 
-      sftp_write(sftp, basename+'/'+xmlfilename, """\
+      data = """\
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0"
  xmlns:media="http://search.yahoo.com/mrss"
@@ -240,22 +257,29 @@ in the past -->
      </yt:community>
    </item>
 </channel>
-""" % info)
-      print xmlfilename, "uploaded metadata"
+""" % info
+      logging.debug("XML Metatdata:\n%s", data)
+      sftp_write(sftp, basename+'/'+xmlfilename, data)
+
+      logging.info("%s uploaded metadata", xmlfilename)
 
     if upload:
-      print filename, "uploading."
+      logging.info("%s uploading.", filename)
       sftp_put(sftp, path+'/'+filename, basename+'/'+filename, progress)
-      print filename, " uploaded."
+      logging.info("%s uploaded.", filename)
+      success = True
+    else:
+      success = True
 
     if success:
       deliveryname = "delivery.complete"
 
-      print deliveryname, "uploading completion file"
-      sftp_write(sftp, basename+'/'+deliveryname, '')
-      print deliveryname, "uploading completion file"
+      if deliveryname not in files:
+        logging.info("%s uploading completion file", deliveryname)
+        sftp_write(sftp, basename+'/'+deliveryname, '')
+        logging.info("%s uploading completion file", deliveryname)
 
-  print 'Upload done.'
+  logging.info('Upload done.')
 
 
 if __name__ == '__main__':
