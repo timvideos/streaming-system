@@ -16,28 +16,6 @@
   </atmosphere>
   
   <flow name="default">
-    <!-- 
-    <component name="producer-firewire"
-               type="pipeline-producer"
-               label="producer-firewire"
-               worker="localhost"
-               project="flumotion"
-               version="0.9.0.1">
-      <property name="pipeline">hdv1394src</property>
-      <clock-master>true</clock-master>
-    </component> 
-
-    <component name="producer-decoder"
-               type="av-generic-decoder"
-               label="producer-decoder"
-               worker="localhost"
-               project="flumotion"
-               version="0.9.0.1">
-      <clock-master>false</clock-master>
-      <eater name="default">
-        <feed alias="default">producer-firewire:default</feed>
-      </eater>
-    </component> -->
 
     <component name="producer-hd-firewire"
                type="firewire-producer"
@@ -55,6 +33,7 @@
       <property name="guid">576537722488116858</property>
       <clock-master>true</clock-master>
     </component>
+
     <component name="scaler-video"
                type="pipeline-converter"
                label="scaler-video"
@@ -69,7 +48,7 @@
     </component>
 		   
     <component name="encoder-video"
-               type="theora-encoder"
+               type="x264-encoder"
                label="encoder-video"
                worker="localhost"
                project="flumotion"
@@ -78,13 +57,14 @@
         <feed alias="default">scaler-video:default</feed>
       </eater>
       <property name="keyframe-maxdistance">25</property>
-      <property name="sharpness">0</property>
       <property name="bitrate">22000000</property>
+      <property name="quality">4</property>
+      <property name="append-string">threads=4</property>
       <clock-master>false</clock-master>
     </component>
     
     <component name="encoder-audio"
-               type="vorbis-encoder"
+               type="faac-encoder"
                label="encoder-audio"
                worker="localhost"
                project="flumotion"
@@ -97,7 +77,7 @@
     </component>
     
     <component name="muxer-audio-video"
-               type="ogg-muxer"
+               type="gst-flv-muxer"
                label="muxer-audio-video"
                worker="localhost"
                project="flumotion"
@@ -108,7 +88,24 @@
       </eater>
       <clock-master>false</clock-master>
     </component>
-   
+  
+    <component name="disk-loop"
+               type="disk-consumer"
+               label="disk-loop"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">muxer-audio-video:default</feed>
+      </eater>
+      <property name="directory">/tmp/flumotion</property>
+      <property name="rotate-type">none</property>
+      <property name="start-recording">False</property>
+      <clock-master>false</clock-master>
+      <plugs>
+      </plugs>
+    </component>
+ 
     <component name="http-audio-video"
                type="http-streamer"
                label="http-audio-video"
