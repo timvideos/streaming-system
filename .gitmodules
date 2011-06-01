@@ -1,6 +1,6 @@
-[submodule "amazon/flumotion-ugly"]
-	path = amazon/flumotion-ugly
+[submodule "tools/flumotion-ugly"]
+	path = tools/flumotion-ugly
 	url = git://github.com/timsvideo/flumotion-ugly.git
-[submodule "amazon/flumotion"]
-	path = amazon/flumotion
+[submodule "tools/flumotion"]
+	path = tools/flumotion
 	url = git://github.com/timsvideo/flumotion.git
