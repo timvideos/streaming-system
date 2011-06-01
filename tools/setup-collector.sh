@@ -33,7 +33,7 @@ apt-get install -y build-essential python-dev autoconf libtool subversion
 
 # Install the core flumotion
 (
-	cd timsvideo/amazon/flumotion
+	cd timsvideo/tools/flumotion
 	./autogen.sh
 	make -j16
 	make install
@@ -41,7 +41,7 @@ apt-get install -y build-essential python-dev autoconf libtool subversion
 
 # Install the ugly plugins
 (
-	cd timsvideo/amazon/flumotion-ugly
+	cd timsvideo/tools/flumotion-ugly
 	./autogen.sh
 	make -j16
 	make install
@@ -57,7 +57,7 @@ adduser --system --quiet --home /usr/local/var/run/flumotion \
 	--gecos "Flumotion Streaming Server" flumotion
 
 # Copy the config files to /etc
-cp -rf timsvideo/amazon/flumotion-config/fromdeb/etc/* /usr/local/etc/
+cp -rf timsvideo/tools/flumotion-config/fromdeb/etc/* /usr/local/etc/
 ln -s /usr/local/etc/init.d/flumotion /etc/init.d/flumotion
 
 make-ssl-cert /usr/share/ssl-cert/ssleay.cnf /usr/local/etc/flumotion/default.pem
