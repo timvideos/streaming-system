@@ -353,16 +353,19 @@
       <clock-master>false</clock-master>
     </component>
 
-    <!-- MP3  Audio Encoding - Only do a low quality version
-    <component name="encoder-audio-mp3-low"
+    <!-- MP3  Audio Encoding - MP3 only works with stereo  -->
+    <component name="encoder-audio-mp3-high"
                type="pipeline-converter"
-               label="encoder-audio-mp3-low"
+               label="encoder-audio-mp3-high"
                worker="localhost"
                project="flumotion"
                version="0.9.0.1">
-      <source>scaler-audio</source>
+      <eater name="default">
+        <feed alias="default">aa-controller-switch:audio</feed>
+      </eater>
       <property name="pipeline">lame bitrate=48</property>
-    </component> -->
+      <clock-master>false</clock-master>
+    </component>
    
     <!-- ============================================================= -->
     <!-- = MUX Video & Audio Together                                = -->
@@ -419,6 +422,19 @@
       <clock-master>false</clock-master>
     </component>
 
+    <!-- ogg (audio only) muxing -->
+    <component name="muxer-ogg-high"
+               type="ogg-muxer"
+               label="muxer-ogg-high"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">encoder-audio-vorbis-high:default</feed>
+      </eater>
+      <clock-master>false</clock-master>
+    </component>
+
     <!-- flv muxing -->
     <component name="muxer-flv-high"
                type="gst-flv-muxer"
@@ -445,6 +461,32 @@
       <clock-master>false</clock-master>
     </component>
 
+    <!-- aac (audio only) muxing -->
+    <component name="muxer-aac-high"
+               type="faac-muxer"
+               label="muxer-aac-high"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">encoder-audio-aac-high:default</feed>
+      </eater>
+      <clock-master>false</clock-master>
+    </component>
+
+    <!-- mp3 (audio only) muxing -->
+    <component name="muxer-mp3-high"
+               type="lamemp3-muxer"
+               label="muxer-mp3-high"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">encoder-audio-mp3-high:default</feed>
+      </eater>
+      <clock-master>false</clock-master>
+    </component>
+
     <!-- vp6 muxing 
     <component name="muxer-vp6-low"
                type="gst-flv-muxer"
@@ -453,7 +495,7 @@
                project="flumotion"
                version="0.9.0.1">
       <eater name="default">
-        <feed alias="default">encoder-audio-mp3-low:default</feed>
+        <feed alias="default">encoder-audio-mp3-high:default</feed>
         <feed alias="default-bis">encoder-video-vp6-low:default</feed>
       </eater>
       <clock-master>false</clock-master>
@@ -554,6 +596,29 @@
       <plugs>
       </plugs>
     </component>
+    <!-- ogg (audio only) -->
+    <component name="http-ogg-high"
+               type="http-streamer"
+               label="http-ogg-high"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">muxer-ogg-high:default</feed>
+      </eater>
+      <property name="porter-username">phqCIZdJkjnx</property>
+      <property name="mount-point">/audio-only.ogg</property>
+      <property name="burst-on-connect">True</property>
+      <property name="port">8080</property>
+      <property name="bandwidth-limit">10000000</property>
+      <property name="type">slave</property>
+      <property name="client-limit">10</property>
+      <property name="porter-socket-path">flu-8080.socket</property>
+      <property name="porter-password">ffDtYpfsEvOK</property>
+      <clock-master>false</clock-master>
+      <plugs>
+      </plugs>
+    </component>
 
     <!-- flv -->
     <component name="http-flv-high"
@@ -589,6 +654,54 @@
       </eater>
       <property name="porter-username">phqCIZdJkjnx</property>
       <property name="mount-point">/webcast-low.flv</property>
+      <property name="burst-on-connect">True</property>
+      <property name="port">8080</property>
+      <property name="bandwidth-limit">10000000</property>
+      <property name="type">slave</property>
+      <property name="client-limit">10</property>
+      <property name="porter-socket-path">flu-8080.socket</property>
+      <property name="porter-password">ffDtYpfsEvOK</property>
+      <clock-master>false</clock-master>
+      <plugs>
+      </plugs>
+    </component>
+
+    <!-- aac (audio only) -->
+    <component name="http-aac-high"
+               type="http-streamer"
+               label="http-aac-high"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">muxer-aac-high:default</feed>
+      </eater>
+      <property name="porter-username">phqCIZdJkjnx</property>
+      <property name="mount-point">/audio-only.aac</property>
+      <property name="burst-on-connect">True</property>
+      <property name="port">8080</property>
+      <property name="bandwidth-limit">10000000</property>
+      <property name="type">slave</property>
+      <property name="client-limit">10</property>
+      <property name="porter-socket-path">flu-8080.socket</property>
+      <property name="porter-password">ffDtYpfsEvOK</property>
+      <clock-master>false</clock-master>
+      <plugs>
+      </plugs>
+    </component>
+
+    <!-- mp3 (audio only) -->
+    <component name="http-mp3-high"
+               type="http-streamer"
+               label="http-mp3-high"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">muxer-mp3-high:default</feed>
+      </eater>
+      <property name="porter-username">phqCIZdJkjnx</property>
+      <property name="mount-point">/audio-only.mp3</property>
       <property name="burst-on-connect">True</property>
       <property name="port">8080</property>
       <property name="bandwidth-limit">10000000</property>
