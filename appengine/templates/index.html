@@ -112,7 +112,7 @@ var player = jwplayer("player").setup({
   modes: [
 {% if html5 %}
     {type: "html5",
-      config: {levels: html5_high}},
+      config: {levels: html5_low}},
 {% endif %}
     {type: "flash", src: "/static/third_party/jwplayer/player.swf",
       config: {levels: flash_auto}},
@@ -166,9 +166,10 @@ function hd_off () {
 }
 
 player_hd.click(hd_toggle);
+
 {% if hdoff %}
-hd_toggle();
-hd_toggle();
+// Turn off HD streaming.
+hd_off();
 {% endif %}
 
 /**
