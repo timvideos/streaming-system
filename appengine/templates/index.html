@@ -71,27 +71,29 @@ function time () {
 // Server which is doing the streaming
 var streamer="http://49.156.19.78:8080/";
 
-// Offline streaming
+// Download streaming
 var offline = streamer+'webcast-low.ogv';
 
 // HTML5 streaming
 var html5_high = [
-  { file: streamer+'webcast-high.webm' },
-  { file: streamer+'webcast-high.ogv' },
+  { file: streamer+'webcast-high.webm?{{ timestamp_md5 }}' },
+  { file: streamer+'webcast-high.ogv?{{ timestamp_md5 }}' },
   //{ file: streamer+'webcast-high.mp4' },
 ];
 var html5_low = [
-  { file: streamer+'webcast-low.webm' },
-  { file: streamer+'webcast-low.ogv' },
+  { file: streamer+'webcast-low.webm?{{ timestamp_md5 }}' },
+  { file: streamer+'webcast-low.ogv?{{ timestamp_md5 }}' },
   //{ file: streamer+'webcast-low.mp4' },
 ];
+
 // Flash streaming
 var flash_high = [
-  { bitrate: "800", file: streamer+'webcast-high.flv', width: "720" }
+  { bitrate: "800", file: streamer+'webcast-high.flv?{{ timestamp_md5 }}', width: "720" }
 ];
 var flash_low = [
-  { bitrate: "300", file: streamer+'webcast-low.flv', width: "432" },
+  { bitrate: "300", file: streamer+'webcast-low.flv?{{ timestamp_md5 }}', width: "432" },
 ];
+
 // Flash Streaming - with automatic format switching
 var flash_auto = flash_high.concat(flash_low);
 
