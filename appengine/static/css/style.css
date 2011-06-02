@@ -20,7 +20,7 @@ body {
 	background-color:#fff;	
 	font-family:"Lucida Grande","bitstream vera sans","trebuchet ms",verdana,arial;
 	text-align:center;
-	padding: 10px;
+	padding: 1px;
 }
 
 #body-table {
@@ -28,8 +28,8 @@ body {
   height: 100%;
   margin: 0;
   border: 0;
-  padding: 1;
-  margin: 1;
+  padding: 1px;
+  margin: 1px;
 }
 
 #body-table td {
@@ -69,6 +69,29 @@ body {
   vertical-align: middle;
   height: 60px;
   width: 60px;
+}
+
+#options {
+  padding: 5px;
+}
+
+#options div {
+  display: inline;
+  color: white;
+  padding: 5px;
+  margin: 5px;
+}
+
+div.options-group ul {
+  display: inline;
+  padding: 0;
+}
+div.options-group form {
+  display: inline;
+}
+div.options-group li {
+  display: inline;
+  list-style-type: none;
 }
 
 #player-hd {
