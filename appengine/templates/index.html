@@ -173,63 +173,6 @@ hd_off();
 {% endif %}
 
 /**
- * Flash/HTML5 mode toggle
- */
-/*
-function mode_toggle () {
-  // Stop and delete the current player
-  player.stop();
-  player = null;
-  $('#player').empty();
-
-  options = {
-    autostart: true,
-    plugins: {
-      qualitymonitor: {}
-    },
-    skin: '/static/third_party/jwplayer/skin/glow.zip',
-  };
-
-  if (player_mode.text()  == 'Flash') {
-    //Converting to auto
-    options.modes = [
-      {type: "html5",
-        config: {levels: html5_high}},
-      {type: "flash", src: "/static/third_party/jwplayer/player.swf",
-        config: {levels: flash_auto}},
-      {type: "download",
-        config: {file: offline}},
-    ];
-    $('#player-mode-center').('<h1>Auto</h1><h2>HTML5</h2>');
-
-  } else if (player_mode.text() == 'Auto') {
-    // Converting to HTML5
-    options.modes = [
-      {type: "html5",
-        config: {levels: html5_high}},
-      {type: "download",
-        config: {file: offline}},
-      ],
-    });
-    $('#player-mode-center').('<h1>HTML5</h1><h2></h2>');
-
-  } else {
-    // Converting to Flash
-    options.modes = [
-      modes: [
-        {type: "flash", src: "/static/third_party/jwplayer/player.swf",
-          config: {levels: flash_auto}},
-        {type: "download",
-          config: {file: offline}},
-      ],
-    });
-    $('#player-mode-center').text('Flash');
-  }
-  player = jwplayer("player").setup(options);
-}
-*/
-
-/**
  * Show and hide the extra buttons
  */
 var buttons_hd_show = 0;
