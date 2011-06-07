@@ -75,6 +75,8 @@ def sftp_listdir(sftp, dirname):
       logging.warn('Regex did not match %r!', line)
       continue
     g = m.groupdict()
+    logging.debug(line)
+    logging.debug(g)
     details[g['filename'].strip()] = long(g['size'].strip())
   logging.info('Found following files %s', details)
   return details
@@ -94,7 +96,7 @@ t = {'GB': 1e9,
 
 def sftp_put(sftp, infilename, outfilename, progress):
   size = os.stat(infilename).st_size
-  logging.info('Uploading %s (%sMB) to %s', infilename, size/1e6, outfilename)
+  logging.info('Uploading %s (%fMB) to %s', infilename, size/1e6, outfilename)
 
   sftp.sendline("put %s %s" % (infilename, outfilename))
 
@@ -226,12 +228,17 @@ def main(argv):
       logging.info("%s is already uploaded and waiting status response.", filename)
       continue
 
+    size = os.stat(path+'/'+filename).st_size
+
     # Upload the actual video
     upload = False
     if filename not in files:
+      logging.info("%s does not exist on server.", filename)
       upload = True
 
     elif files[filename] != size:
+      logging.info(
+          "%s filesize differs remote: %s, local: %s.", filename, files[filename], size)
       upload = True
 
     success = False
@@ -321,7 +328,7 @@ in the past -->
         logging.info("%s uploading completion file", deliveryname)
 
       f = open(path+'/'+successfile, 'w')
-      f.write(time.time())
+      f.write(str(time.time()))
       f.write('\n')
       f.close()
 
