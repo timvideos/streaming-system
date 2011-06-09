@@ -38,7 +38,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
               <li><input type="radio" name="format" value="flash">Flash
               <li><input type="radio" name="format" value="html5">HTML5
               <li><input type="radio" name="format" value="justintv">Justin.tv
-              <li><input type="radio" name="format" value="project">Audio Only
+              <li><input type="radio" name="format" value="audio">Audio Only
             </ul>
           </form>
         </div>
@@ -162,10 +162,41 @@ player.onReady(fit_player);
 // When the window's size changes, so does ours.
 $(window).resize(fit_player);
 
+function player_load(type, quality) {
+  if (type == 'auto') {
+    type = player.renderingMode;
+  }
+
+  if (type == 'html5') {
+    if (quality == 'auto') {
+      player.load({levels: html5_low});
+    } else if (quality == 'hd') {
+      player.load({levels: html5_low});
+    } else if (quality == 'sd') {
+      player.load({levels: html5_low});
+    }
+  } else {
+    if (quality == 'auto') {
+      player.load({levels: flash_auto});
+    } else if (quality == 'hd') {
+      player.load({levels: flash_high});
+    } else if (quality == 'sd') {
+      player.load({levels: flash_low});
+    }
+  }
+
+  if (quality == 'hd') {
+    $('#player-hd-center').text('HD on');
+  } else if (quality == 'sd') {
+    $('#player-hd-center').text('HD off');
+  } else if (quality == 'auto') {
+    $('#player-hd-center').text('HD auto');
+  }
+}
+
 /**
- * HD stream toggle
+ * HD stream options
  */
-var quality_option = $('input[name=quality][type=radio]');
 var player_hd = $('#player-hd');
 function hd_toggle() {
   if (player_hd.text() != 'HD on') {
@@ -174,39 +205,26 @@ function hd_toggle() {
     quality_set('sd');
   }
 }
-function quality_change(evt) {
-  var value = $('input[name=quality][type=radio]:checked').val();
-  quality_set(value);
-}
+player_hd.click(hd_toggle);
+
+var quality_option = $('input[name=quality][type=radio]');
 function quality_set(value) {
   if (value == 'auto') {
-    if (player.renderingMode == 'html5') {
-      player.load({levels: html5_low});
-    } else {
-      player.load({levels: flash_auto});
-    }
-    $('#player-hd-center').text('HD auto');
+    player_load('auto', 'auto');
   } else if (value == 'sd') {
-    if (player.renderingMode == 'html5') {
-      player.load({levels: html5_low});
-    } else {
-      player.load({levels: flash_low});
-    }
-    $('#player-hd-center').text('HD off');
+    player_load('auto', 'sd');
   } else if (value == 'hd') {
-    if (player.renderingMode == 'html5') {
-      player.load({levels: html5_high});
-    } else {
-      player.load({levels: flash_high});
-    }
-    $('#player-hd-center').text('HD on');
+    player_load('auto', 'hd');
   }
 
   var option = $('input[name=quality][type=radio][value='+value+']');
   option.attr('checked', true);
 }
+function quality_change(evt) {
+  var value = $('input[name=quality][type=radio]:checked').val();
+  quality_set(value);
+}
 quality_option.change(quality_change);
-player_hd.click(hd_toggle);
 
 {% if hdoff %}
 // Turn off HD streaming.
@@ -241,8 +259,28 @@ function buttons_hide () {
 player_sizer.mousemove(buttons_show);
 
 /**
- *
+ * Format of the streaming.
  */
+var format_option = $('input[name=format][type=radio]');
+function format_set(value) {
+  if (value == 'novideo') {
+  } else if (value == 'flash') {
+  } else if (value == 'html5') {
+
+    player.load({levels: flash_html});
+
+  } else if (value == 'justintv') {
+  } else if (value == 'audio') {
+  }
+
+  var option = $('input[name=format][type=radio][value='+value+']');
+  option.attr('checked', true);
+}
+function format_change(evt) {
+  var value = $('input[name=format][type=radio]:checked').val();
+  format_set(value);
+}
+format_option.change(format_change);
 
 
     </script>
