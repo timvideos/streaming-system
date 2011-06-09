@@ -97,7 +97,7 @@ function time () {
 var streamer="http://49.156.19.78:8080/";
 
 // Download streaming
-var offline = streamer+'webcast-low.ogv';
+var video_download = streamer+'webcast-low.ogv';
 
 // HTML5 streaming
 var html5_high = [
@@ -122,29 +122,13 @@ var flash_low = [
 // Flash Streaming - with automatic format switching
 var flash_auto = flash_high.concat(flash_low);
 
-// Create the jwplayer
-var player = jwplayer("player").setup({
-  autostart: true,
-  plugins: {
-    qualitymonitor: {},
-    'gapro-2': {
-      'trackstarts': true,
-      'trackpercentage': false,
-      'trackseconds': false
-    }
-  },
-  skin: '/static/third_party/jwplayer/skin/glow.zip',
-  modes: [
-{% if html5 %}
-    {type: "html5",
-      config: {levels: html5_low}},
-{% endif %}
-    {type: "flash", src: "/static/third_party/jwplayer/player.swf",
-      config: {levels: flash_auto}},
-    {type: "download",
-      config: {file: offline}},
-  ]
-});
+// Audio only streams
+var audio_auto = [
+  { bitrate: "192", file: streamer+'audio-only.aac?{{ timestamp_md5 }}' },
+  { bitrate: "128", file: streamer+'audio-only.ogg?{{ timestamp_md5 }}' },
+  { bitrate: "48", file: streamer+'audio-only.mp3?{{ timestamp_md5 }}' }
+];
+var audio_download = streamer+'audio-only.mp3?{{ timestamp_md5 }}';
 
 /**
  * Resize the player to fit the window.
@@ -155,9 +139,10 @@ function fit_player () {
   if (player_sizer.height() < 432) {
     quality_set('sd');
   }
-  jwplayer("player").resize(player_sizer.width(), player_sizer.height());
+  if (player_jwobject) {
+    player_jwobject.resize(player_sizer.width(), player_sizer.height());
+  }
 }
-player.onReady(fit_player);
 
 // When the window's size changes, so does ours.
 $(window).resize(fit_player);
@@ -169,19 +154,19 @@ function player_load(type, quality) {
 
   if (type == 'html5') {
     if (quality == 'auto') {
-      player.load({levels: html5_low});
+      player_jwobject.load({levels: html5_low});
     } else if (quality == 'hd') {
-      player.load({levels: html5_low});
+      player_jwobject.load({levels: html5_low});
     } else if (quality == 'sd') {
-      player.load({levels: html5_low});
+      player_jwobject.load({levels: html5_low});
     }
   } else {
     if (quality == 'auto') {
-      player.load({levels: flash_auto});
+      player_jwobject.load({levels: flash_auto});
     } else if (quality == 'hd') {
-      player.load({levels: flash_high});
+      player_jwobject.load({levels: flash_high});
     } else if (quality == 'sd') {
-      player.load({levels: flash_low});
+      player_jwobject.load({levels: flash_low});
     }
   }
 
@@ -238,20 +223,17 @@ var buttons_hd_show = 0;
 function buttons_show () {
   player_hd.stop(true,true);
   player_hd.fadeIn('slow');
-//  player_mode.stop(true,true);
-//  player_mode.fadeIn('slow');
 
   buttons_hd_show = time();
   window.setTimeout(buttons_hide, 2000);
 }
 function buttons_hide () {
   if ((time() - buttons_hd_show) > 1900) {
-    var player_state = player.getState()
+    var player_state = player_jwobject.getState()
     if (player_state == "IDLE" || player_state == "PAUSED") {
       window.setTimeout(buttons_hide, 2000);
     } else {
       player_hd.fadeOut('slow');
-//    player_mode.fadeOut('slow');
     }
   }
 }
@@ -261,16 +243,73 @@ player_sizer.mousemove(buttons_show);
 /**
  * Format of the streaming.
  */
+var jwsettings = {
+  autostart: true,
+  plugins: {
+    qualitymonitor: {},
+    'gapro-2': {
+      'trackstarts': true,
+      'trackpercentage': false,
+      'trackseconds': false
+    }
+  },
+  skin: '/static/third_party/jwplayer/skin/glow.zip',
+};
+
+var jwflash = {
+  type: "flash", src: "/static/third_party/jwplayer/player.swf",
+  config: {levels: flash_auto}
+};
+var jwhtml5 = {
+  type: "html5",
+  config: {levels: html5_low},
+};
+var jwdownload = {
+  type: "download",
+  config: {file: video_download}
+};
+
+var jwaudio = [
+  {type: "html5",
+   config: {levels: audio_auto}},
+  {type: "flash", src: "/static/third_party/jwplayer/player.swf",
+   config: {levels: audio_auto}},
+  {type: "download",
+   config: {file: audio_download}}
+];
+
+var player_jwobject = null;
+
 var format_option = $('input[name=format][type=radio]');
 function format_set(value) {
+
+  if (player_jwobject) {
+    player_jwobject.remove();
+    player_jwobject = null;
+  }
+
+  var jwplayer_create = true;
   if (value == 'novideo') {
+    jwplayer_create = false;
+  } else if (value == 'auto') {
+    jwsettings.modes = [jwhtml5, jwflash, jwdownload];
   } else if (value == 'flash') {
+    jwsettings.modes = [jwflash, jwdownload];
   } else if (value == 'html5') {
-
-    player.load({levels: flash_html});
-
+    jwsettings.modes = [jwhtml5, jwdownload];
   } else if (value == 'justintv') {
+    jwplayer_create = false;
   } else if (value == 'audio') {
+    jwsettings.modes = jwaudio;
+  }
+  
+  if (jwplayer_create) {
+    // Create the player
+    player_jwobject = jwplayer("player").setup(jwsettings);
+    player_jwobject.onReady(fit_player);
+    // Enable the quality widget
+  } else {
+    // Disable the quality widget
   }
 
   var option = $('input[name=format][type=radio][value='+value+']');
