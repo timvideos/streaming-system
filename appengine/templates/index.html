@@ -5,6 +5,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
     <script type="text/javascript" src="/static/third_party/jquery-extra/jquery.relatedtweets-1.0.min.js"></script>
     <script type="text/javascript" src="/static/third_party/jwplayer/jwplayer.js"></script>
@@ -36,7 +37,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
           <form id="format">
             <ul>
               <li><input type="radio" name="format" value="videooff">Video Off
-              <li><input type="radio" name="format" value="flash">Auto
+              <li><input type="radio" name="format" value="auto">Auto
               <li><input type="radio" name="format" value="flash">Flash
               <li><input type="radio" name="format" value="html5">HTML5
               <li><input type="radio" name="format" value="justintv">Justin.tv
@@ -96,13 +97,10 @@ function time () {
 /**
  * Resize the player to fit the window.
  */
-var player_sizer = $("#player-sizer");
 function fit_player () {
-  // Turn off HD
-  if (player_sizer.height() < 432) {
-    quality_set('sd');
-  }
+  var player_sizer = $("#player-sizer");
   if (player_jwobject) {
+    console.log(player_sizer.width(), player_sizer.height());
     player_jwobject.resize(player_sizer.width(), player_sizer.height());
   }
 }
@@ -116,7 +114,15 @@ $(window).resize(fit_player);
 var quality_option = $('input[name=quality][type=radio]');
 function quality_set(value) {
   if (player_jwobject) {
-    player_jwobject.load(jwplayer_levels(player_format, value));
+    var format = player_format;
+    if (value == format)
+      return;
+
+    if (player_format == 'auto') {
+      format = player_jwobject.renderingMode;
+    }
+    if (format)
+      player_jwobject.load(jwplayer_levels(format, value));
   }
   var option = $('input[name=quality][type=radio][value='+value+']');
   option.attr('checked', true);
@@ -135,16 +141,40 @@ var player_format = null;
 var format_option = $('input[name=format][type=radio]');
 function format_set(value) {
 
+  // Clean up the previous player
+  // (player_format == 'auto' || player_format == 'flash' || player_format == 'html5' || player_format == 'audio')
   if (player_jwobject) {
     player_jwobject.remove();
     player_jwobject = null;
   }
+  if (player_format == "justintv") {
+    swobject.removeSWF("player");
+  }
+
 
   var jwplayer_create = false;
   if (value == 'novideo') {
   } 
   if (value == 'justintv') {
-    jwplayer_create = false;
+    var flashvars = {
+      "start_volume": 0.5,
+      "backgroundImage": "",
+      "channel": "mithro1",
+      "hostname": "www.justin.tv",
+      "auto_play": true
+    };
+    var params = {
+      "allowFullScreen": true,
+      "allowScriptAccess": "always",
+      "allowNetworking": "all",
+      "movie": "http://www.justin.tv/widgets/live_embed_player.swf"
+    };
+    
+    var url = "http://www.justin.tv/widgets/live_embed_player.swf?";
+    for (value in flashvars) {
+      url = url + "&" + value + "=" + flashvars[value];
+    }
+    swfobject.embedSWF(url, "player", "100%", "100%", "9.0.0", null, flashvars, params);
   }
   
   if (value == 'auto' || value == 'flash' || value == 'html5' || value == 'audio') {
@@ -164,6 +194,7 @@ function format_set(value) {
     };
     console.log(jwsettings);
     player_jwobject = jwplayer("player").setup(jwsettings);
+    fit_player();
     player_jwobject.onReady(fit_player);
 
     // Enable the quality widget

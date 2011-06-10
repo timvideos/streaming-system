@@ -73,6 +73,7 @@ body {
 
 #options {
   padding: 5px;
+  height: 1%;
 }
 
 #options div {
@@ -145,4 +146,8 @@ div.options-group li {
 #twitter-search a {
   color: #999999;
   text-decoration: none;
+}
+
+#player {
+  float: left;
 }
