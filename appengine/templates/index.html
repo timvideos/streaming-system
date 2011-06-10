@@ -37,7 +37,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
           <form id="format">
             <ul>
               <li><input type="radio" name="format" value="videooff">Video Off
-              <li><input type="radio" name="format" value="auto">Auto
+              <li><input type="radio" name="format" value="auto" checked>Auto
               <li><input type="radio" name="format" value="flash">Flash
               <li><input type="radio" name="format" value="html5">HTML5
               <li><input type="radio" name="format" value="justintv">Justin.tv
@@ -45,11 +45,11 @@ vim: set ts=2 sw=2 et sts=2 ai:
             </ul>
           </form>
         </div>
-        <div class="options-group container">
+        <div id="quality-container" class="options-group container">
           Quality:
           <form id="quality">
             <ul>
-              <li><input type="radio" name="quality" value="auto">Auto
+              <li><input type="radio" name="quality" value="auto" checked>Auto
               <li><input type="radio" name="quality" value="hd">HD on
               <li><input type="radio" name="quality" value="sd">HD off
             </ul>
@@ -98,10 +98,10 @@ function time () {
  * Resize the player to fit the window.
  */
 function fit_player () {
-  var player_sizer = $("#player-sizer");
+  var player_sizer = $("#player-cell");
   if (player_jwobject) {
     console.log(player_sizer.width(), player_sizer.height());
-    player_jwobject.resize(player_sizer.width(), player_sizer.height());
+    player_jwobject.resize(player_sizer.width()-20, player_sizer.height()-20);
   }
 }
 
@@ -151,7 +151,6 @@ function format_set(value) {
     swobject.removeSWF("player");
   }
 
-
   var jwplayer_create = false;
   if (value == 'novideo') {
   } 
@@ -192,14 +191,15 @@ function format_set(value) {
       skin: '/static/third_party/jwplayer/skin/glow.zip',
       modes: jwplayer_modes(value, 'auto')
     };
-    console.log(jwsettings);
     player_jwobject = jwplayer("player").setup(jwsettings);
     fit_player();
     player_jwobject.onReady(fit_player);
 
     // Enable the quality widget
+    $('#quality-container').show();
   } else {
     // Disable the quality widget
+    $('#quality-container').hide();
   }
 
   player_format = value;
@@ -213,6 +213,8 @@ function format_change(evt) {
 }
 format_option.change(format_change);
 
+format_change();
+quality_change();
 
     </script>
 </body>
