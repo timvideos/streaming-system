@@ -33,11 +33,11 @@ var flash_streams = {
 };
 
 var audio_streams = {
-  'modes': ['flash', 'html5'],
+  'modes': ['html5', 'flash'],
   'sd': [
-    { 'bitrate': 192, 'file': streamer+'audio-only.aac' },
-    { 'bitrate': 128, 'file': streamer+'audio-only.ogg' },
-    { 'bitrate': 48, 'file': streamer+'audio-only.mp3' }
+    { 'bitrate': 192, 'file': streamer+'audio-only.aac', 'width': 100 },
+    { 'bitrate': 128, 'file': streamer+'audio-only.ogg', 'width': 100 },
+    { 'bitrate': 48, 'file': streamer+'audio-only.mp3', 'width': 100 }
   ],
   'download': streamer+'audio-only.mp3',
   'extra': {
@@ -69,7 +69,7 @@ function jwplayer_levels(format, quality) {
     levels = $.extend(true, [], stream.sd);
   }
   // Add the cache buster
-  var cache_buster = '?'+new Date().getTime();
+  var cache_buster = '?q='+new Date().getTime();
   for (i in levels) {
     levels[i].file = levels[i].file + cache_buster;
   }
