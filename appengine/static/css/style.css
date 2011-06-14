@@ -151,3 +151,18 @@ div.options-group li {
 #player {
   float: left;
 }
+
+#footer {
+  font-size: 8pt;
+  height: 1em;
+  text-align: right;
+}
+
+#footer img {
+  height: 1em;
+}
+
+#footer a {
+  text-decoration: none;
+}
+
