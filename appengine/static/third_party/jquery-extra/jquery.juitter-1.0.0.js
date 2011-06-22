@@ -1,4 +1,6 @@
 /*
+vim: set ts=2 sw=2 noet sts=2 ai:
+
 JUITTER 1.0.0 - 22/07/2009 - http://juitter.com
 BY RODRIGO FANTE - http://rodrigofante.com
 
@@ -121,8 +123,19 @@ The Juitter developer shall have no responsability for data loss or damage of an
 								
 								var tweet = $.Juitter.filter(item.text);
 								
-								if(fromID=="image") mHTML="<a href='http://www.twitter.com/"+item.from_user+"'><img src='"+item.profile_image_url+"' alt='"+item.from_user+"' class='juitterAvatar' /></a> <a class='juitterName' href='href='http://www.twitter.com/"+item.from_user+"'>"+item.from_user+"</a> "+$.Juitter.textFormat(tweet)+" <span class='time'>-| "+item.created_at+" |- </span> <a href='" + link + "' class='JRM' "+openLink+">"+readMore+"</a>";
-								else mHTML="<a href='http://www.twitter.com/"+item.from_user+"'>@"+item.from_user+":</a> "+$.Juitter.textFormat(tweet)+" -| <span class='time'>"+item.created_at+"</span> |-  <a href='" + link + "' "+openLink+">"+readMore+"</a>";
+								var mHTML = "";
+								if (fromID=="image") {
+								  mHTML += "<a href='http://www.twitter.com/"+item.from_user+"'>";
+									mHTML += "<img src='"+item.profile_image_url+"' alt='"+item.from_user+"' class='juitterAvatar' />";
+									mHTML += "</a>";
+								} else {
+									mHTML += "<div class='juitterAvatar'>&nsbp;</div>";
+								}
+								mHTML += "</div>";
+								mHTML += "<span class='juitterTweet'><a href='http://www.twitter.com/"+item.from_user+"'>"+item.from_user+'</a> ';
+								mHTML += $.Juitter.textFormat(tweet);
+								mHTML += "</span>";
+								mHTML += "<div class='juitterTime'>-| "+item.created_at+" |- </span>";
 								
 								$("<li></li>") 
 									.html(mHTML)  
