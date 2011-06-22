@@ -1,0 +1,85 @@
+{% comment %}
+-*- coding: utf-8 -*-
+vim: set ts=2 sw=2 et sts=2 ai:
+{% endcomment %}
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/third_party/jquery-extra/jquery.juitter-1.0.0.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/tweet.css">
+    <link rel="stylesheet" type="text/css" href="/static/third_party/jquery-extra/jquery.juitter-1.0.0.css">
+    <title>Tim's Video Streaming for {{ group|upper }}</title>
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-23123757-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+  </head>
+<body>
+
+  <table id="body-table">
+    <tr>
+      <th id="options" colspan=2>
+        <div class="options-group container">
+          Tweet&nbsp;with&nbsp;hashtag:&nbsp;#{{hashtag}}
+        </div>
+        <div class="options-group container">
+          Web&nbsp;chat&nbsp;at&nbsp;http://tims-video.appspot.com/{{ hashtag }}
+        </div>
+        <div class="options-group container">
+          Join&nbsp;IRC&nbsp;on&nbsp;irc://irc.frenode.net/#{{group}}
+        </div>
+      </th>
+    </tr><tr>
+      <td id="twitter-cell" style="height: 100%;">
+        <div id="twitter-container" class="container">
+          <div id="twitter-sizer" class="sizer">
+            <div id="twitter-juitter">
+              <div id="juitterContainer"></div>
+            </div>
+          </div>        
+        </div>
+      </td>
+      <td id="chat-cell">
+        <div id="chat-container" class="container">
+          <div id="chat-sizer" class="sizer">
+            <iframe id="chat-frame" src="http://webchat.freenode.net?nick=videoscreen&channels={{ group|urlencode }}&uio=MTA9dHJ1ZSYxMT0yMzYe4"></iframe>
+          </div>
+        </div>
+      </td>
+    </tr><tr>
+      <td id="footer" colspan=2>
+        Backend provided by <a href="http://www.orionvm.com.au">
+          OrionVM</a>,
+        Frontend hosted on <a href="http://appengine.google.com/">
+          <img src="/static/img/appengine-small.png">
+          Google AppEngine</a>,
+        All code Open Source - Fork on <a href="https://github.com/timsvideo">
+          <img src="/static/img/github-small.png">
+          github</a>!
+      </td>
+    </tr>
+  </table>
+<script type="text/javascript">
+$(document).ready(function() {
+  $("#twitter-juitter").height($("#twitter-cell").height());
+  $.Juitter.start({
+    live:"live-5",
+    total: 20,
+    searchType: "searchWord",
+    searchObject: "{{ hashtag|urlencode }},",
+    });
+});
+</script>  
+</body>
+</html>

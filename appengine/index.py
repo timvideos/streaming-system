@@ -8,6 +8,7 @@
 # Python imports
 import os
 import logging
+import re
 
 # AppEngine Imports
 from google.appengine.ext import webapp
@@ -20,7 +21,7 @@ twitter = {'slug': 'sydlug'}
 class StaticTemplate(webapp.RequestHandler):
     """Handler which shows a map of how to get to slug."""
     def get(self, group):
-        if not group:
+        if not re.match('[a-z/]+', group):
             group = 'slug'
 
         if '/' in group:
@@ -31,11 +32,9 @@ class StaticTemplate(webapp.RequestHandler):
         if hashtag in twitter:
             hashtag = twitter[hashtag]
 
-        novideo = self.request.get('novideo', 'False')
-        if novideo.lower()[0] in ('y', 't'):
-            video = False
-        else:
-            video = True
+        template = self.request.get('template', '')
+        if not re.match('[a-z]+', template):
+            template = 'index'
 
         html5str = self.request.get('flashonly', 'False')
         if html5str.lower()[0] in ('y', 't'):
@@ -49,6 +48,5 @@ class StaticTemplate(webapp.RequestHandler):
         else:
             hdoff = False
 
-        template = 'templates/index.html'
         self.response.headers['Content-Type'] = 'text/html'
-        self.response.out.write(r(template, locals()))
+        self.response.out.write(r('templates/%s.html' % template, locals()))

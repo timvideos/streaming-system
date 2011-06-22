@@ -17,7 +17,7 @@ body {
 	width: 100%;
 	height: 100%;
 	margin: 0;
-	background-color:#fff;	
+	background-color: black;
 	font-family:"Lucida Grande","bitstream vera sans","trebuchet ms",verdana,arial;
 	text-align:center;
 	padding: 1px;
@@ -41,12 +41,9 @@ body {
   position: relative;
   width: 100%;
   height: 100%;
-  background-color: #111111;
+  background-color: #f0f1ff;
   text-align:left;
-  border-radius: 20px;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#112233', endColorstr='#111111'); /* for IE */
-  background: -webkit-gradient(linear, left top, left bottom, from(#112233), to(#111111)); /* for webkit browsers */
-  background: -moz-linear-gradient(top,  #112233,  #111111); /* for firefox 3.6+ */
+  border-radius: 5px;
 }
 
 .sizer {
@@ -71,6 +68,10 @@ body {
   width: 60px;
 }
 
+th {
+  font-size: 14pt;
+}
+
 #options {
   padding: 5px;
   height: 1%;
@@ -78,7 +79,7 @@ body {
 
 #options div {
   display: inline;
-  color: white;
+  color: black;
   padding: 5px;
   padding-left: 10px;
   padding-right: 10px;
@@ -146,6 +147,11 @@ div.options-group li {
 #twitter-search a {
   color: #999999;
   text-decoration: none;
+}
+
+#twitter-juitter {
+  width: 100%;
+  overflow: hidden;
 }
 
 #player {
