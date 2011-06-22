@@ -18,6 +18,12 @@ from utils.render import render as r
 
 twitter = {'slug': 'sydlug'}
 
+# IP Address which are considered "In Room"
+LOCALIPS = [
+ '^127\.',
+ '^74\.125\.56',
+]
+
 class StaticTemplate(webapp.RequestHandler):
     """Handler which shows a map of how to get to slug."""
     def get(self, group):
@@ -35,6 +41,11 @@ class StaticTemplate(webapp.RequestHandler):
         template = self.request.get('template', '')
         if not re.match('[a-z]+', template):
             template = 'index'
+
+            # Is the request coming from the room?
+            for ipregex in LOCALIPS:
+                if re.match(ipregex, self.request.remote_addr):
+                    template = 'inroom'
 
         html5str = self.request.get('flashonly', 'False')
         if html5str.lower()[0] in ('y', 't'):
