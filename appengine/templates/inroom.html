@@ -41,7 +41,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
         </div>
       </th>
     </tr><tr>
-      <td id="twitter-cell" style="height: 100%;">
+      <td id="twitter-cell" style="height: auto;">
         <div id="twitter-container" class="container">
           <div id="twitter-sizer" class="sizer">
             <div id="twitter-juitter">
@@ -59,20 +59,21 @@ vim: set ts=2 sw=2 et sts=2 ai:
       </td>
     </tr><tr>
       <td id="footer" colspan=2>
-        Backend provided by <a href="http://www.orionvm.com.au">
-          OrionVM</a>,
-        Frontend hosted on <a href="http://appengine.google.com/">
-          <img src="/static/img/appengine-small.png">
-          Google AppEngine</a>,
-        All code Open Source - Fork on <a href="https://github.com/timsvideo">
-          <img src="/static/img/github-small.png">
-          github</a>!
+        <span id="footer-container" class="container">
+{% include "footer.html" %}
+        </span>
       </td>
     </tr>
   </table>
 <script type="text/javascript">
+function resize() {
+ $("#twitter-juitter").height(5);
+ $("#twitter-juitter").height($("#twitter-cell").innerHeight()-20);
+}
+$(window).resize(resize);
+
 $(document).ready(function() {
-  $("#twitter-juitter").height($("#twitter-cell").height());
+  resize();
   $.Juitter.start({
     live:"live-5",
     total: 20,
