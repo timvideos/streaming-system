@@ -53,7 +53,11 @@ vim: set ts=2 sw=2 et sts=2 ai:
       <td id="chat-cell" style="width: 60%;">
         <div id="chat-container" class="container">
           <div id="chat-sizer" class="sizer">
+{% if screen %}
             <iframe id="chat-frame" src="http://webchat.freenode.net?nick=videoscreen&channels={{ group|urlencode }}&uio=MTA9dHJ1ZSYxMT0yMzYe4"></iframe>
+{% else %}
+            <iframe id="chat-frame" src="http://webchat.freenode.net?channels={{ group|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
+{% endif %}
           </div>
         </div>
       </td>

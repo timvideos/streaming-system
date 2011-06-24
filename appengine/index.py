@@ -47,17 +47,11 @@ class StaticTemplate(webapp.RequestHandler):
                 if re.match(ipregex, self.request.remote_addr):
                     template = 'inroom'
 
-        html5str = self.request.get('flashonly', 'False')
-        if html5str.lower()[0] in ('y', 't'):
-            html5 = False
+        screenstr = self.request.get('screen', 'False')
+        if screenstr.lower()[0] in ('y', 't'):
+            screen = True
         else:
-            html5 = True
-
-        hdoffstr = self.request.get('hdoff', 'False')
-        if hdoffstr.lower()[0] in ('y', 't'):
-            hdoff = True
-        else:
-            hdoff = False
+            screen = False
 
         self.response.headers['Content-Type'] = 'text/html'
         self.response.out.write(r('templates/%s.html' % template, locals()))
