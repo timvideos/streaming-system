@@ -23,6 +23,10 @@ body {
 	padding: 1px;
 }
 
+img {
+  border: none;
+}
+
 #body-table {
   width: 100%;
   height: 100%;
