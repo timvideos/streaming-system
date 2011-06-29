@@ -104,7 +104,6 @@ function time () {
 function fit_player () {
   var player_sizer = $("#player-cell");
   if (player_jwobject) {
-    console.log(player_sizer.width(), player_sizer.height());
     player_jwobject.resize(player_sizer.width()-20, player_sizer.height()-20);
   }
 }
@@ -146,7 +145,6 @@ var format_option = $('input[name=format][type=radio]');
 function format_set(value) {
 
   // Clean up the previous player
-  // (player_format == 'auto' || player_format == 'flash' || player_format == 'html5' || player_format == 'audio')
   if (player_jwobject) {
     player_jwobject.remove();
     player_jwobject = null;
