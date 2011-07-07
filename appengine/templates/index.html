@@ -55,6 +55,9 @@ vim: set ts=2 sw=2 et sts=2 ai:
             </ul>
           </form>
         </div>
+        <div id="quality-container" class="options-group container">
+          Backup Stream <a href="http://justin.tv/{{ channel }}">at Justin.tv</a>
+        </div>
       </td>
     </tr><tr>
       <td id="player-cell">
@@ -160,7 +163,7 @@ function format_set(value) {
     var flashvars = {
       "start_volume": 0.5,
       "backgroundImage": "",
-      "channel": "mithro1",
+      "channel": "{{ channel }}",
       "hostname": "www.justin.tv",
       "auto_play": true
     };

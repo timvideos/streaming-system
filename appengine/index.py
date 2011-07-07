@@ -17,6 +17,7 @@ from google.appengine.ext import webapp
 from utils.render import render as r
 
 twitter = {'slug': 'sydlug'}
+channels = {'ggdsydney': 'ggdsydney'}
 
 # IP Address which are considered "In Room"
 LOCALIPS = [
@@ -37,6 +38,11 @@ class StaticTemplate(webapp.RequestHandler):
 
         if hashtag in twitter:
             hashtag = twitter[hashtag]
+
+        if group in channels:
+            channel = channels[group]
+        else:
+            channel = 'mithro1'
 
         template = self.request.get('template', '')
         if not re.match('[a-z]+', template):
