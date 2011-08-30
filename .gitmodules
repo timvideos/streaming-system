@@ -4,3 +4,6 @@
 [submodule "tools/flumotion"]
 	path = tools/flumotion
 	url = git://github.com/timsvideo/flumotion.git
+[submodule "tools/flumotion-extra"]
+	path = tools/flumotion-extra
+	url = git://github.com/timsvideo/flumotion-extra.git
