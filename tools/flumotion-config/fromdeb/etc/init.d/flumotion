@@ -147,7 +147,7 @@ if [ -e $LOGFILE ]; then
 	chown -R flumotion:flumotion $(dirname $LOGFILE)
 fi
 
-function do_components {
+do_components() {
 	set -e
 	components=`flumotion-command component list`
 
