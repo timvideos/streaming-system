@@ -1,5 +1,5 @@
 application: tims-video
-version: 2
+version: 3
 runtime: python
 api_version: 1
 
@@ -13,6 +13,9 @@ handlers:
 
 - url: /.*
   script: handler.py
+
+builtins:
+- appstats: on
 
 skip_files:
 - third_party/.*

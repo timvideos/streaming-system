@@ -30,36 +30,17 @@
   
   <flow name="default">
     <!-- Program to show when not on the air -->
-    <component name="producer-test-video"
-               type="videotest-producer"
-               label="producer-test-video"
+    <component name="producer-looper"
+               type="loop-producer"
+               label="producer-looper"
                worker="localhost"
                project="flumotion"
                version="0.9.0.1">
-      <property name="pattern">0</property>
-      <property name="framerate">25/1</property>
-      <property name="pixel-aspect-ratio">1</property>
       <property name="width">1280</property>
+      <property name="framerate">25/1</property>
+      <property name="location">/tmp/geekgirl.ogg</property>
       <property name="height">720</property>
       <clock-master>false</clock-master>
-    </component>
-    <component name="producer-test-audio"
-               type="audiotest-producer"
-               label="producer-test-audio"
-               worker="localhost"
-               project="flumotion"
-               version="0.9.0.1">
-      <property name="volume">1.0</property>
-      <property name="samplerate">44100</property>
-      <property name="frequency">440</property>
-      <clock-master>false</clock-master>
-    </component>
-    <component name="producer-test-audio-stereo"
-               project="flumotion"
-               type="pipeline-converter"
-               worker="localhost">
-      <eater name="default"><feed>producer-test-audio</feed></eater>
-      <property name="pipeline">audioconvert ! audio/x-raw-int, channels=2</property>
     </component>
 
     <!-- Program to show when on the air -->
@@ -92,9 +73,9 @@
                type="av-basic-watchdog-combiner"
                worker="localhost">
       <eater name="video-master"><feed>producer-decoder:video</feed></eater>
-      <eater name="video-backup"><feed>producer-test-video</feed></eater>
+      <eater name="video-backup"><feed>producer-looper:video</feed></eater>
       <eater name="audio-master"><feed>producer-decoder:audio</feed></eater>
-      <eater name="audio-backup"><feed>producer-test-audio</feed></eater>
+      <eater name="audio-backup"><feed>producer-looper:audio</feed></eater>
       <property name="video-pixel-aspect-ratio">1</property>
       <property name="video-framerate">25/1</property>
       <property name="video-width">1280</property>

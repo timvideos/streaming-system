@@ -17,10 +17,14 @@ body {
 	width: 100%;
 	height: 100%;
 	margin: 0;
-	background-color:#fff;	
+	background-color: black;
 	font-family:"Lucida Grande","bitstream vera sans","trebuchet ms",verdana,arial;
 	text-align:center;
-	padding: 10px;
+	padding: 1px;
+}
+
+img {
+  border: none;
 }
 
 #body-table {
@@ -28,8 +32,8 @@ body {
   height: 100%;
   margin: 0;
   border: 0;
-  padding: 1;
-  margin: 1;
+  padding: 1px;
+  margin: 1px;
 }
 
 #body-table td {
@@ -41,12 +45,9 @@ body {
   position: relative;
   width: 100%;
   height: 100%;
-  background-color: #111111;
+  background-color: #f0f1ff;
   text-align:left;
-  border-radius: 20px;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#112233', endColorstr='#111111'); /* for IE */
-  background: -webkit-gradient(linear, left top, left bottom, from(#112233), to(#111111)); /* for webkit browsers */
-  background: -moz-linear-gradient(top,  #112233,  #111111); /* for firefox 3.6+ */
+  border-radius: 5px;
 }
 
 .sizer {
@@ -69,6 +70,38 @@ body {
   vertical-align: middle;
   height: 60px;
   width: 60px;
+}
+
+th {
+  font-size: 16pt;
+}
+
+#options {
+  padding: 5px;
+  height: 1%;
+}
+
+#options div {
+  display: inline-block;
+  width: auto;
+  color: black;
+  padding: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin: 5px;
+  height: 2em;
+}
+
+div.options-group ul {
+  display: inline;
+  padding: 0;
+}
+div.options-group form {
+  display: inline;
+}
+div.options-group li {
+  display: inline;
+  list-style-type: none;
 }
 
 #player-hd {
@@ -106,18 +139,47 @@ body {
 }
 
 #twitter-cell {
-  height: 1%;
+  height: 70px;
 }
 
 #twitter-cell .related-tweets {
   border: 0;
   background: white;
+  height: 48px;
 }
 
 #twitter-search {
-  color: white;
+  color: black;
 }
 #twitter-search a {
   color: #999999;
   text-decoration: none;
+}
+
+#twitter-juitter {
+  width: 100%;
+  overflow: hidden;
+}
+
+#player {
+  float: left;
+}
+
+#footer {
+  font-size: 8pt;
+  height: 1em;
+  text-align: right;
+}
+
+#footer img {
+  height: 1em;
+}
+
+#footer a {
+  text-decoration: none;
+}
+
+#footer-container {
+  padding-left: 5px;
+  padding-right: 5px;
 }

@@ -8,6 +8,7 @@
 # Python imports
 import os
 import logging
+import re
 
 # AppEngine Imports
 from google.appengine.ext import webapp
@@ -16,11 +17,18 @@ from google.appengine.ext import webapp
 from utils.render import render as r
 
 twitter = {'slug': 'sydlug'}
+channels = {'ggdsydney': 'ggdsydney'}
+
+# IP Address which are considered "In Room"
+LOCALIPS = [
+ '^127\.',
+ '^74\.125\.56',
+]
 
 class StaticTemplate(webapp.RequestHandler):
     """Handler which shows a map of how to get to slug."""
     def get(self, group):
-        if not group:
+        if not re.match('[a-z/]+', group):
             group = 'slug'
 
         if '/' in group:
@@ -31,24 +39,25 @@ class StaticTemplate(webapp.RequestHandler):
         if hashtag in twitter:
             hashtag = twitter[hashtag]
 
-        novideo = self.request.get('novideo', 'False')
-        if novideo.lower()[0] in ('y', 't'):
-            video = False
+        if group in channels:
+            channel = channels[group]
         else:
-            video = True
+            channel = 'mithro1'
 
-        html5str = self.request.get('flashonly', 'False')
-        if html5str.lower()[0] in ('y', 't'):
-            html5 = False
+        template = self.request.get('template', '')
+        if not re.match('[a-z]+', template):
+            template = 'index'
+
+            # Is the request coming from the room?
+            for ipregex in LOCALIPS:
+                if re.match(ipregex, self.request.remote_addr):
+                    template = 'inroom'
+
+        screenstr = self.request.get('screen', 'False')
+        if screenstr.lower()[0] in ('y', 't'):
+            screen = True
         else:
-            html5 = True
+            screen = False
 
-        hdoffstr = self.request.get('hdoff', 'False')
-        if hdoffstr.lower()[0] in ('y', 't'):
-            hdoff = True
-        else:
-            hdoff = False
-
-        template = 'templates/index.html'
         self.response.headers['Content-Type'] = 'text/html'
-        self.response.out.write(r(template, locals()))
+        self.response.out.write(r('templates/%s.html' % template, locals()))

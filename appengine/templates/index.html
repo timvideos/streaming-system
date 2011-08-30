@@ -5,9 +5,11 @@ vim: set ts=2 sw=2 et sts=2 ai:
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
     <script type="text/javascript" src="/static/third_party/jquery-extra/jquery.relatedtweets-1.0.min.js"></script>
     <script type="text/javascript" src="/static/third_party/jwplayer/jwplayer.js"></script>
+    <script type="text/javascript" src="/static/js/streams.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <link rel="stylesheet" type="text/css" href="/static/css/tweet.css">
     <title>Tim's Video Streaming for {{ group|upper }}</title>
@@ -15,6 +17,8 @@ vim: set ts=2 sw=2 et sts=2 ai:
 <script type="text/javascript">
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-23123757-1']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
   _gaq.push(['_trackPageview']);
 
   (function() {
@@ -29,17 +33,42 @@ vim: set ts=2 sw=2 et sts=2 ai:
 
   <table id="body-table">
     <tr>
-{% if video %}
+      <td id="options" colspan=2>
+        <div class="options-group container">
+          Video Format:
+          <form id="format">
+            <ul>
+              <li><input type="radio" name="format" value="videooff">Video Off
+              <li><input type="radio" name="format" value="auto" checked>Auto
+              <li><input type="radio" name="format" value="flash">Flash
+              <li><input type="radio" name="format" value="html5">HTML5
+              <li><input type="radio" name="format" value="justintv">Justin.tv
+              <li><input type="radio" name="format" value="audio">Audio Only
+            </ul>
+          </form>
+        </div>
+        <div id="quality-container" class="options-group container">
+          Quality:
+          <form id="quality">
+            <ul>
+              <li><input type="radio" name="quality" value="auto" checked>Auto
+              <li><input type="radio" name="quality" value="hd">HD on
+              <li><input type="radio" name="quality" value="sd">HD off
+            </ul>
+          </form>
+        </div>
+        <div id="quality-container" class="options-group container">
+          Backup Stream <a href="http://justin.tv/{{ channel }}">at Justin.tv</a>
+        </div>
+      </td>
+    </tr><tr>
       <td id="player-cell">
         <div id="player-container" class="container">
-          <div id="player-hd" class="button"><div id="player-hd-center">HD<br>auto</div></div>
-          <!-- <div id="player-mode" class="button"><div id="player-mode-center"></div></div> -->
           <div id="player-sizer" class="sizer">
             <a href="" id="player"></a>
           </div>
         </div>
       </td>
-{% endif %}
       <td id="chat-cell">
         <div id="chat-container" class="container">
           <div id="chat-sizer" class="sizer">
@@ -58,6 +87,12 @@ vim: set ts=2 sw=2 et sts=2 ai:
           </div>
         </div>
       </td>
+    </tr><tr>
+      <td id="footer" colspan=2>
+        <span id="footer-container" class="container">
+{% include "footer.html" %}
+        </span>
+      </td>
     </tr>
   </table>
 <script type="text/javascript">
@@ -68,190 +103,124 @@ function time () {
   return new Date().getTime();
 }
 
-// Server which is doing the streaming
-var streamer="http://49.156.19.78:8080/";
-
-// Offline streaming
-var offline = streamer+'webcast-low.ogv';
-
-// HTML5 streaming
-var html5_high = [
-  { file: streamer+'webcast-high.webm' },
-  { file: streamer+'webcast-high.ogv' },
-  //{ file: streamer+'webcast-high.mp4' },
-];
-var html5_low = [
-  { file: streamer+'webcast-low.webm' },
-  { file: streamer+'webcast-low.ogv' },
-  //{ file: streamer+'webcast-low.mp4' },
-];
-// Flash streaming
-var flash_high = [
-  { bitrate: "800", file: streamer+'webcast-high.flv', width: "720" }
-];
-var flash_low = [
-  { bitrate: "300", file: streamer+'webcast-low.flv', width: "432" },
-];
-// Flash Streaming - with automatic format switching
-var flash_auto = flash_high.concat(flash_low);
-
-// Create the jwplayer
-var player = jwplayer("player").setup({
-  autostart: true,
-  plugins: {
-    qualitymonitor: {},
-    'gapro-2': {
-      'trackstarts': true,
-      'trackpercentage': false,
-      'trackseconds': false
-    }
-  },
-  skin: '/static/third_party/jwplayer/skin/glow.zip',
-  modes: [
-{% if html5 %}
-    {type: "html5",
-      config: {levels: html5_high}},
-{% endif %}
-    {type: "flash", src: "/static/third_party/jwplayer/player.swf",
-      config: {levels: flash_auto}},
-    {type: "download",
-      config: {file: offline}},
-  ]
-});
-
 /**
  * Resize the player to fit the window.
  */
-var player_sizer = $("#player-sizer");
 function fit_player () {
-  // Turn off HD
-  if (player_sizer.height() < 432) {
-    hd_off();
+  var player_sizer = $("#player-cell");
+  if (player_jwobject) {
+    player_jwobject.resize(player_sizer.width()-20, player_sizer.height()-20);
   }
-  jwplayer("player").resize(player_sizer.width(), player_sizer.height());
 }
-player.onReady(fit_player);
 
 // When the window's size changes, so does ours.
 $(window).resize(fit_player);
 
 /**
- * HD stream toggle
+ * HD stream options
  */
-var player_hd = $('#player-hd');
-function hd_toggle () {
-  if (player_hd.text() != 'HD on') {
-    hd_on();
-  } else {
-    hd_off();
-  }
-}
-function hd_on () {
-  if (player.renderingMode == 'html5') {
-    player.load({levels: html5_high});
-  } else {
-    player.load({levels: flash_high});
-  }
-  $('#player-hd-center').text('HD on');
-}
-function hd_off () {
-  if (player.renderingMode == 'html5') {
-    player.load({levels: html5_low});
-  } else {
-    player.load({levels: flash_low});
-  }
-  $('#player-hd-center').text('HD off');
-}
+var quality_option = $('input[name=quality][type=radio]');
+function quality_set(value) {
+  if (player_jwobject) {
+    var format = player_format;
+    if (value == format)
+      return;
 
-player_hd.click(hd_toggle);
-{% if hdoff %}
-hd_toggle();
-hd_toggle();
-{% endif %}
-
-/**
- * Flash/HTML5 mode toggle
- */
-/*
-function mode_toggle () {
-  // Stop and delete the current player
-  player.stop();
-  player = null;
-  $('#player').empty();
-
-  options = {
-    autostart: true,
-    plugins: {
-      qualitymonitor: {}
-    },
-    skin: '/static/third_party/jwplayer/skin/glow.zip',
-  };
-
-  if (player_mode.text()  == 'Flash') {
-    //Converting to auto
-    options.modes = [
-      {type: "html5",
-        config: {levels: html5_high}},
-      {type: "flash", src: "/static/third_party/jwplayer/player.swf",
-        config: {levels: flash_auto}},
-      {type: "download",
-        config: {file: offline}},
-    ];
-    $('#player-mode-center').('<h1>Auto</h1><h2>HTML5</h2>');
-
-  } else if (player_mode.text() == 'Auto') {
-    // Converting to HTML5
-    options.modes = [
-      {type: "html5",
-        config: {levels: html5_high}},
-      {type: "download",
-        config: {file: offline}},
-      ],
-    });
-    $('#player-mode-center').('<h1>HTML5</h1><h2></h2>');
-
-  } else {
-    // Converting to Flash
-    options.modes = [
-      modes: [
-        {type: "flash", src: "/static/third_party/jwplayer/player.swf",
-          config: {levels: flash_auto}},
-        {type: "download",
-          config: {file: offline}},
-      ],
-    });
-    $('#player-mode-center').text('Flash');
-  }
-  player = jwplayer("player").setup(options);
-}
-*/
-
-/**
- * Show and hide the extra buttons
- */
-var buttons_hd_show = 0;
-function buttons_show () {
-  player_hd.stop(true,true);
-  player_hd.fadeIn('slow');
-//  player_mode.stop(true,true);
-//  player_mode.fadeIn('slow');
-
-  buttons_hd_show = time();
-  window.setTimeout(buttons_hide, 2000);
-}
-function buttons_hide () {
-  if ((time() - buttons_hd_show) > 1900) {
-    var player_state = player.getState()
-    if (player_state == "IDLE" || player_state == "PAUSED") {
-      window.setTimeout(buttons_hide, 2000);
-    } else {
-      player_hd.fadeOut('slow');
-//    player_mode.fadeOut('slow');
+    if (player_format == 'auto') {
+      format = player_jwobject.renderingMode;
     }
+    if (format)
+      player_jwobject.load(jwplayer_levels(format, value));
   }
+  var option = $('input[name=quality][type=radio][value='+value+']');
+  option.attr('checked', true);
 }
+function quality_change(evt) {
+  var value = $('input[name=quality][type=radio]:checked').val();
+  quality_set(value);
+}
+quality_option.change(quality_change);
 
-player_sizer.mousemove(buttons_show);
+/**
+ * Format of the streaming.
+ */
+var player_jwobject = null;
+var player_format = null;
+var format_option = $('input[name=format][type=radio]');
+function format_set(value) {
+
+  // Clean up the previous player
+  if (player_jwobject) {
+    player_jwobject.remove();
+    player_jwobject = null;
+  }
+  if (player_format == "justintv") {
+    swobject.removeSWF("player");
+  }
+
+  var jwplayer_create = false;
+  if (value == 'novideo') {
+  } 
+  if (value == 'justintv') {
+    var flashvars = {
+      "start_volume": 0.5,
+      "backgroundImage": "",
+      "channel": "{{ channel }}",
+      "hostname": "www.justin.tv",
+      "auto_play": true
+    };
+    var params = {
+      "allowFullScreen": true,
+      "allowScriptAccess": "always",
+      "allowNetworking": "all",
+      "movie": "http://www.justin.tv/widgets/live_embed_player.swf"
+    };
+    
+    var url = "http://www.justin.tv/widgets/live_embed_player.swf?";
+    for (value in flashvars) {
+      url = url + "&" + value + "=" + flashvars[value];
+    }
+    swfobject.embedSWF(url, "player", "100%", "100%", "9.0.0", null, flashvars, params);
+  }
+  
+  if (value == 'auto' || value == 'flash' || value == 'html5' || value == 'audio') {
+    // Create the player
+    var jwsettings = {
+      autostart: true,
+      plugins: {
+        'gapro-2': {
+          'trackstarts': true,
+          'trackpercentage': false,
+          'trackseconds': true
+        }
+      },
+      skin: '/static/third_party/jwplayer/skin/glow.zip',
+      modes: jwplayer_modes(value, 'auto')
+    };
+    player_jwobject = jwplayer("player").setup(jwsettings);
+    fit_player();
+    player_jwobject.onReady(fit_player);
+
+    // Enable the quality widget
+    $('#quality-container').show();
+  } else {
+    // Disable the quality widget
+    $('#quality-container').hide();
+  }
+
+  player_format = value;
+
+  var option = $('input[name=format][type=radio][value='+value+']');
+  option.attr('checked', true);
+}
+function format_change(evt) {
+  var value = $('input[name=format][type=radio]:checked').val();
+  format_set(value);
+}
+format_option.change(format_change);
+
+format_change();
+quality_change();
 
     </script>
 </body>
