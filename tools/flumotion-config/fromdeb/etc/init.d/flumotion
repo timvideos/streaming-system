@@ -31,6 +31,7 @@ SCRIPTNAME="/etc/init.d/$NAME"
 
 # Load the VERBOSE setting and other rcS variables
 [ -f /etc/default/rcS ] && . /etc/default/rcS
+VERBOSE=yes
 
 # Define LSB log_* functions.
 # Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
@@ -105,6 +106,20 @@ stop_instance() {
 
 do_status() {
 	user_do "$DAEMON status"
+	echo
+	flumotion-command component detailedlist
+	echo
+	components=`flumotion-command component list`
+	for comp in $components;
+	do
+		if [ $comp == "atmosphere:" ]; then
+			flow="atmosphere"
+		elif [ $comp == "default" -o $comp == "flow:" ]; then
+			flow="default"
+		else
+			flumotion-command component -i /$flow/$comp mood
+		fi
+	done
 }
 
 do_clean() {
@@ -128,14 +143,28 @@ if [ ! -d /usr/local/var/log/flumotion ]; then
 	mkdir -p /usr/local/var/log/flumotion
 	chown -R flumotion:flumotion /usr/local/var/log/flumotion
 fi
-if [ ! -d /tmp/flumotion ]; then
-	mkdir /tmp/flumotion
-	chown -R flumotion:flumotion /tmp/flumotion
-fi
 if [ -e $LOGFILE ]; then
 	chown -R flumotion:flumotion $(dirname $LOGFILE)
 fi
 
+function do_components {
+	set -e
+	components=`flumotion-command component list`
+
+	for comp in $components;
+	do
+		if [ $comp == "atmosphere:" ]; then
+			flow="atmosphere"
+		elif [ $comp == "default" -o $comp == "flow:" ]; then
+			flow="default"
+		else
+			while flumotion-command component -i /$flow/$comp mood | grep waking >/dev/null; do
+				sleep 1
+			done
+			flumotion-command component -i /$flow/$comp $1 >/dev/null
+		fi
+	done
+}
 
 case "$1" in
   start)
@@ -146,6 +175,8 @@ case "$1" in
 		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
 		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
 	esac
+
+	/etc/init.d/flumotion stop-components
 	;;
   stop)
 	shift
@@ -156,16 +187,36 @@ case "$1" in
 		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
 	esac
 	;;
+  start-components)
+	shift
+	[ "$VERBOSE" != no ] && log_daemon_msg "Starting components" "$NAME"
+	do_components start
+	case "$?" in
+		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+  stop-components)
+	shift
+	[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $NAME components"
+	do_components stop
+	case "$?" in
+		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
   restart|force-reload)
 	shift
-	log_daemon_msg "Restarting $DESC" "$NAME"
+	[ "$VERBOSE" != no ] && log_daemon_msg "Restarting $DESC" "$NAME"
 	do_stop $*
 	do_start $*
 	case "$?" in
-		0) log_end_msg 0 ;;
-		1) log_end_msg 1 ;; # Old process is still running
-		*) log_end_msg 1 ;; # Failed to start
+		0) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		1) [ "$VERBOSE" != no ] && log_end_msg 1 ;; # Old process is still running
+		*) [ "$VERBOSE" != no ] && log_end_msg 1 ;; # Failed to start
 	esac
+
+	/etc/init.d/flumotion stop-components
 	;;
   status)
 	do_status
