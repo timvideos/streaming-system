@@ -1,0 +1,2 @@
+# If this value is "stopped" the components will be started up in stopped mode.
+COMPONENTS=stopped
