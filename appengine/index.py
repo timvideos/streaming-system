@@ -42,7 +42,7 @@ class StaticTemplate(webapp.RequestHandler):
         if group in channels:
             channel = channels[group]
         else:
-            channel = 'mithro1'
+            channel = 'googlefosssydney'
 
         template = self.request.get('template', '')
         if not re.match('[a-z]+', template):
