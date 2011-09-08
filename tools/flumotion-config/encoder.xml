@@ -113,23 +113,6 @@
       <clock-master>false</clock-master>
     </component>
 
-    <component name="disk-loop"
-               type="disk-consumer"
-               label="disk-loop"
-               worker="localhost"
-               project="flumotion"
-               version="0.9.0.1">
-      <eater name="default">
-        <feed alias="default">muxer-loop:default</feed>
-      </eater>
-      <property name="directory">/tmp/flumotion</property>
-      <property name="rotate-type">none</property>
-      <property name="start-recording">False</property>
-      <clock-master>false</clock-master>
-      <plugs>
-      </plugs>
-    </component>
-
     <component name="http-loop"
                type="http-streamer"
                label="http-loop"
