@@ -22,7 +22,7 @@ def subprocess_mock(mox, *args, **kw):
     return mock_process
 
 
-class PowerStatusTest(mox.MoxTestBase):
+class ACStatusTest(mox.MoxTestBase):
 
     acpi_online = """\
 Battery 0: Full, 100%
@@ -59,7 +59,7 @@ Cooling 2: Processor 0 of 10
         mock_process.returncode = 0
         self.mox.ReplayAll()
 
-        self.assertFalse(platform.get_power_status())
+        self.assertFalse(platform.get_ac_status())
 
     def test_online(self):
         mock_process = subprocess_mock(self.mox, 'acpi -V', shell=True, stdout=subprocess.PIPE)
@@ -68,7 +68,7 @@ Cooling 2: Processor 0 of 10
         mock_process.returncode = 0
         self.mox.ReplayAll()
 
-        self.assertTrue(platform.get_power_status())
+        self.assertTrue(platform.get_ac_status())
 
 
 

@@ -120,7 +120,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkHBox" id="presentation-preview">
+          <object class="GtkHBox" id="presentation-preview-box">
             <property name="visible">True</property>
             <child>
               <object class="GtkLabel" id="presentation-preview-text">
@@ -132,7 +132,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkImage" id="presentation-preview-display">
+              <object class="GtkImage" id="presentation-preview">
                 <property name="visible">True</property>
                 <property name="pixel_size">200</property>
                 <property name="icon_name">x-office-presentation</property>
@@ -621,7 +621,7 @@ and adjust the slider until the audio indicater turns ORANGE when speaking.</pro
         <child>
           <object class="GtkImage" id="battery-pic">
             <property name="visible">True</property>
-            <property name="stock">gtk-missing-image</property>
+            <property name="pixbuf">img/photos/power-disconnected.jpg</property>
           </object>
           <packing>
             <property name="position">1</property>
@@ -631,10 +631,20 @@ and adjust the slider until the audio indicater turns ORANGE when speaking.</pro
           <object class="GtkHBox" id="hbox1">
             <property name="visible">True</property>
             <child>
-              <placeholder/>
+              <object class="GtkLabel" id="spacer2">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
             </child>
             <child>
-              <placeholder/>
+              <object class="GtkLabel" id="spacer1">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
             </child>
             <child>
               <object class="GtkButton" id="battery-recheck">
@@ -642,6 +652,7 @@ and adjust the slider until the audio indicater turns ORANGE when speaking.</pro
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <signal name="clicked" handler="update_power"/>
               </object>
               <packing>
                 <property name="position">2</property>
@@ -670,8 +681,9 @@ and adjust the slider until the audio indicater turns ORANGE when speaking.</pro
         </child>
         <child>
           <object class="GtkImage" id="network-pic">
+            <property name="width_request">200</property>
             <property name="visible">True</property>
-            <property name="stock">gtk-missing-image</property>
+            <property name="pixbuf">img/photos/telstra-power.png</property>
           </object>
           <packing>
             <property name="position">1</property>
@@ -681,10 +693,20 @@ and adjust the slider until the audio indicater turns ORANGE when speaking.</pro
           <object class="GtkHBox" id="network-vbox">
             <property name="visible">True</property>
             <child>
-              <placeholder/>
+              <object class="GtkLabel" id="spacer3">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
             </child>
             <child>
-              <placeholder/>
+              <object class="GtkLabel" id="spacer4">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
             </child>
             <child>
               <object class="GtkButton" id="network-recheck">
@@ -692,6 +714,7 @@ and adjust the slider until the audio indicater turns ORANGE when speaking.</pro
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <signal name="clicked" handler="update_network"/>
               </object>
               <packing>
                 <property name="position">2</property>

@@ -3,10 +3,14 @@
 # -*- coding: utf-8 -*-
 # vim: set ts=4 sw=4 et sts=4 ai:
 
+import gobject
 import pygtk
 pygtk.require('2.0')
 import gtk
 import gtk.glade
+
+
+import platform
 
 
 class PortableXML(object):
@@ -47,9 +51,9 @@ class App(object):
     def __init__(self):
 
         xml = PortableXML()
+        self.xml = xml
 
         assistant = gtk.Assistant()
-
 
         battery = xml.get_page("battery")
         assistant.append_page(battery)
@@ -91,6 +95,17 @@ class App(object):
         assistant.show_all()
         assistant.connect("close", gtk.main_quit, "WM destroy")
         assistant.fullscreen()
+
+        self.xml.builder.connect_signals(self)
+        self.timer_id = gobject.timeout_add(1000, self.update_power)
+
+    def update_power(self, evt=None):
+        if self.timer_id is not None:
+            pic = self.xml.builder.get_object('battery-pic')
+            pic.set_from_file(['img/photos/power-disconnected.jpg', 'img/photos/power-connected.jpg'][platform.get_ac_status()])
+            return True
+        return False
+
 
     def main(self):
         # All PyGTK applications must have a gtk.main(). Control ends here

@@ -3,9 +3,15 @@
 # -*- coding: utf-8 -*-
 # vim: set ts=4 sw=4 et sts=4 ai:
 
+import math
 import subprocess
+import random
 
-def get_power_status():
+import mechanize
+import cookielib
+
+
+def get_ac_status():
     """Returns true if the laptop is on AC."""
     p = subprocess.Popen('acpi -V', shell=True, stdout=subprocess.PIPE)
 
@@ -32,6 +38,8 @@ def get_network_status():
 
 
 if __name__ == "__main__":
-    print "Power:", get_power_status()
+    print "AC:", get_ac_status()
     print "Network:", get_network_status()
 
+    a = GetNetworkStrength()
+    a.home()
