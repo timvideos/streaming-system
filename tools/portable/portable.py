@@ -73,6 +73,12 @@ class App(object):
         assistant.set_page_type(presentation, gtk.ASSISTANT_PAGE_CONTENT)
         assistant.set_page_complete(presentation, True)
 
+        camera = xml.get_page("camera")
+        assistant.append_page(camera)
+        assistant.set_page_title(camera, "Camera Capture Setup")
+        assistant.set_page_type(camera, gtk.ASSISTANT_PAGE_CONTENT)
+        assistant.set_page_complete(camera, True)
+
         interaction = xml.get_page("interaction")
         assistant.append_page(interaction)
         assistant.set_page_title(interaction, "Interaction Setup")

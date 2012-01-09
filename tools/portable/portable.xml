@@ -728,4 +728,58 @@ and adjust the slider until the audio indicater turns ORANGE when speaking.</pro
       </object>
     </child>
   </object>
+  <object class="GtkWindow" id="camera">
+    <child>
+      <object class="GtkVBox" id="camera-box">
+        <property name="visible">True</property>
+        <property name="spacing">20</property>
+        <child>
+          <object class="GtkLabel" id="camera-instructions">
+            <property name="visible">True</property>
+            <property name="label" translatable="yes">Place the web camera approximetly 1 meter in front of the presenter as shown in the picture below.</property>
+          </object>
+          <packing>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="camera-example">
+            <property name="visible">True</property>
+            <property name="stock">gtk-missing-image</property>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkHBox" id="camera-preview-vbox">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkLabel" id="camera-preview-text">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">A live preview of the camera is shown to the right.</property>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkImage" id="camera-preview">
+                <property name="visible">True</property>
+                <property name="pixel_size">200</property>
+                <property name="icon_name">x-office-presentation</property>
+                <property name="icon-size">6</property>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
 </interface>
