@@ -29,39 +29,6 @@
   </atmosphere>
   
   <flow name="default">
-    <!-- Program to show when not on the air -->
-    <component name="producer-test-video"
-               type="videotest-producer"
-               label="producer-test-video"
-               worker="localhost"
-               project="flumotion"
-               version="0.9.0.1">
-      <property name="pattern">0</property>
-      <property name="framerate">25/1</property>
-      <property name="pixel-aspect-ratio">1</property>
-      <property name="width">1280</property>
-      <property name="height">720</property>
-      <clock-master>false</clock-master>
-    </component>
-    <component name="producer-test-audio"
-               type="audiotest-producer"
-               label="producer-test-audio"
-               worker="localhost"
-               project="flumotion"
-               version="0.9.0.1">
-      <property name="volume">1.0</property>
-      <property name="samplerate">44100</property>
-      <property name="frequency">440</property>
-      <clock-master>false</clock-master>
-    </component>
-    <component name="producer-test-audio-stereo"
-               project="flumotion"
-               type="pipeline-converter"
-               worker="localhost">
-      <eater name="default"><feed>producer-test-audio</feed></eater>
-      <property name="pipeline">audioconvert ! audio/x-raw-int, channels=2</property>
-    </component>
-
     <!-- Program to show when on the air -->
     <component name="producer-src"
                project="flumotion"
@@ -87,36 +54,19 @@
       <property name="samplerate">44100</property>
     </component>
 
-    <component name="aa-controller-switch"
-               project="flumotion"
-               type="av-basic-watchdog-combiner"
-               worker="localhost">
-      <eater name="video-master"><feed>producer-decoder:video</feed></eater>
-      <eater name="video-backup"><feed>producer-test-video</feed></eater>
-      <eater name="audio-master"><feed>producer-decoder:audio</feed></eater>
-      <eater name="audio-backup"><feed>producer-test-audio</feed></eater>
-      <property name="video-pixel-aspect-ratio">1</property>
-      <property name="video-framerate">25/1</property>
-      <property name="video-width">1280</property>
-      <property name="video-height">720</property>
-      <property name="audio-channels">2</property>
-      <property name="audio-samplerate">44100</property>
-    </component>
-
-
     <!-- Scale the video -->
     <component name="scaler-video"
                project="flumotion"
                type="pipeline-converter"
                worker="localhost">
-      <eater name="default"><feed>aa-controller-switch:video</feed></eater>
+      <eater name="default"><feed>producer-decoder:video</feed></eater>
       <property name="pipeline">videoscale ! video/x-raw-yuv,width=768,height=432</property>
     </component>
     <component name="scaler-audio"
                project="flumotion"
                type="pipeline-converter"
                worker="localhost">
-      <eater name="default"><feed>aa-controller-switch:audio</feed></eater>
+      <eater name="default"><feed>producer-decoder:audio</feed></eater>
       <property name="pipeline">audioconvert ! audioresample ! audio/x-raw-int, channels=1</property>
     </component>
 
@@ -131,7 +81,7 @@
                project="flumotion"
                version="0.9.0.1">
       <eater name="default">
-        <feed alias="default">aa-controller-switch:video</feed>
+        <feed alias="default">producer-decoder:video</feed>
       </eater>
       <property name="keyframe-maxdistance">25</property>
       <property name="bitrate">2200000</property>
@@ -144,7 +94,7 @@
                project="flumotion"
                version="0.9.0.1">
       <eater name="default">
-        <feed alias="default">aa-controller-switch:audio</feed>
+        <feed alias="default">producer-decoder:audio</feed>
       </eater>
       <property name="bitrate">192000</property>
       <clock-master>false</clock-master>
@@ -161,23 +111,6 @@
         <feed alias="default-bis">encoder-video-loop:default</feed>
       </eater>
       <clock-master>false</clock-master>
-    </component>
-
-    <component name="disk-loop"
-               type="disk-consumer"
-               label="disk-loop"
-               worker="localhost"
-               project="flumotion"
-               version="0.9.0.1">
-      <eater name="default">
-        <feed alias="default">muxer-loop:default</feed>
-      </eater>
-      <property name="directory">/tmp/flumotion</property>
-      <property name="rotate-type">none</property>
-      <property name="start-recording">False</property>
-      <clock-master>false</clock-master>
-      <plugs>
-      </plugs>
     </component>
 
     <component name="http-loop"
@@ -213,7 +146,7 @@
                project="flumotion"
                version="0.9.0.1">
       <eater name="default">
-        <feed alias="default">aa-controller-switch:video</feed>
+        <feed alias="default">producer-decoder:video</feed>
       </eater>
       <property name="keyframe-maxdistance">25</property>
       <property name="bitrate">800000</property>
@@ -241,7 +174,7 @@
                project="flumotion"
                version="0.9.0.1">
       <eater name="default">
-        <feed alias="default">aa-controller-switch:video</feed>
+        <feed alias="default">producer-decoder:video</feed>
       </eater>
       <property name="keyframe-maxdistance">25</property>
       <property name="bitrate">800000</property>
@@ -269,7 +202,7 @@
                project="flumotion"
                version="0.9.0.1">
       <eater name="default">
-        <feed alias="default">aa-controller-switch:video</feed>
+        <feed alias="default">producer-decoder:video</feed>
       </eater>
       <property name="keyframe-maxdistance">25</property>
       <property name="bitrate">800000</property>
@@ -294,7 +227,7 @@
                project="flumotion"
                type="pipeline-converter"
                worker="localhost">
-      <eater name="default"><feed>aa-controller-switch:audio</feed></eater>
+      <eater name="default"><feed>producer-decoder:audio</feed></eater>
       <property name="pipeline">ffmpegcolorspace ! ffenc_flv bitrate=300000</property>
     </component> -->
 
@@ -309,7 +242,7 @@
                project="flumotion"
                version="0.9.0.1">
       <eater name="default">
-        <feed alias="default">aa-controller-switch:audio</feed>
+        <feed alias="default">producer-decoder:audio</feed>
       </eater>
       <property name="bitrate">128000</property>
       <clock-master>false</clock-master>
@@ -335,7 +268,7 @@
                project="flumotion"
                version="0.9.0.1">
       <eater name="default">
-        <feed alias="default">aa-controller-switch:audio</feed>
+        <feed alias="default">producer-decoder:audio</feed>
       </eater>
       <property name="bitrate">128000</property>
       <clock-master>false</clock-master>
@@ -361,7 +294,7 @@
                project="flumotion"
                version="0.9.0.1">
       <eater name="default">
-        <feed alias="default">aa-controller-switch:audio</feed>
+        <feed alias="default">producer-decoder:audio</feed>
       </eater>
       <property name="pipeline">lame bitrate=48</property>
       <clock-master>false</clock-master>

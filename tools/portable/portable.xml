@@ -1,0 +1,708 @@
+<?xml version="1.0"?>
+<interface>
+  <requires lib="gtk+" version="2.16"/>
+  <!-- interface-naming-policy project-wide -->
+  <object class="GtkWindow" id="presentation">
+    <child>
+      <object class="GtkVBox" id="presentation-box">
+        <property name="visible">True</property>
+        <property name="spacing">20</property>
+        <child>
+          <object class="GtkHBox" id="laptop2red-box">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkImage" id="laptop">
+                <property name="width_request">200</property>
+                <property name="height_request">200</property>
+                <property name="visible">True</property>
+                <property name="pixbuf">img/laptop.png</property>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkVBox" id="laptop2red-vbox">
+                <property name="visible">True</property>
+                <child>
+                  <object class="GtkLabel" id="laptop2red-text">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Connect the presenter's laptop to the RED vga connector.</property>
+                  </object>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkImage" id="arrow1">
+                    <property name="visible">True</property>
+                    <property name="pixbuf">img/arrow.png</property>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkImage" id="red">
+                <property name="width_request">200</property>
+                <property name="height_request">200</property>
+                <property name="visible">True</property>
+                <property name="pixbuf">img/red.png</property>
+              </object>
+              <packing>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkHBox" id="green2projector-box">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkImage" id="green">
+                <property name="width_request">200</property>
+                <property name="height_request">200</property>
+                <property name="visible">True</property>
+                <property name="pixbuf">img/green.png</property>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkVBox" id="green2projector-vbox">
+                <property name="visible">True</property>
+                <child>
+                  <object class="GtkLabel" id="green2projector-text">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Connecet the GREEN vga connector the the PRIMARY projector.</property>
+                  </object>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkImage" id="arrow2">
+                    <property name="visible">True</property>
+                    <property name="pixbuf">img/arrow.png</property>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkImage" id="presentation-projector">
+                <property name="width_request">200</property>
+                <property name="height_request">200</property>
+                <property name="visible">True</property>
+                <property name="pixbuf">img/projector.png</property>
+              </object>
+              <packing>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkHBox" id="presentation-preview">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkLabel" id="presentation-preview-text">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">When connected properly, the projecter should show the presentation and a copy of it should appear to the right.</property>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkImage" id="presentation-preview-display">
+                <property name="visible">True</property>
+                <property name="pixel_size">200</property>
+                <property name="icon_name">x-office-presentation</property>
+                <property name="icon-size">6</property>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="interaction">
+    <child>
+      <object class="GtkVBox" id="interaction-instructions">
+        <property name="visible">True</property>
+        <child>
+          <object class="GtkLabel" id="interaction-title">
+            <property name="visible">True</property>
+            <property name="label" translatable="yes">Optional</property>
+          </object>
+          <packing>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkHBox" id="yellow2projector-box">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkImage" id="yellow1">
+                <property name="width_request">200</property>
+                <property name="height_request">200</property>
+                <property name="visible">True</property>
+                <property name="pixbuf">img/yellow.png</property>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkVBox" id="vbox1">
+                <property name="visible">True</property>
+                <child>
+                  <object class="GtkLabel" id="yellow2projector-instructions">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Connect the YELLOW vga connecter to the secondary projector.</property>
+                  </object>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkImage" id="arrow3">
+                    <property name="visible">True</property>
+                    <property name="pixbuf">img/arrow.png</property>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkImage" id="interaction-projector">
+                <property name="width_request">200</property>
+                <property name="height_request">200</property>
+                <property name="visible">True</property>
+                <property name="pixbuf">img/projector.png</property>
+              </object>
+              <packing>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="interaction-or">
+            <property name="visible">True</property>
+            <property name="label" translatable="yes">or</property>
+          </object>
+          <packing>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkHBox" id="yellow2hdtv-box">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkImage" id="yellow2">
+                <property name="width_request">200</property>
+                <property name="height_request">200</property>
+                <property name="visible">True</property>
+                <property name="pixbuf">img/yellow.png</property>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkVBox" id="vbox2">
+                <property name="visible">True</property>
+                <child>
+                  <object class="GtkLabel" id="yellow2hdtv-instructions">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Connect the YELLOW hdmi connecter to a HDTV</property>
+                  </object>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkImage" id="arrow4">
+                    <property name="visible">True</property>
+                    <property name="pixbuf">img/arrow.png</property>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkImage" id="ineraction-hdtv">
+                <property name="width_request">200</property>
+                <property name="height_request">200</property>
+                <property name="visible">True</property>
+                <property name="pixbuf">img/hdtv.png</property>
+              </object>
+              <packing>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">3</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkHBox" id="interaction-test-box">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkLabel" id="interaction-test-text">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Click the TEST button to have the interaction items appear on the projector/HDTV.</property>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="interaction-test-button">
+                <property name="label" translatable="yes">TEST</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">4</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="audio-inroom">
+    <child>
+      <object class="GtkVBox" id="audio-inroom-box">
+        <property name="visible">True</property>
+        <child>
+          <object class="GtkHBox" id="audio-inroom-instructions-box">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkImage" id="red-microphone">
+                <property name="width_request">200</property>
+                <property name="height_request">200</property>
+                <property name="visible">True</property>
+                <property name="pixbuf">img/red.png</property>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="audio-inroom-instructions-text">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Mount the RED microphone in front of the room's speaker system.
+As pictured below.</property>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkImage" id="handheld-microphone1">
+                <property name="visible">True</property>
+                <property name="pixbuf">img/microphone.png</property>
+              </object>
+              <packing>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="audio-inroom-example">
+            <property name="visible">True</property>
+            <property name="stock">gtk-missing-image</property>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkHBox" id="audio-inroom-test-box">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkLabel" id="audio-inroom-test-text">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Get the presenter to say "Hello how are you" a couple of times,
+and adjust the slider until the audio indicater turns ORANGE when speaking.</property>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkVBox" id="audio-inroom-test-adjust-box">
+                <property name="visible">True</property>
+                <child>
+                  <object class="GtkImage" id="audio-inroom-preview">
+                    <property name="visible">True</property>
+                    <property name="stock">gnome-stock-mic</property>
+                  </object>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkHScale" id="audio-inroom-test-adjust">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="audio-standalone">
+    <child>
+      <object class="GtkVBox" id="audio-standalone-box">
+        <property name="visible">True</property>
+        <child>
+          <object class="GtkHBox" id="audio-standalone-speaker-box">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkImage" id="yellow-microphone">
+                <property name="width_request">200</property>
+                <property name="height_request">200</property>
+                <property name="visible">True</property>
+                <property name="pixbuf">img/yellow.png</property>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="yellow-microphone-text">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Attach the YELLOW lapel mic to the speaker.</property>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkImage" id="lapel-microphone">
+                <property name="width_request">200</property>
+                <property name="height_request">200</property>
+                <property name="visible">True</property>
+                <property name="stock">gtk-missing-image</property>
+              </object>
+              <packing>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkHBox" id="audio-standalone-audience-box">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkImage" id="green-microphone2">
+                <property name="width_request">200</property>
+                <property name="height_request">200</property>
+                <property name="visible">True</property>
+                <property name="pixbuf">img/green.png</property>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="green-microphone-text">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Use the GREEN handheld mic for the audience.</property>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkImage" id="handheld-microphone2">
+                <property name="width_request">200</property>
+                <property name="height_request">200</property>
+                <property name="visible">True</property>
+                <property name="pixbuf">img/microphone.png</property>
+              </object>
+              <packing>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkHBox" id="audio-standalone-test-box">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkLabel" id="audio-standalone-test-text">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Get the presenter to say "Hello how are you" a couple of times,
+and adjust the slider until the audio indicater turns ORANGE when speaking.</property>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkVBox" id="audio-standalone-test-adjust-box">
+                <property name="visible">True</property>
+                <child>
+                  <object class="GtkImage" id="audio-standalone-preview">
+                    <property name="visible">True</property>
+                    <property name="stock">gnome-stock-mic</property>
+                  </object>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkHScale" id="audio-standalone-test-adjust">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="preview">
+    <child>
+      <object class="GtkTable" id="preview-box">
+        <property name="visible">True</property>
+        <property name="n_rows">2</property>
+        <property name="n_columns">2</property>
+        <child>
+          <object class="GtkImage" id="preview-video">
+            <property name="visible">True</property>
+            <property name="icon_name">video</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkVScale" id="preview-audio">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="right_attach">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkHBox" id="preview-button-box">
+            <property name="visible">True</property>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="record">
+                <property name="label">gtk-media-record</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="stream">
+                <property name="label" translatable="yes">Stream</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+              </object>
+              <packing>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="top_attach">1</property>
+            <property name="bottom_attach">2</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="battery">
+    <child>
+      <object class="GtkVBox" id="battery-box">
+        <property name="visible">True</property>
+        <child>
+          <object class="GtkLabel" id="battery-instructions">
+            <property name="visible">True</property>
+            <property name="label" translatable="yes">Please connect power to the box.</property>
+          </object>
+          <packing>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="battery-pic">
+            <property name="visible">True</property>
+            <property name="stock">gtk-missing-image</property>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkHBox" id="hbox1">
+            <property name="visible">True</property>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <object class="GtkButton" id="battery-recheck">
+                <property name="label" translatable="yes">Recheck Power</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+              </object>
+              <packing>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="network">
+    <child>
+      <object class="GtkVBox" id="network-box">
+        <property name="visible">True</property>
+        <child>
+          <object class="GtkLabel" id="network-instructions">
+            <property name="visible">True</property>
+            <property name="label" translatable="yes">Please turn on the Telstra Elite network device.</property>
+          </object>
+          <packing>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="network-pic">
+            <property name="visible">True</property>
+            <property name="stock">gtk-missing-image</property>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkHBox" id="network-vbox">
+            <property name="visible">True</property>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <object class="GtkButton" id="network-recheck">
+                <property name="label" translatable="yes">Recheck Network</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+              </object>
+              <packing>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
