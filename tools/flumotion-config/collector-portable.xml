@@ -45,7 +45,7 @@
       <property name="pipeline">
 videobox top=0 bottom=0 left=0 right=-199 border-alpha=0 !
 mix.sink_1
-v4l2src !
+v4l2src device=/dev/video1 !
 image/jpeg,width=640,height=480,framerate=(fraction)24/1 !
 jpegdec !
 videocrop left=80 right=80 top=0 bottom=0 !
