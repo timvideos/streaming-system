@@ -1,0 +1,159 @@
+<planet name="planet">
+  
+  <atmosphere>
+    <component name="porter-http"
+               type="porter"
+               label="porter-http"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <property name="username">pMEUjzeXaBJJ</property>
+      <property name="socket-path">flu-DUwiBh.socket</property>
+      <property name="password">egMLHlXjuUgt</property>
+      <property name="port">8800</property>
+    </component>
+    
+  </atmosphere>
+  
+  <flow name="default">
+    <component name="producer-firewire"
+               type="firewire-producer"
+               label="producer-firewire"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <property name="deinterlace-mode">auto</property>
+      <property name="is-square">True</property>
+      <property name="deinterlace-method">ffmpeg</property>
+      <property name="framerate">24/1</property>
+      <property name="height">0</property>
+      <property name="width">655</property>
+      <property name="decoder">ffdec_dvvideo</property>
+      <property name="guid">9025895499050107</property>
+      <clock-master>true</clock-master>
+    </component>
+
+    <component name="scaler-video"
+               type="pipeline-converter"
+               label="scaler-video"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">producer-firewire:video</feed>
+      </eater>
+      <property name="pipeline">
+videobox top=0 bottom=0 left=0 right=-199 border-alpha=0 !
+mix.sink_1
+v4l2src !
+image/jpeg,width=640,height=480,framerate=(fraction)24/1 !
+jpegdec !
+videocrop left=80 right=80 top=0 bottom=0 !
+videoscale !
+video/x-raw-yuv,width=199,height=199;video/x-raw/rgb,width=199,height=199 !
+videobox top=0 bottom=-281 left=-655 right=0 border-alpha=1 !
+mix.sink_0
+videomixer name=mix sink_0::zorder=0 sink_1::zorder=1
+      </property>
+      <clock-master>false</clock-master>
+    </component>
+		   
+    <component name="encoder-video"
+               type="x264-encoder"
+               label="encoder-video"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">scaler-video:default</feed>
+      </eater>
+      <property name="keyframe-maxdistance">24</property>
+      <property name="bitrate">22000000</property>
+      <property name="quality">4</property>
+      <property name="append-string">threads=4</property>
+      <clock-master>false</clock-master>
+    </component>
+    
+    <component name="encoder-audio"
+               type="faac-encoder"
+               label="encoder-audio"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">producer-firewire:audio</feed>
+      </eater>
+      <property name="bitrate">48000</property>
+      <clock-master>false</clock-master>
+    </component>
+    
+    <component name="muxer-audio-video"
+               type="gst-flv-muxer"
+               label="muxer-audio-video"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">encoder-audio:default</feed>
+        <feed alias="default-bis">encoder-video:default</feed>
+      </eater>
+      <clock-master>false</clock-master>
+    </component>
+  
+    <component name="disk-loop"
+               type="disk-consumer"
+               label="disk-loop"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">muxer-audio-video:default</feed>
+      </eater>
+      <property name="directory">/tmp/flumotion</property>
+      <property name="rotate-type">none</property>
+      <property name="start-recording">False</property>
+      <clock-master>false</clock-master>
+      <plugs>
+      </plugs>
+    </component>
+ 
+    <component name="http-audio-video"
+               type="http-streamer"
+               label="http-audio-video"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">muxer-audio-video:default</feed>
+      </eater>
+      <property name="porter-username">pMEUjzeXaBJJ</property>
+      <property name="mount-point">/output</property>
+      <property name="burst-on-connect">False</property>
+      <property name="port">8800</property>
+      <property name="type">slave</property>
+      <property name="porter-socket-path">flu-DUwiBh.socket</property>
+      <property name="porter-password">egMLHlXjuUgt</property>
+      <clock-master>false</clock-master>
+      <plugs>
+      </plugs>
+    </component>
+
+    <component name="fgdp-audio-video"
+               type="fgdp-consumer"
+               label="fgdp-audio-video"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">muxer-audio-video:default</feed>
+      </eater>
+      <property name="username">user</property>
+      <property name="host">49.156.19.78</property>
+      <property name="password">test</property>
+      <property name="port">15000</property>
+      <clock-master>false</clock-master>
+    </component>
+ 
+  </flow>
+  
+</planet>
