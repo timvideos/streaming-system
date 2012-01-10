@@ -33,9 +33,9 @@
       <clock-master>true</clock-master>
     </component>
 
-    <component name="scaler-video"
+    <component name="composite-video"
                type="pipeline-converter"
-               label="scaler-video"
+               label="composite-video"
                worker="localhost"
                project="flumotion"
                version="0.9.0.1">
@@ -65,7 +65,7 @@ videomixer name=mix sink_0::zorder=0 sink_1::zorder=1
                project="flumotion"
                version="0.9.0.1">
       <eater name="default">
-        <feed alias="default">scaler-video:default</feed>
+        <feed alias="default">composite-video:default</feed>
       </eater>
       <property name="keyframe-maxdistance">24</property>
       <property name="bitrate">22000000</property>

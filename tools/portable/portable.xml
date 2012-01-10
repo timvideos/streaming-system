@@ -763,11 +763,10 @@ and adjust the slider until the audio indicater turns ORANGE when speaking.</pro
               </packing>
             </child>
             <child>
-              <object class="GtkImage" id="camera-preview">
+              <object class="GtkDrawingArea" id="camera-preview">
+                <property name="width_request">200</property>
+                <property name="height_request">200</property>
                 <property name="visible">True</property>
-                <property name="pixel_size">200</property>
-                <property name="icon_name">x-office-presentation</property>
-                <property name="icon-size">6</property>
               </object>
               <packing>
                 <property name="position">1</property>
