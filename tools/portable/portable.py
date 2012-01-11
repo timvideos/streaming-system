@@ -253,11 +253,16 @@ class AudioPage(SetUpPage):
         from flumotion.monitor.nagios import util
         componentState = util.findComponent(result, '/default/producer-firewire')
         from flumotion.common import componentui
+
+        import volume_monitor
+        self.volume_monitor = volume_monitor.VolumeMonitor(self.medium, componentState)
+
         d = self.medium.componentCallRemote(componentState, 'getUIState')
         d.addCallback(self.uistate)
         return d
 
     def uistate(self, uistate):
+        print "uistate!, creating volume_monitor"
         print 'uistate', uistate
         l = uistate.keys()
         l.sort()
@@ -268,6 +273,10 @@ class AudioPage(SetUpPage):
             self, set_=self.stateSet, append=self.stateAppend,
             remove=self.stateRemove)
         self.uistate = uistate
+
+        self.volume_monitor.setUIState(uistate)
+
+        self.volume_monitor.wtree.get_widget('window1').show()
 
     def stateSet(self, object, key, value):
         print "set", object, key, value
@@ -281,11 +290,6 @@ class AudioPage(SetUpPage):
     def disconnected(self, *args):
         print "Disconnected", args
 
-    def reconnected(self, *args):
-        print "Reconnected", args
-
-    def failure(self, *args):
-        print "Failure", args
 
 
 class App(object):
@@ -350,25 +354,6 @@ class App(object):
         gtk.gdk.threads_init()
         reactor.run()
 
-
-##from flumotion.component.effects.volume.admin_gtk import VolumeAdminGtkNode
-##
-##class FirewireAdminGtk(admin_gtk.BaseAdminGtk):
-##
-##    def component_effectVolumeSet(self, effect, volume):
-##        """
-##        @param volume: volume multiplier between 0.0 and 4.0
-##        @type  volume: float
-##        """
-##        if effect != 'inputVolume':
-##            self.warning('Unknown effect %s in %r' % (effect, self))
-##            return
-##        v = self.nodes['Volume']
-##        v.volumeSet(volume)
-##
-##    def component_volumeChanged(self, channel, rms, peak, decay):
-##        volume = self.nodes['Volume']
-##        volume.volumeChanged(channel, rms, peak, decay)
 
 def main(args):
     app = App()
