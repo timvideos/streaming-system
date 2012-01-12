@@ -34,9 +34,17 @@ vim: set ts=2 sw=2 et sts=2 ai:
 
   <table id="body-table">
     <tr>
-      <td id="options" colspan=2>
-        <div id="showing" class="container_1">
+      <td id="title">
+        <div id="showing" class="container_4">
         </div>
+      </td><td>
+        <div id="sponsor-temp", class="talk_desc container_3">
+          <img src="/static/img/orionvm.png" style="height:150px;">
+          <p>Blah blah blah, something about Orion VM</p>
+        </div>
+      </td>
+    </tr><tr>
+      <td id="options" colspan=2>
         <div class="options-group container_1">
           Video Format:
           <form id="format">
@@ -81,6 +89,16 @@ vim: set ts=2 sw=2 et sts=2 ai:
       </td>
     </tr><tr>
       <td id="twitter-cell" colspan=2>
+<!--
+        <table id="sponsor-always" class="options-group container_1">
+         <tr>
+          <td>
+            Streaming servers by
+          </td><td>
+            <img src="/static/img/orionvm.png">
+          </td>
+         </tr>
+        </table> -->
         <div id="twitter-container" class="container_3">
           <div id="twitter-sizer" class="sizer">
             <div class="related-tweets" options="{debug: false}">Related tweets loading....</div>
@@ -227,7 +245,7 @@ quality_change();
 
 function schedule_callback() {
   update_schedule($('#showing'), '{{group|escapejs}}');
-  setTimeout(schedule_callback, 1e3);
+  setTimeout(schedule_callback, 60e3);
 }
 
 get_schedule(schedule_callback);

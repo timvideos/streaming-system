@@ -14,6 +14,7 @@ function get_schedule(callback) {
     url: '/schedule.js',
     dataType: 'json',
     cache: true,
+    async: true,
     success: function(data) {
       schedule = data;
       callback();
@@ -23,6 +24,8 @@ function get_schedule(callback) {
 
 function current_session(group) {
   var time = current_time();
+
+  time = Date.parse("2012-01-20 11:30:00 GMT+1100 (EST)");
 
   for (var i = 0; i < schedule.length; i++) {
     var talk = schedule[i];
@@ -56,14 +59,18 @@ function update_schedule(widget, group) {
   }
 
   var html = "";
-  if (talk['URL']) {
-    html = "<a href='" + talk['URL'] + ">";
-  }
-  html += "<span class='talk_title'>" + talk['Title'] + "</span>";
-  if (talk['URL']) {
-    html += "</a>"
-  }
-  html += "<span class='talk_description'>" + talk['Description'] + "</span>";
+  html += "<div id='talk_info' onclick='$(\".talk_desc\").toggle()'>(More info)</div>";
+  html += "<div id='talk_title'>";
+    if (talk['URL']) {
+      html += "<a href='" + talk['URL'] + "' onClick=\"return confirm('Leave the video?');\">";
+    }
+    html += talk['Title'];
+    if (talk['URL']) {
+      html += "</a>";
+    }
+  html += "</div>";
+
+  html += "<div class='talk_desc'><br>" + talk['Description'].replace("\n", '<br><br>') + "</div>";
 
   widget.html(html);
 }

@@ -66,12 +66,49 @@ img {
 
 .container_3 {
   position: relative;
-  width: 100%;
   height: 100%;
   text-align:left;
   border: 2px solid #ced1b8;
   border-radius: 5px;
   background-color: #ffffff;
+}
+
+.container_4 {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align:left;
+  color: #ddecf8;
+  padding: 5px;
+  border-radius: 5px;
+  background-color: #3d91d6;
+}
+
+#title {
+ height: 1%;
+}
+#talk_title {
+  text-align: center;
+}
+#talk_title a {
+  text-decoration: none;
+  font-size: 16px;
+  color: #ddecf8;
+}
+#talk_info {
+  font-size: 8px;
+  font-style: italic;
+  float: right;
+}
+.talk_desc {
+  width: 100%;
+  display: none;
+}
+
+#sponsor-temp {
+  height: 200px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .sizer {
@@ -161,9 +198,30 @@ div.options-group li {
   border: 0;
 }
 
+
 #twitter-cell {
   height: 70px;
 }
+
+/*
+#twitter-cell div#twitter-container {
+  margin-right: 200px;
+}
+#twitter-cell table#sponsor-always {
+  margin-right: 1px;
+  width: 198px;
+  float: right;
+  height: inherit;
+}
+#twitter-cell table#sponsor-always td {
+  text-align: center;
+  vertical-align: middle;
+  font-style: italic;
+}
+#twitter-cell table#sponsor-always td img {
+  width: 104px;
+  height: 70px;
+} */
 
 #twitter-cell .related-tweets {
   border: 0;
