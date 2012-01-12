@@ -7,13 +7,15 @@
 
 # Python imports
 import datetime
-import os
 import logging
+import os
+import time
 import re
 
 # AppEngine Imports
 from google.appengine.ext import webapp
 from google.appengine.api import memcache
+from google.appengine.api import urlfetch
 
 # Our App imports
 import models
@@ -106,7 +108,24 @@ class StreamsTemplate(webapp.RequestHandler):
         self.response.headers['Cache-Control'] = 'no-cache'
         self.response.headers['Expires'] = '-1'
 
+        current_time = time.time()*1e3
+
         self.response.out.write(r('templates/streams.js', locals()))
+
+
+class WhatsOnTemplate(webapp.RequestHandler):
+    """Renders the whats_on.js file."""
+
+    def get(self):
+        self.response.headers['Content-Type'] = 'text/javascript'
+        # Make sure this page isn't cached, otherwise the server load balancing won't work.
+        self.response.headers['Pragma'] = 'no-cache'
+        self.response.headers['Cache-Control'] = 'no-cache'
+        self.response.headers['Expires'] = '-1'
+
+        current_time = time.time()*1e3
+
+        self.response.out.write(r('templates/whats_on.js', locals()))
 
 
 SECRET='tellnoone'
@@ -156,3 +175,19 @@ class StatsHandler(webapp.RequestHandler):
         for server in servers:
             self.response.out.write('ip:%s group:%s clients:%i bitrate:%i lastseen:%s\n' % (
                 server.ip, server.group, server.clients, server.bitrate, server.lastseen))
+
+
+class ScheduleProxy(webapp.RequestHandler):
+
+    def get(self):
+        self.response.headers['Content-Type'] = 'text/javascript'
+        # Make sure this page isn't cached, otherwise the server load balancing won't work.
+        #self.response.headers['Pragma'] = 'no-cache'
+        #self.response.headers['Cache-Control'] = 'no-cache'
+        #self.response.headers['Expires'] = '-1'
+
+        schedule = memcache.get('schedule')
+        if not schedule:
+            schedule = urlfetch.fetch('http://lca2012.linux.org.au/programme/schedule/json').content
+            memcache.set('schedule', schedule, 120)
+        self.response.out.write(schedule)

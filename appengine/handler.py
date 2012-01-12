@@ -17,6 +17,8 @@ import index
 
 application = webapp.WSGIApplication(
   [('/(.*)/streams.js', index.StreamsTemplate),
+   ('/whats_on.js', index.WhatsOnTemplate),
+   ('/schedule.js', index.ScheduleProxy),
    ('/register', index.RegisterHandler),
    ('/stats', index.StatsHandler),
    ('/(.*)', index.StaticTemplate)],
