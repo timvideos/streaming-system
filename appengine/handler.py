@@ -18,6 +18,7 @@ import index
 application = webapp.WSGIApplication(
   [('/(.*)/streams.js', index.StreamsTemplate),
    ('/register', index.RegisterHandler),
+   ('/stats', index.StatsHandler),
    ('/(.*)', index.StaticTemplate)],
   debug=True)
 

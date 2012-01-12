@@ -82,34 +82,75 @@ class StreamsTemplate(webapp.RequestHandler):
         # Get all the active streaming severs for this channel
         ten_mins_ago = datetime.datetime.now() - datetime.timedelta(minutes=10)
         q = models.Encoder.all()
-        q.filter(':group', group)
-        active_servers = [x for x in q if q.lastseen > ten_mins_ago]
+        q.filter('group =', group)
+
+        active_servers = []
+        for server in q:
+            print server, server.lastseen, ten_mins_ago
+            if server.lastseen < ten_mins_ago:
+                continue
+            active_servers.append(server)
+
         if not active_servers:
             # FIXME: Technical difficulties server....
-            server = ''
+            server = BACKUP_SERVER
         else:
-            server = sorted(active_servers, key='bandwidth')[0]
+            # Choose the least loaded server
+            server = sorted(active_servers, cmp=lambda a, b: cmp(a.bitrate, b.bitrate))[0].ip
 
         self.response.headers['Content-Type'] = 'text/javascript'
+        # Make sure this page isn't cached, otherwise the server load balancing won't work.
+        self.response.headers['Pragma'] = 'no-cache'
+        self.response.headers['Cache-Control'] = 'no-cache'
+        self.response.headers['Expires'] = '-1'
+
         self.response.out.write(r('templates/streams.js', locals()))
 
+
+SECRET='tellnoone'
 
 class RegisterHandler(webapp.RequestHandler):
     """Registers an encoding server into the application."""
 
-    def post(self, secret, group, ip,
-             clients, bitrate):
-
+    def post(self):
         self.response.headers['Content-Type'] = 'text/plain'
+
+        secret = self.request.get('secret')
         if secret != SECRET:
-            self.response.out.write('ERROR\n')
+            self.response.out.write('ERROR SECRET\n')
             return
+
+        group = self.request.get('group')
+        if group not in channels:
+            self.response.out.write('ERROR GROUP\n')
+            return
+
+        ip = self.request.get('ip')
+        clients = int(self.request.get('clients'))
+        bitrate = int(self.request.get('bitrate'))
 
         s = models.Encoder(
                 key_name='%s-%s' % (group, ip),
                 group=group,
                 ip=ip,
-                encodings=[],
-                bandwidth=int(bandwidth))
+                clients=clients,
+                bitrate=bitrate)
         s.put()
         self.response.out.write('OK\n')
+
+
+class StatsHandler(webapp.RequestHandler):
+    """Print out some stats about registered encoders."""
+
+    def get(self):
+        servers = sorted(models.Encoder.all(), cmp=lambda a, b: cmp((a.group, a.bitrate), (b.group, b.bitrate)))
+
+        self.response.headers['Content-Type'] = 'text/plain'
+        # Make sure this page isn't cached
+        self.response.headers['Pragma'] = 'no-cache'
+        self.response.headers['Cache-Control'] = 'no-cache'
+        self.response.headers['Expires'] = '-1'
+
+        for server in servers:
+            self.response.out.write('ip:%s group:%s clients:%i bitrate:%i lastseen:%s\n' % (
+                server.ip, server.group, server.clients, server.bitrate, server.lastseen))

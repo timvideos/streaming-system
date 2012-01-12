@@ -14,8 +14,8 @@ class Encoder(db.Model):
     """Amazon EC2 instance which does encoding."""
     group = db.StringProperty(required=True)
     ip = db.StringProperty(required=True)
-    encodings = db.StringListProperty(required=True)
-    bandwidth = db.IntegerProperty(default=0)
+    bitrate = db.IntegerProperty(default=0)
+    clients = db.IntegerProperty(default=0)
     lastseen = db.DateTimeProperty(auto_now=True, required=True)
 
 
