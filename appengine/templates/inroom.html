@@ -39,7 +39,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
           Web&nbsp;chat&nbsp;at&nbsp;http://view.streamti.me/{{group}}
         </div>
         <div class="options-group container_1">
-          Join&nbsp;IRC&nbsp;on&nbsp;irc://irc.frenode.net/#{{group}}
+          Join&nbsp;IRC&nbsp;on&nbsp;irc://irc.frenode.net/#{{channel}}
         </div>
       </th>
     </tr><tr>
@@ -56,7 +56,8 @@ vim: set ts=2 sw=2 et sts=2 ai:
         <div id="chat-container" class="container_3">
           <div id="chat-sizer" class="sizer">
 {% if screen %}
-            <iframe id="chat-frame" src="http://webchat.freenode.net?nick=videoscreen&channels={{ group|urlencode }}&uio=MTA9dHJ1ZSYxMT0yMzYe4"></iframe>
+            <iframe id="chat-frame"
+              src="http://webchat.freenode.net?nick=videoscreen-{{group|urlencode}}&channels={{ group|urlencode }}&uio=MTA9dHJ1ZSYxMT0yMzYe4"></iframe>
 {% else %}
             <iframe id="chat-frame" src="http://webchat.freenode.net?channels={{ group|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
 {% endif %}
@@ -65,7 +66,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
       </td>
     </tr><tr>
       <td id="footer" colspan=2>
-        <span id="footer-container" class="container">
+        <span id="footer-container" class="container_3">
 {% include "footer.html" %}
         </span>
       </td>
