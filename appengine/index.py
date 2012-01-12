@@ -36,6 +36,8 @@ channels = {
 LOCALIPS = [
 ]
 
+BACKUP_SERVER = ''
+
 class StaticTemplate(webapp.RequestHandler):
     """Renders the HTML templates."""
 
