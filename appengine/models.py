@@ -12,13 +12,15 @@ from google.appengine.ext import db
 
 class Encoder(db.Model):
     """Amazon EC2 instance which does encoding."""
-    url = db.StringProperty(required=True)
+    group = db.StringProperty(required=True)
+    ip = db.StringProperty(required=True)
     encodings = db.StringListProperty(required=True)
     bandwidth = db.IntegerProperty(default=0)
     lastseen = db.DateTimeProperty(auto_now=True, required=True)
 
 
 class Collector(db.Model):
-    """Amazon EC2 instance which we send data too."""
-    url = db.StringProperty(required=True)
+    """Amazon EC2 instance which sends data."""
+    group = db.StringProperty(required=True)
+    ip = db.StringProperty(required=True)
     lastseen = db.DateTimeProperty(auto_now=True, required=True)
