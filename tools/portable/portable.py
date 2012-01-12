@@ -3,6 +3,8 @@
 # -*- coding: utf-8 -*-
 # vim: set ts=4 sw=4 et sts=4 ai:
 
+import sys
+
 import gobject
 import pygtk
 pygtk.require('2.0')
@@ -11,7 +13,10 @@ import gst
 import gtk
 import gtk.glade
 
-import platform
+from twisted.internet import error, defer, reactor
+from twisted.python import log as twistedlog
+
+import portable_platform
 
 
 class PortableXML(object):
@@ -54,6 +59,9 @@ class SetUpPage(object):
         else:
             self.on_unprepare()
 
+    def update(self):
+        pass
+
     def on_unprepare(self):
         self.timer = None
 
@@ -70,7 +78,7 @@ class BatteryPage(SetUpPage):
             pic = self.xml.get_object('battery-pic')
             text = self.xml.get_object('battery-instructions')
 
-            if platform.get_ac_status():
+            if portable_platform.get_ac_status():
                 pic.set_from_file('img/photos/power-connected.jpg')
                 text.set_label('Power has been connected, yay!')
                 self.assistant.set_page_complete(self.page, True)
@@ -90,7 +98,7 @@ class NetworkPage(SetUpPage):
         if self.timer is not None:
             text = self.xml.get_object('network-instructions')
 
-            if platform.get_network_status():
+            if portable_platform.get_network_status():
                 text.set_label('')
                 self.assistant.set_page_complete(self.page, True)
             else:
@@ -148,6 +156,8 @@ class VideoPage(SetUpPage):
         self.player.set_state(gst.STATE_PLAYING)
 
     def on_unprepare(self, *args):
+        SetUpPage.on_unprepare(self)
+
         if self.player is not None:
             self.player.set_state(gst.STATE_NULL)
             while (gst.STATE_CHANGE_SUCCESS, gst.STATE_NULL) != self.player.get_state()[:-1]:
@@ -209,6 +219,76 @@ autovideosink
     video_component = 'camera-preview'
 
 
+class AudioPage(SetUpPage):
+    xmlname = "audio-inroom"
+    title = "Inroom Audio Setup"
+
+    def __init__(self, flumotion, *args):
+        self.flumotion = flumotion
+        SetUpPage.__init__(self, *args)
+
+        from flumotion.common import log
+        log.init()
+
+        from flumotion.common import connection
+        from flumotion.twisted import pb
+
+        from flumotion.admin import admin
+        self.medium = admin.AdminModel()
+
+        i = connection.PBConnectionInfo(
+            "127.0.0.1", 7531, True, pb.Authenticator(username='user', password='test'))
+        d = self.medium.connectToManager(i)
+        d.addCallback(self.connected)
+        d.addErrback(twistedlog.err)
+
+    def connected(self, *args):
+        d = self.medium.callRemote('getPlanetState')
+        d.addCallback(self.planet_state)
+        d.addErrback(twistedlog.err)
+        return d
+
+    def planet_state(self, result):
+
+        from flumotion.monitor.nagios import util
+        componentState = util.findComponent(result, '/default/producer-firewire')
+        from flumotion.common import componentui
+
+        import volume_monitor
+        self.volume_monitor = volume_monitor.VolumeMonitor(self.medium, componentState)
+
+        d = self.medium.componentCallRemote(componentState, 'getUIState')
+        d.addCallback(self.uistate)
+        return d
+
+    def uistate(self, uistate):
+        print "uistate!, creating volume_monitor"
+        print 'uistate', uistate
+        l = uistate.keys()
+        l.sort()
+        print 'Properties:'
+        for p in l:
+            print '- %s - %s' % (p, uistate.get(p))
+        uistate.addListener(
+            self, set_=self.stateSet, append=self.stateAppend,
+            remove=self.stateRemove)
+        self.uistate = uistate
+
+        self.volume_monitor.setUIState(uistate)
+
+        self.volume_monitor.wtree.get_widget('window1').show()
+
+    def stateSet(self, object, key, value):
+        print "set", object, key, value
+
+    def stateAppend(self, object, key, value):
+        print "append", object, key, value
+
+    def stateRemove(self, object, key, value):
+        print "remove", object, key, value
+
+    def disconnected(self, *args):
+        print "Disconnected", args
 
 
 
@@ -236,7 +316,6 @@ class App(object):
         gtk.main_quit()
 
     def __init__(self):
-
         xml = PortableXML()
         self.xml = xml
 
@@ -248,17 +327,16 @@ class App(object):
         presentation = PresentationPage(assistant, xml)
         camera = CameraPage(assistant, xml)
 
+        # Setup the Flumotion connection object
+        from flumotion.common import log
+        log.init()
+        audio_inroom = AudioPage(None, assistant, xml)
+
         interaction = xml.get_page("interaction")
         assistant.append_page(interaction)
         assistant.set_page_title(interaction, "Interaction Setup")
         assistant.set_page_type(interaction, gtk.ASSISTANT_PAGE_CONTENT)
         assistant.set_page_complete(interaction, False)
-
-        audio_inroom = xml.get_page("audio-inroom")
-        assistant.append_page(audio_inroom)
-        assistant.set_page_title(audio_inroom, "Inroom Audio Setup")
-        assistant.set_page_type(audio_inroom, gtk.ASSISTANT_PAGE_CONTENT)
-        assistant.set_page_complete(audio_inroom, False)
 
         audio_standalone = xml.get_page("audio-standalone")
         assistant.append_page(audio_standalone)
@@ -272,15 +350,11 @@ class App(object):
         assistant.fullscreen()
 
 
-
     def main(self):
-        # All PyGTK applications must have a gtk.main(). Control ends here
-        # and waits for an event to occur (like a key press or mouse event).
         gtk.gdk.threads_init()
-        gtk.main()
+        reactor.run()
 
 
-
-if __name__ == "__main__":
+def main(args):
     app = App()
     app.main()
