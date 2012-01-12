@@ -34,7 +34,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
   <table id="body-table">
     <tr>
       <td id="options" colspan=2>
-        <div class="options-group container">
+        <div class="options-group container_1">
           Video Format:
           <form id="format">
             <ul>
@@ -47,7 +47,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
             </ul>
           </form>
         </div>
-        <div id="quality-container" class="options-group container">
+        <div id="quality-container" class="options-group container_1">
           Quality:
           <form id="quality">
             <ul>
@@ -57,20 +57,20 @@ vim: set ts=2 sw=2 et sts=2 ai:
             </ul>
           </form>
         </div>
-        <div id="quality-container" class="options-group container">
+        <div id="quality-container" class="options-group container_1">
           Backup Stream <a href="http://justin.tv/{{ channel }}">at Justin.tv</a>
         </div>
       </td>
     </tr><tr>
       <td id="player-cell">
-        <div id="player-container" class="container">
+        <div id="player-container" class="container_2">
           <div id="player-sizer" class="sizer">
             <a href="" id="player"></a>
           </div>
         </div>
       </td>
       <td id="chat-cell">
-        <div id="chat-container" class="container">
+        <div id="chat-container" class="container_3">
           <div id="chat-sizer" class="sizer">
             <iframe id="chat-frame" src="http://webchat.freenode.net?channels={{ group|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
           </div>
@@ -78,18 +78,18 @@ vim: set ts=2 sw=2 et sts=2 ai:
       </td>
     </tr><tr>
       <td id="twitter-cell" colspan=2>
-        <div id="twitter-container" class="container">
+        <div id="twitter-container" class="container_3">
           <div id="twitter-sizer" class="sizer">
             <div class="related-tweets" options="{debug: false}">Related tweets loading....</div>
             <div id="twitter-search">Search on Twitter:
-              <a class=tag href="http://search.twitter.com/search?q=%23{{ hashtag|urlencode }}" rel="tag">{{ hashtag }}</a>
+              <a class=tag href="http://search.twitter.com/search?q={{ hashtag|urlencode }}" rel="tag">{{ hashtag }}</a>
             </div>
           </div>
         </div>
       </td>
     </tr><tr>
       <td id="footer" colspan=2>
-        <span id="footer-container" class="container">
+        <span id="footer-container" class="container_3">
 {% include "footer.html" %}
         </span>
       </td>
@@ -160,7 +160,7 @@ function format_set(value) {
 
   var jwplayer_create = false;
   if (value == 'novideo') {
-  } 
+  }
   if (value == 'justintv') {
     var flashvars = {
       "start_volume": 0.5,
@@ -175,14 +175,14 @@ function format_set(value) {
       "allowNetworking": "all",
       "movie": "http://www.justin.tv/widgets/live_embed_player.swf"
     };
-    
+
     var url = "http://www.justin.tv/widgets/live_embed_player.swf?";
     for (value in flashvars) {
       url = url + "&" + value + "=" + flashvars[value];
     }
     swfobject.embedSWF(url, "player", "100%", "100%", "9.0.0", null, flashvars, params);
   }
-  
+
   if (value == 'auto' || value == 'flash' || value == 'html5' || value == 'audio') {
     // Create the player
     var jwsettings = {

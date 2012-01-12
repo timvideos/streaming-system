@@ -1,12 +1,12 @@
 application: tims-video
-version: 3
+version: lca
 runtime: python
 api_version: 1
 
 handlers:
 - url: /favicon.ico
-  static_files: images/favicon.png
-  upload: images/favicon.ico
+  static_files: static/img/favicon.ico
+  upload: static/img/favicon.ico
 
 - url: /static
   static_dir: static

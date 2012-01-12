@@ -32,28 +32,28 @@ vim: set ts=2 sw=2 et sts=2 ai:
   <table id="body-table">
     <tr>
       <th id="options" colspan=2>
-        <div class="options-group container">
-          Tweet&nbsp;with&nbsp;hashtag:&nbsp;#{{hashtag}}
+        <div class="options-group container_1">
+          Tweet&nbsp;with&nbsp;hashtag:&nbsp;{{hashtag}}
         </div>
-        <div class="options-group container">
-          Web&nbsp;chat&nbsp;at&nbsp;http://view.streamti.me/{{ hashtag }}
+        <div class="options-group container_1">
+          Web&nbsp;chat&nbsp;at&nbsp;http://view.streamti.me/{{group}}
         </div>
-        <div class="options-group container">
+        <div class="options-group container_1">
           Join&nbsp;IRC&nbsp;on&nbsp;irc://irc.frenode.net/#{{group}}
         </div>
       </th>
     </tr><tr>
       <td id="twitter-cell" style="height: auto;">
-        <div id="twitter-container" class="container">
+        <div id="twitter-container" class="container_3">
           <div id="twitter-sizer" class="sizer">
             <div id="twitter-juitter">
               <div id="juitterContainer"></div>
             </div>
-          </div>        
+          </div>
         </div>
       </td>
       <td id="chat-cell" style="width: 60%;">
-        <div id="chat-container" class="container">
+        <div id="chat-container" class="container_3">
           <div id="chat-sizer" class="sizer">
 {% if screen %}
             <iframe id="chat-frame" src="http://webchat.freenode.net?nick=videoscreen&channels={{ group|urlencode }}&uio=MTA9dHJ1ZSYxMT0yMzYe4"></iframe>

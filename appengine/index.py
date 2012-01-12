@@ -16,33 +16,33 @@ from google.appengine.ext import webapp
 # Our App imports
 from utils.render import render as r
 
-twitter = {'slug': 'sydlug'}
-channels = {'ggdsydney': 'ggdsydney'}
+twitter = ['@linuxconfau', '#linux.conf.au', '#lca2012']
+
+channels = {
+    'caro': 'lca2012-caro',
+    'c001': 'lca2012-c001',
+    'studio': 'lca2012-studio',
+    't101': 'lca2012-t101',
+    'studio1': 'lca2012-studio1',
+    'studio2': 'lca2012-studio2',
+    'studio2': 'lca2012-studio2',
+    't102': 'lca2012-t102',
+}
 
 # IP Address which are considered "In Room"
 LOCALIPS = [
- '^127\.',
- '^74\.125\.56',
 ]
 
 class StaticTemplate(webapp.RequestHandler):
     """Handler which shows a map of how to get to slug."""
     def get(self, group):
         if not re.match('[a-z/]+', group):
-            group = 'slug'
-
-        if '/' in group:
-            group, hashtag = group.split('/', 1)
-        else:
-            hashtag = group
-
-        if hashtag in twitter:
-            hashtag = twitter[hashtag]
+            group = 'caro'
 
         if group in channels:
             channel = channels[group]
         else:
-            channel = 'googlefosssydney'
+            channel = 'caro'
 
         template = self.request.get('template', '')
         if not re.match('[a-z]+', template):
@@ -58,6 +58,8 @@ class StaticTemplate(webapp.RequestHandler):
             screen = True
         else:
             screen = False
+
+        hashtag = " OR ".join(twitter)
 
         self.response.headers['Content-Type'] = 'text/html'
         self.response.out.write(r('templates/%s.html' % template, locals()))
