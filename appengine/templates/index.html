@@ -36,11 +36,21 @@ vim: set ts=2 sw=2 et sts=2 ai:
     <tr>
       <td id="title">
         <div id="showing" class="container_4">
+          <div id='talk_info' onclick='$(".talk_desc").fadeToggle();'>(More info)</div>
+          <div id='talk_title'></div>
+          <div id='talk_desc' class='talk_desc'></div>
         </div>
       </td><td>
         <div id="sponsor-temp", class="talk_desc container_3">
-          <img src="/static/img/orionvm.png" style="height:150px;">
-          <p>Blah blah blah, something about Orion VM</p>
+          <img src="/static/img/orionvm.png">
+          <p>
+            OrionVM provides the world’s fastest cloud platform, specializing in
+            Linux. We are sponsoring Linux.conf.au 2012 by providing the
+            infrastructure for the coding and streaming of the event. To see the
+            platform in action visit
+             <a href="http://www.orionvm.com.au">the website</a>
+            sign up and mention linux.conf.au for $50 free credit.
+          </p>
         </div>
       </td>
     </tr><tr>
@@ -244,8 +254,9 @@ format_change();
 quality_change();
 
 function schedule_callback() {
-  update_schedule($('#showing'), '{{group|escapejs}}');
+  update_schedule($('#talk_title'), $('#talk_desc'), '{{group|escapejs}}');
   setTimeout(schedule_callback, 60e3);
+  fit_player();
 }
 
 get_schedule(schedule_callback);

@@ -45,7 +45,7 @@ function current_session(group) {
   }
 }
 
-function update_schedule(widget, group) {
+function update_schedule(widget_title, widget_desc, group) {
   var talk = current_session(group);
 
   if (!talk) {
@@ -55,22 +55,18 @@ function update_schedule(widget, group) {
   if (!talk) {
     talk = new Array();
     talk['Title'] = "Unknown Talk";
-    talk['Description'] = '';
+    talk['Description'] = 'Cannot get talk title and description.';
   }
 
-  var html = "";
-  html += "<div id='talk_info' onclick='$(\".talk_desc\").toggle()'>(More info)</div>";
-  html += "<div id='talk_title'>";
-    if (talk['URL']) {
-      html += "<a href='" + talk['URL'] + "' onClick=\"return confirm('Leave the video?');\">";
-    }
-    html += talk['Title'];
-    if (talk['URL']) {
-      html += "</a>";
-    }
-  html += "</div>";
+  var title = "";
+  if (talk['URL']) {
+    title += "<a href='" + talk['URL'] + "' onClick=\"return confirm('Leave the video?');\">";
+  }
+  title += talk['Title'];
+  if (talk['URL']) {
+    title += "</a>";
+  }
+  widget_title.html(title);
 
-  html += "<div class='talk_desc'><br>" + talk['Description'].replace("\n", '<br><br>') + "</div>";
-
-  widget.html(html);
+  widget_desc.html("<br>" + talk['Description'].replace("\n", '<br><br>'));
 }

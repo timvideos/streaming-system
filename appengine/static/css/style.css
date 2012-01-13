@@ -106,9 +106,21 @@ img {
 }
 
 #sponsor-temp {
-  height: 200px;
   margin-top: 20px;
   margin-bottom: 20px;
+  padding: 5px;
+  height: 220px;
+}
+
+#sponsor-temp img {
+  padding: 10px;
+  height: 160px;
+  display: block;
+  float: right;
+}
+
+#sponsor-temp p {
+  font-size: 10pt;
 }
 
 .sizer {
@@ -148,7 +160,7 @@ th {
   padding: 5px;
   padding-left: 10px;
   padding-right: 10px;
-  margin: 5px;
+  margin: 1px;
   height: 2em;
 }
 
