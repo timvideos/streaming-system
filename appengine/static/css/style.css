@@ -87,15 +87,16 @@ img {
 #title {
  height: 1%;
 }
-#talk_title {
+
+.talk_title {
   text-align: center;
 }
-#talk_title a {
+.talk_title a {
   text-decoration: none;
-  font-size: 16px;
+  font-size: 16pt;
   color: #ddecf8;
 }
-#talk_info {
+.talk_info {
   font-size: 8px;
   font-style: italic;
   float: right;
@@ -113,13 +114,31 @@ img {
 }
 
 #sponsor-temp img {
-  padding: 10px;
-  height: 160px;
+  padding: 15px;
+  padding-top: 10px;
+  width: 160px;
   display: block;
-  float: right;
+  float: left;
 }
 
 #sponsor-temp p {
+  font-size: 10pt;
+}
+
+#sponsor-front {
+  top: 0;
+  padding: 5px;
+  width: 240px;
+  height: auto;
+}
+
+#sponsor-front img {
+  padding: 10px;
+  width: 235px;
+  display: block;
+}
+
+#sponsor-front p {
   font-size: 10pt;
 }
 

@@ -148,6 +148,7 @@ The Juitter developer shall have no responsability for data loss or damage of an
 								
 								// remove old entries
 								$.Juitter.delRegister();
+								$.Juitter.onUpdate();
 								msgNb++;								
 							}
 						}

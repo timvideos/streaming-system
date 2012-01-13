@@ -160,6 +160,25 @@ class RegisterHandler(webapp.RequestHandler):
         self.response.out.write('OK\n')
 
 
+class GroupsTemplate(webapp.RequestHandler):
+    def get(self):
+        # Get the currently active groups
+        ten_mins_ago = datetime.datetime.now() - datetime.timedelta(minutes=10)
+        groups = set()
+        for server in models.Encoder.all():
+            if server.lastseen < ten_mins_ago:
+                continue
+            groups.add(server.group)
+
+        global channels
+
+        hashtag = " OR ".join(twitter)
+
+        self.response.headers['Content-Type'] = 'text/html'
+        self.response.out.write(r('templates/groups.html', locals()))
+
+
+
 class StatsHandler(webapp.RequestHandler):
     """Print out some stats about registered encoders."""
 
