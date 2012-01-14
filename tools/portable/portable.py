@@ -69,6 +69,14 @@ class SetUpPage(object):
     def on_show(self):
         self.update()
 
+    def focus_forward(self):
+        def callback(widget, label):
+            if hasattr(widget, 'get_children'):
+                for child in widget.get_children():
+                    if hasattr(child, 'get_label') and child.get_label() == label:
+                        child.grab_focus()
+        self.assistant.forall(callback, 'gtk-go-forward')
+
 
 class BatteryPage(SetUpPage):
     xmlname = "battery"
@@ -83,6 +91,7 @@ class BatteryPage(SetUpPage):
                 pic.set_from_file('img/photos/power-connected.jpg')
                 text.set_label('Power has been connected, yay!')
                 self.assistant.set_page_complete(self.page, True)
+                self.focus_forward()
             else:
                 pic.set_from_file('img/photos/power-disconnected.jpg')
                 text.set_label('Please connect the power cable.')
