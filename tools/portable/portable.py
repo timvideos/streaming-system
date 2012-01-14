@@ -17,6 +17,7 @@ import gtk.glade
 from twisted.internet import error, defer, reactor
 from twisted.python import log as twistedlog
 
+import inhibitor
 import portable_platform
 
 
@@ -343,6 +344,9 @@ class App(object):
         gtk.main_quit()
 
     def __init__(self):
+        self.inhibitor = inhibitor.Inhibitor()
+        self.inhibitor.inhibit(reason="Video streaming!")
+
         xml = PortableXML()
         self.xml = xml
 
