@@ -4,6 +4,7 @@
 # vim: set ts=4 sw=4 et sts=4 ai:
 
 import sys
+import threading
 
 import gobject
 import pygtk
@@ -16,6 +17,7 @@ import gtk.glade
 from twisted.internet import error, defer, reactor
 from twisted.python import log as twistedlog
 
+import inhibitor
 import portable_platform
 
 
@@ -68,6 +70,14 @@ class SetUpPage(object):
     def on_show(self):
         self.update()
 
+    def focus_forward(self):
+        def callback(widget, label):
+            if hasattr(widget, 'get_children'):
+                for child in widget.get_children():
+                    if hasattr(child, 'get_label') and child.get_label() == label:
+                        child.grab_focus()
+        self.assistant.forall(callback, 'gtk-go-forward')
+
 
 class BatteryPage(SetUpPage):
     xmlname = "battery"
@@ -82,6 +92,7 @@ class BatteryPage(SetUpPage):
                 pic.set_from_file('img/photos/power-connected.jpg')
                 text.set_label('Power has been connected, yay!')
                 self.assistant.set_page_complete(self.page, True)
+                self.focus_forward()
             else:
                 pic.set_from_file('img/photos/power-disconnected.jpg')
                 text.set_label('Please connect the power cable.')
@@ -96,17 +107,34 @@ class NetworkPage(SetUpPage):
 
     def update(self, evt=None):
         if self.timer is not None:
-            text = self.xml.get_object('network-instructions')
-
-            if portable_platform.get_network_status():
-                text.set_label('')
-                self.assistant.set_page_complete(self.page, True)
-            else:
-                text.set_label('')
-                self.assistant.set_page_complete(self.page, False)
-
+            self.check_network()
             return True
         return False
+
+    def check_network(self):
+        if not getattr(self, 'checking', False):
+            self.checking = True
+            def callback(self=self):
+                import gobject
+                if portable_platform.get_network_status():
+                    gobject.idle_add(self.network_connected)
+                else:
+                    gobject.idle_add(self.network_disconnected)
+                self.checking = False
+
+            t = threading.Thread(target=callback)
+            t.start()
+
+    def network_connected(self):
+        text = self.xml.get_object('network-instructions')
+        text.set_label('')
+        self.assistant.set_page_complete(self.page, True)
+        self.focus_forward()
+
+    def network_disconnected(self):
+        text = self.xml.get_object('network-instructions')
+        text.set_label('Please turn on the Telstra Next-G Elite Device. (Power button is shown below.)')
+        self.assistant.set_page_complete(self.page, False)
 
 
 class VideoPage(SetUpPage):
@@ -316,6 +344,9 @@ class App(object):
         gtk.main_quit()
 
     def __init__(self):
+        self.inhibitor = inhibitor.Inhibitor()
+        self.inhibitor.inhibit(reason="Video streaming!")
+
         xml = PortableXML()
         self.xml = xml
 
