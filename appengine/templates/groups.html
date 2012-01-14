@@ -48,14 +48,14 @@ vim: set ts=2 sw=2 et sts=2 ai:
 {% endfor %}
     </tr><tr>
 {% for group in groups %}
-      <td height=1>
+      <td>
         <div class="container_2"><img src="http://49.156.17.92/{{group}}/latest.jpg" style="width: 200px; height: 200px";></div>
       </td>
 {% endfor %}
     </tr><tr>
 {% for group in groups %}
-      <td height=1>
-        <div class="container_2"><img src="http://49.156.17.92/{{group}}/latest.jpg" style="width: 200px; height: 200px";></div>
+      <td>
+        <div class="container_2"><iframe class="chat-preview" src="http://extra.streamti.me/~irc/frameit.php?channel=%23lca2012-{{group}}"></iframe>
       </td>
 {% endfor %}
     </tr><tr>
