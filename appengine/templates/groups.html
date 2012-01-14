@@ -1,0 +1,126 @@
+{% comment %}
+-*- coding: utf-8 -*-
+vim: set ts=2 sw=2 et sts=2 ai:
+{% endcomment %}
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/third_party/jquery-extra/jquery.juitter-1.0.0.js"></script>
+    <script type="text/javascript" src="/whats_on.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/tweet.css">
+    <link rel="stylesheet" type="text/css" href="/static/third_party/jquery-extra/jquery.juitter-1.0.0.css">
+    <title>Stream Time for Linux.conf.au!</title>
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-23123757-1']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+  </head>
+<body>
+  <table id="body-table">
+    <tr>
+{% for group in groups %}
+      <td height=1>
+        <div class="container_3"><h1>{{group}}</h1></div>
+      </td>
+{% endfor %}
+    </tr><tr>
+{% for group in groups %}
+      <td id="title">
+        <div id="showing" class="container_4">
+          <div id='{{group}}_info' class='talk_info' onclick='$(".talk_desc").fadeToggle();'>(More info)</div>
+          <div id='{{group}}_title' class='talk_title'></div>
+          <div id='{{group}}_desc' class='talk_desc'></div>
+        </div>
+      </td>
+{% endfor %}
+    </tr><tr>
+{% for group in groups %}
+      <td height=1>
+        <div class="container_2"><img src="http://49.156.17.92/{{group}}/latest.jpg" style="width: 200px; height: 200px";></div>
+      </td>
+{% endfor %}
+    </tr><tr>
+{% for group in groups %}
+      <td height=1>
+        <div class="container_2"><img src="http://49.156.17.92/{{group}}/latest.jpg" style="width: 200px; height: 200px";></div>
+      </td>
+{% endfor %}
+    </tr><tr>
+      <td colspan={{groups|length}}>
+        <table style="height: 100%; width: 100%;">
+          <tr>
+            <td style="width: 240px; vertical-align: top;">
+              <div id="sponsor-front" class="container_3" style="height: 100px;" >
+                <a href="http://www.orionvm.com.au/"><img src="/static/img/orionvm.png"></a>
+                <p>
+                  OrionVM provides the world’s fastest cloud platform, specializing in
+                  Linux.
+                </p><p>
+                  To see the platform in action <a href="https://panel.orionvm.com.au/signup/">sign up</a>
+                  and mention linux.conf.au for $50 free credit.
+                </p>
+                </div>
+            </td>
+            <td id="twitter-cell" style="height: auto;">
+              <div id="twitter-container" class="container_3" style="">
+                <div id="twitter-sizer" class="sizer">
+                  <div id="twitter-juitter">
+                    <div id="juitterContainer"></div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr><tr>
+      <td id="footer" colspan=2>
+        <span id="footer-container" class="container_3">
+{% include "footer.html" %}
+        </span>
+      </td>
+    </tr>
+  </table>
+<script type="text/javascript">
+
+function resize() {
+ $("#twitter-juitter").height(5);
+ $("#twitter-juitter").height($("#twitter-cell").innerHeight()-30);
+}
+$.Juitter.onUpdate = resize;
+$(window).resize(resize);
+
+$(document).ready(function() {
+  $.Juitter.start({
+    live:"live-5",
+    total: 20,
+    searchType: "searchWord",
+    searchObject: "{{ hashtag|urlencode }}",
+    });
+});
+
+function schedule_callback() {
+{% for group in groups %}
+  update_schedule($('#{{group|escapejs}}_title'), $('#{{group|escapejs}}_desc'), '{{group|escapejs}}');
+{% endfor %}
+  setTimeout(schedule_callback, 60e3);
+}
+
+get_schedule(schedule_callback);
+
+    </script>
+</body>
+</html>

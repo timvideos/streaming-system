@@ -16,7 +16,14 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 import index
 
 application = webapp.WSGIApplication(
-  [('/(.*)', index.StaticTemplate)],
+  [('/(.*)/streams.js', index.StreamsTemplate),
+   ('/whats_on.js', index.WhatsOnTemplate),
+   ('/schedule.js', index.ScheduleProxy),
+   ('/register', index.RegisterHandler),
+   ('/stats', index.StatsHandler),
+   ('/(.+)', index.StaticTemplate),
+   ('/', index.GroupsTemplate),
+   ],
   debug=True)
 
 

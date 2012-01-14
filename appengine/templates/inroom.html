@@ -32,31 +32,32 @@ vim: set ts=2 sw=2 et sts=2 ai:
   <table id="body-table">
     <tr>
       <th id="options" colspan=2>
-        <div class="options-group container">
-          Tweet&nbsp;with&nbsp;hashtag:&nbsp;#{{hashtag}}
+        <div class="options-group container_1">
+          Tweet&nbsp;with&nbsp;hashtag:&nbsp;{{hashtag}}
         </div>
-        <div class="options-group container">
-          Web&nbsp;chat&nbsp;at&nbsp;http://view.streamti.me/{{ hashtag }}
+        <div class="options-group container_1">
+          Web&nbsp;chat&nbsp;at&nbsp;http://view.streamti.me/{{group}}
         </div>
-        <div class="options-group container">
-          Join&nbsp;IRC&nbsp;on&nbsp;irc://irc.frenode.net/#{{group}}
+        <div class="options-group container_1">
+          Join&nbsp;IRC&nbsp;on&nbsp;irc://irc.frenode.net/#{{channel}}
         </div>
       </th>
     </tr><tr>
       <td id="twitter-cell" style="height: auto;">
-        <div id="twitter-container" class="container">
+        <div id="twitter-container" class="container_3">
           <div id="twitter-sizer" class="sizer">
             <div id="twitter-juitter">
               <div id="juitterContainer"></div>
             </div>
-          </div>        
+          </div>
         </div>
       </td>
       <td id="chat-cell" style="width: 60%;">
-        <div id="chat-container" class="container">
+        <div id="chat-container" class="container_3">
           <div id="chat-sizer" class="sizer">
 {% if screen %}
-            <iframe id="chat-frame" src="http://webchat.freenode.net?nick=videoscreen&channels={{ group|urlencode }}&uio=MTA9dHJ1ZSYxMT0yMzYe4"></iframe>
+            <iframe id="chat-frame"
+              src="http://webchat.freenode.net?nick=videoscreen-{{group|urlencode}}&channels={{ group|urlencode }}&uio=MTA9dHJ1ZSYxMT0yMzYe4"></iframe>
 {% else %}
             <iframe id="chat-frame" src="http://webchat.freenode.net?channels={{ group|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
 {% endif %}
@@ -65,7 +66,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
       </td>
     </tr><tr>
       <td id="footer" colspan=2>
-        <span id="footer-container" class="container">
+        <span id="footer-container" class="container_3">
 {% include "footer.html" %}
         </span>
       </td>
@@ -76,6 +77,7 @@ function resize() {
  $("#twitter-juitter").height(5);
  $("#twitter-juitter").height($("#twitter-cell").innerHeight()-20);
 }
+$.Juitter.onUpdate = resize;
 $(window).resize(resize);
 
 $(document).ready(function() {

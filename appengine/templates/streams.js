@@ -2,14 +2,14 @@
 // vim: set ts=2 sw=2 et sts=2 ai:
 
 // Server which is doing the streaming
-var streamer='http://49.156.19.78:8080/';
+var streamer='{{server|escapejs}}';
 
 var html5_streams = {
   'modes': ['html5'],
   'hd': [
     { 'file': streamer+'webcast-high.webm' },
-	  { 'file': streamer+'webcast-high.ogv' },
-	  //{ file: streamer+'webcast-high.mp4' }
+    { 'file': streamer+'webcast-high.ogv' },
+    //{ file: streamer+'webcast-high.mp4' }
   ],
   'sd': [
     { 'file': streamer+'webcast-low.webm' },

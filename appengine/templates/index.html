@@ -9,7 +9,8 @@ vim: set ts=2 sw=2 et sts=2 ai:
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
     <script type="text/javascript" src="/static/third_party/jquery-extra/jquery.relatedtweets-1.0.min.js"></script>
     <script type="text/javascript" src="/static/third_party/jwplayer/jwplayer.js"></script>
-    <script type="text/javascript" src="/static/js/streams.js"></script>
+    <script type="text/javascript" src="/whats_on.js"></script>
+    <script type="text/javascript" src="/{{ group }}/streams.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <link rel="stylesheet" type="text/css" href="/static/css/tweet.css">
     <title>Tim's Video Streaming for {{ group|upper }}</title>
@@ -33,8 +34,17 @@ vim: set ts=2 sw=2 et sts=2 ai:
 
   <table id="body-table">
     <tr>
+      <td id="title" colspan=2>
+        <div id="showing" class="container_4">
+          <div id='talk_info' class='talk_info' onclick='$(".talk_desc").fadeToggle();'>(More info)</div>
+          <div id='talk_title' class='talk_title'></div>
+          <div id='talk_desc' class='talk_desc'></div>
+        </div>
+      </td><td>
+      </td>
+    </tr><tr>
       <td id="options" colspan=2>
-        <div class="options-group container">
+        <div class="options-group container_1">
           Video Format:
           <form id="format">
             <ul>
@@ -47,7 +57,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
             </ul>
           </form>
         </div>
-        <div id="quality-container" class="options-group container">
+        <div id="quality-container" class="options-group container_1">
           Quality:
           <form id="quality">
             <ul>
@@ -57,20 +67,34 @@ vim: set ts=2 sw=2 et sts=2 ai:
             </ul>
           </form>
         </div>
-        <div id="quality-container" class="options-group container">
+        <div id="quality-container" class="options-group container_1">
           Backup Stream <a href="http://justin.tv/{{ channel }}">at Justin.tv</a>
         </div>
       </td>
     </tr><tr>
-      <td id="player-cell">
-        <div id="player-container" class="container">
+      <td id="player-cell" rowspan=2>
+        <div id="player-container" class="container_2">
           <div id="player-sizer" class="sizer">
             <a href="" id="player"></a>
           </div>
         </div>
       </td>
+      <td id="sponsor-cell" class="container_3">
+        <div id='sponsor-hide' class='talk_info' onclick='sponsor_hide();'>(Hide)</div>
+        <a href="http://www.orionvm.com.au/"><img src="/static/img/orionvm.png"></a>
+        <div>
+          <p>
+            OrionVM provides the world’s fastest cloud platform, specializing in
+            Linux.
+          </p><p>
+            To see the platform in action <a href="https://panel.orionvm.com.au/signup/">sign up</a>
+            and mention linux.conf.au for $50 free credit.
+          </p>
+        </div>
+      </td>
+    </tr><tr>
       <td id="chat-cell">
-        <div id="chat-container" class="container">
+        <div id="chat-container" class="container_3">
           <div id="chat-sizer" class="sizer">
             <iframe id="chat-frame" src="http://webchat.freenode.net?channels={{ group|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
           </div>
@@ -78,29 +102,37 @@ vim: set ts=2 sw=2 et sts=2 ai:
       </td>
     </tr><tr>
       <td id="twitter-cell" colspan=2>
-        <div id="twitter-container" class="container">
+<!--
+        <table id="sponsor-always" class="options-group container_1">
+         <tr>
+          <td>
+            Streaming servers by
+          </td><td>
+            <img src="/static/img/orionvm.png">
+          </td>
+         </tr>
+        </table> -->
+        <div id="twitter-container" class="container_3">
           <div id="twitter-sizer" class="sizer">
             <div class="related-tweets" options="{debug: false}">Related tweets loading....</div>
             <div id="twitter-search">Search on Twitter:
-              <a class=tag href="http://search.twitter.com/search?q=%23{{ hashtag|urlencode }}" rel="tag">{{ hashtag }}</a>
+              <a class=tag href="http://search.twitter.com/search?q={{ hashtag|urlencode }}" rel="tag">{{ hashtag }}</a>
             </div>
           </div>
         </div>
       </td>
     </tr><tr>
       <td id="footer" colspan=2>
-        <span id="footer-container" class="container">
+        <span id="footer-container" class="container_3">
 {% include "footer.html" %}
         </span>
       </td>
     </tr>
   </table>
 <script type="text/javascript">
-/**
- * Get Unix timestamp
- */
-function time () {
-  return new Date().getTime();
+
+function sponsor_hide() {
+  $("#sponsor-cell").hide();
 }
 
 /**
@@ -160,7 +192,7 @@ function format_set(value) {
 
   var jwplayer_create = false;
   if (value == 'novideo') {
-  } 
+  }
   if (value == 'justintv') {
     var flashvars = {
       "start_volume": 0.5,
@@ -175,14 +207,14 @@ function format_set(value) {
       "allowNetworking": "all",
       "movie": "http://www.justin.tv/widgets/live_embed_player.swf"
     };
-    
+
     var url = "http://www.justin.tv/widgets/live_embed_player.swf?";
     for (value in flashvars) {
       url = url + "&" + value + "=" + flashvars[value];
     }
     swfobject.embedSWF(url, "player", "100%", "100%", "9.0.0", null, flashvars, params);
   }
-  
+
   if (value == 'auto' || value == 'flash' || value == 'html5' || value == 'audio') {
     // Create the player
     var jwsettings = {
@@ -221,6 +253,14 @@ format_option.change(format_change);
 
 format_change();
 quality_change();
+
+function schedule_callback() {
+  update_schedule($('#talk_title'), $('#talk_desc'), '{{group|escapejs}}');
+  setTimeout(schedule_callback, 60e3);
+  fit_player();
+}
+
+get_schedule(schedule_callback);
 
     </script>
 </body>
