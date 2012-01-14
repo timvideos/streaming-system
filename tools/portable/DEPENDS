@@ -1,0 +1,5 @@
+#! /bin/sh
+
+easy_install mechanize
+
+apt-get install acpi
