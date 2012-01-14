@@ -34,7 +34,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
 
   <table id="body-table">
     <tr>
-      <td id="title">
+      <td id="title" colspan=2>
         <div id="showing" class="container_4">
           <div id='talk_info' class='talk_info' onclick='$(".talk_desc").fadeToggle();'>(More info)</div>
           <div id='talk_title' class='talk_title'></div>
@@ -79,17 +79,10 @@ vim: set ts=2 sw=2 et sts=2 ai:
           </div>
         </div>
       </td>
-      <td id="chat-cell">
-        <div id="chat-container" class="container_3">
-          <div id="chat-sizer" class="sizer">
-            <iframe id="chat-frame" src="http://webchat.freenode.net?channels={{ group|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
-          </div>
-        </div>
-      </td>
-    </tr><tr>
-      <td height=1>
-        <div id="sponsor-temp", class="container_3" style="height: auto;">
-          <a href="http://www.orionvm.com.au/"><img src="/static/img/orionvm.png"></a>
+      <td id="sponsor-cell" class="container_3">
+        <div id='sponsor-hide' class='talk_info' onclick='sponsor_hide();'>(Hide)</div>
+        <a href="http://www.orionvm.com.au/"><img src="/static/img/orionvm.png"></a>
+        <div>
           <p>
             OrionVM provides the world’s fastest cloud platform, specializing in
             Linux.
@@ -97,6 +90,14 @@ vim: set ts=2 sw=2 et sts=2 ai:
             To see the platform in action <a href="https://panel.orionvm.com.au/signup/">sign up</a>
             and mention linux.conf.au for $50 free credit.
           </p>
+        </div>
+      </td>
+    </tr><tr>
+      <td id="chat-cell">
+        <div id="chat-container" class="container_3">
+          <div id="chat-sizer" class="sizer">
+            <iframe id="chat-frame" src="http://webchat.freenode.net?channels={{ group|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
+          </div>
         </div>
       </td>
     </tr><tr>
@@ -129,11 +130,9 @@ vim: set ts=2 sw=2 et sts=2 ai:
     </tr>
   </table>
 <script type="text/javascript">
-/**
- * Get Unix timestamp
- */
-function time () {
-  return new Date().getTime();
+
+function sponsor_hide() {
+  $("#sponsor-cell").hide();
 }
 
 /**

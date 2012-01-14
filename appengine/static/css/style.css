@@ -106,23 +106,31 @@ img {
   display: none;
 }
 
-#sponsor-temp {
-  margin-top: 20px;
-  margin-bottom: 20px;
+#sponsor-cell {
   padding: 5px;
-  height: 220px;
+  height: 100px;
+  overflow: hidden;
 }
 
-#sponsor-temp img {
-  padding: 15px;
-  padding-top: 10px;
-  width: 160px;
+#sponsor-cell div {
+  padding: 5px;
+  height: 80px;
+  margin: 0;
+}
+
+#sponsor-cell img {
+  padding: 5px;
+  height: 80px;
   display: block;
   float: left;
+  margin-right: 10px;
+  margin-left: 10px;
 }
 
-#sponsor-temp p {
+#sponsor-cell p {
   font-size: 10pt;
+  padding: 1px;
+  margin: 0;
 }
 
 #sponsor-front {
