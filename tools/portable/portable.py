@@ -4,6 +4,7 @@
 # vim: set ts=4 sw=4 et sts=4 ai:
 
 import sys
+import threading
 
 import gobject
 import pygtk
@@ -96,17 +97,34 @@ class NetworkPage(SetUpPage):
 
     def update(self, evt=None):
         if self.timer is not None:
-            text = self.xml.get_object('network-instructions')
-
-            if portable_platform.get_network_status():
-                text.set_label('')
-                self.assistant.set_page_complete(self.page, True)
-            else:
-                text.set_label('')
-                self.assistant.set_page_complete(self.page, False)
-
+            self.check_network()
             return True
         return False
+
+    def check_network(self):
+        if not getattr(self, 'checking', False):
+            self.checking = True
+            def callback(self=self):
+                import gobject
+                if portable_platform.get_network_status():
+                    gobject.idle_add(self.network_connected)
+                else:
+                    gobject.idle_add(self.network_disconnected)
+                self.checking = False
+
+            t = threading.Thread(target=callback)
+            t.start()
+
+    def network_connected(self):
+        text = self.xml.get_object('network-instructions')
+        text.set_label('')
+        self.assistant.set_page_complete(self.page, True)
+        self.focus_forward()
+
+    def network_disconnected(self):
+        text = self.xml.get_object('network-instructions')
+        text.set_label('Please turn on the Telstra Next-G Elite Device. (Power button is shown below.)')
+        self.assistant.set_page_complete(self.page, False)
 
 
 class VideoPage(SetUpPage):
