@@ -25,8 +25,6 @@ function get_schedule(callback) {
 function current_session(group) {
   var time = current_time();
 
-  time = Date.parse("2012-01-20 11:30:00 GMT+1100 (EST)");
-
   for (var i = 0; i < schedule.length; i++) {
     var talk = schedule[i];
     if (group)
