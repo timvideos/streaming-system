@@ -1,8 +1,6 @@
 <?php
 // -*- coding: utf-8 -*-
 // vim: set ts=2 sw=2 et sts=2 ai:
-// Tool for framing an irchtml2log.py output into a video preview page while
-// hiding excess info, also tries to shows the latest logs.
 ?>
 <html>
   <head>
@@ -34,7 +32,7 @@
         setTimeout(bump, 50);
       }
       function bump() {
-        $('#wrapper').css('height', $(window.frames[0].document).height()+1+'px');
+        $('#wrapper').css('height', $('body', window.frames[0].document).height()+20+'px');
       }
       function wait_frame() {
         if ($('.irclog', window.frames[0].document).length == 0) {
