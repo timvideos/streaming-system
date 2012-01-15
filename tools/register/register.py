@@ -131,7 +131,17 @@ class Command(main.Command):
 MYIP = ""
 
 def main(args):
-    args.insert(1, 'register')
+    args_a = [args.pop(0)]
+    args_b = []
+
+    while len(args) > 0:
+        arg = args.pop(0)
+        if arg == '-m':
+            args_a.append(arg)
+            args_a.append(args.pop(0))
+        else:
+            args_b.append(arg)
+    args = args_a + ["register"] + args_b
 
     c = Command()
     try:
