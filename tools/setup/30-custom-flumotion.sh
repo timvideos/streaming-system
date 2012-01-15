@@ -13,11 +13,11 @@ set -e
 apt-get remove flumotion || true
 
 # Dependencies to build stuff
-apt-get install -y build-essential autoconf libtool libxml-parser-perl python-dev libvorbis-dev libogg-dev libtheora-dev libvpx-dev
+apt-get install -y build-essential autoconf libtool libxml-parser-perl python-dev libvorbis-dev libogg-dev libtheora-dev libvpx-dev subversion
 
 # FIXME(mithro): Temporary hack for lca's natty boxes
 apt-get install -y autopoint || true
-apt-get install -y gstreamer0.10-plugins-.*-multiverse || true
+apt-get install -y gstreamer0.10-plugins-.*-multiverse gstreamer0.10-ffmpeg || true
 # FIXME(mithro): End
 
 # Dependencies to run flumotion
@@ -56,7 +56,7 @@ cp -rf timsvideo/tools/flumotion-config/fromdeb/etc/* /usr/local/etc/
 ln -sf /usr/local/etc/init.d/flumotion /etc/init.d/flumotion
 
 # Create a SSL certificate used for encryption.
-make-ssl-cert /usr/share/ssl-cert/ssleay.cnf /usr/local/etc/flumotion/default.pem
+make-ssl-cert /usr/share/ssl-cert/ssleay.cnf /usr/local/etc/flumotion/default.pem || true
 chown flumotion:flumotion /usr/local/etc/flumotion/default.pem
 
 # Give access to the firewire ports
