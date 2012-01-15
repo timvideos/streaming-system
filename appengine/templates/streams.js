@@ -2,7 +2,7 @@
 // vim: set ts=2 sw=2 et sts=2 ai:
 
 // Server which is doing the streaming
-var streamer='{{server|escapejs}}';
+var streamer='http://{{server|escapejs}}:8080/';
 
 var html5_streams = {
   'modes': ['html5'],
