@@ -5,7 +5,7 @@
     <host>0.0.0.0</host>
     <component name="manager-bouncer" type="htpasswdcrypt-bouncer">
       <property name="data">
-lca:Nk5neMA3Yq1Lo
+%(user)s:%(crypt)s
 </property>
     </component>
   </manager>
@@ -129,9 +129,9 @@ lca:Nk5neMA3Yq1Lo
       <eater name="default">
         <feed alias="default">muxer-audio-video:default</feed>
       </eater>
-      <property name="username">user</property>
-      <property name="host">ROOMNAME.streamti.me</property>
-      <property name="password">test</property>
+      <property name="username">%(user)s</property>
+      <property name="host">%(room)s.streamti.me</property>
+      <property name="password">%(password)s</property>
       <property name="port">15000</property>
       <clock-master>false</clock-master>
     </component>
