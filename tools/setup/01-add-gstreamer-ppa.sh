@@ -9,7 +9,7 @@
 
 # Install the PPA.
 if [ ! -e /etc/apt/sources.list.d/gstreamer-developers-ppa-lucid.list ]; then
-  apt-add-repository ppa:gstreamer-developers/ppa
+  apt-add-repository ppa:mithro/streamtime/ppa
 fi
 
 # Pin the PPA's gstreamer packages.
