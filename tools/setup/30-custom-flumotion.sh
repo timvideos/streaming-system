@@ -15,12 +15,18 @@ apt-get remove flumotion || true
 # Dependencies to build stuff
 apt-get install -y build-essential autoconf libtool libxml-parser-perl python-dev libvorbis-dev libogg-dev libtheora-dev libvpx-dev
 
+# FIXME(mithro): Temporary hack for lca's natty boxes
+apt-get install -y autopoint || true
+apt-get install -y gstreamer0.10-plugins-.*-multiverse || true
+# FIXME(mithro): End
+
 # Dependencies to run flumotion
 apt-get install -y python-kiwi python-twisted.* ssl-cert
 
 # Install the core flumotion
 (
   cd timsvideo/tools/flumotion
+  git clean -f -x
   ./autogen.sh
   make -j16
   make install
@@ -29,6 +35,7 @@ apt-get install -y python-kiwi python-twisted.* ssl-cert
 # Install the ugly plugins
 (
   cd timsvideo/tools/flumotion-ugly
+  git clean -f -x
   ./autogen.sh
   make -j16
   make install
