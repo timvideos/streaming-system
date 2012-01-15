@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+<planet>
+
+  <manager name="planet">
+    <host>0.0.0.0</host>
+    <component name="manager-bouncer" type="htpasswdcrypt-bouncer">
+      <property name="data">
+lca:Nk5neMA3Yq1Lo
+</property>
+    </component>
+  </manager>
+  
+  <atmosphere>
+    <component name="porter-http"
+               type="porter"
+               label="porter-http"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <property name="username">pMEUjzeXaBJJ</property>
+      <property name="socket-path">flu-DUwiBh.socket</property>
+      <property name="password">egMLHlXjuUgt</property>
+      <property name="port">8800</property>
+    </component>
+  </atmosphere>
+  
+  <flow name="default">
+
+    <component name="producer-audio-video"
+               type="dvsource-producer"
+               label="producer-audio-video"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+               
+      <property name="deinterlace-mode">auto</property>
+      <property name="is-square">True</property>
+      <property name="deinterlace-method">ffmpeg</property>
+      <property name="framerate">25/1</property>
+      <property name="height">576</property>
+      <property name="width">792</property>
+      <property name="decoder">ffdec_dvvideo</property>
+      <property name="filename">/tmp/dvsource</property>
+      <clock-master>true</clock-master>
+    </component>
+    
+    <component name="encoder-video"
+               type="pipeline-converter"
+               label="encoder-video"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">producer-audio-video:video</feed>
+      </eater>
+      <property name="pipeline">ffmpegcolorspace ! ffenc_flv bitrate=200000</property>
+    </component>
+    
+    <component name="encoder-audio"
+               type="faac-encoder"
+               label="encoder-audio"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">producer-audio-video:audio</feed>
+      </eater>
+      <property name="bitrate">192000</property>
+      <clock-master>false</clock-master>
+    </component>
+    
+    <component name="muxer-audio-video"
+               type="gst-flv-muxer"
+               label="muxer-audio-video"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">encoder-audio:default</feed>
+        <feed alias="default-bis">encoder-video:default</feed>
+      </eater>
+      <clock-master>false</clock-master>
+    </component>
+  
+    <component name="disk-loop"
+               type="disk-consumer"
+               label="disk-loop"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">muxer-audio-video:default</feed>
+      </eater>
+      <property name="directory">/tmp/flumotion</property>
+      <property name="rotate-type">none</property>
+      <property name="start-recording">False</property>
+      <clock-master>false</clock-master>
+      <plugs>
+      </plugs>
+    </component>
+ 
+    <component name="http-audio-video"
+               type="http-streamer"
+               label="http-audio-video"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">muxer-audio-video:default</feed>
+      </eater>
+      <property name="porter-username">pMEUjzeXaBJJ</property>
+      <property name="mount-point">/output</property>
+      <property name="burst-on-connect">False</property>
+      <property name="port">8800</property>
+      <property name="type">slave</property>
+      <property name="porter-socket-path">flu-DUwiBh.socket</property>
+      <property name="porter-password">egMLHlXjuUgt</property>
+      <clock-master>false</clock-master>
+      <plugs>
+      </plugs>
+    </component>
+
+    <component name="fgdp-audio-video"
+               type="fgdp-consumer"
+               label="fgdp-audio-video"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">muxer-audio-video:default</feed>
+      </eater>
+      <property name="username">user</property>
+      <property name="host">ROOMNAME.streamti.me</property>
+      <property name="password">test</property>
+      <property name="port">15000</property>
+      <clock-master>false</clock-master>
+    </component>
+ 
+  </flow>
+  
+</planet>

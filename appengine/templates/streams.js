@@ -8,14 +8,11 @@ var html5_streams = {
   'modes': ['html5'],
   'hd': [
     { 'file': streamer+'webcast-high.webm' },
-    { 'file': streamer+'webcast-high.ogv' },
-    //{ file: streamer+'webcast-high.mp4' }
   ],
   'sd': [
     { 'file': streamer+'webcast-low.webm' },
-    { 'file': streamer+'webcast-low.ogv' },
   ],
-  'download': streamer+'webcast-low.ogv'
+  'download': streamer+'webcast-low.webm'
 };
 
 var flash_streams = {
