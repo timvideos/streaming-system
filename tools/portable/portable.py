@@ -21,10 +21,13 @@ import inhibitor
 import portable_platform
 
 
+FAKE=True
+
+
 class PortableXML(object):
     def __init__(self):
         self.builder = gtk.Builder()
-        self.builder.add_from_file("portable.xml")
+        self.builder.add_from_file("portable.glade")
 
     def get_page(self, name):
         window = self.builder.get_object(name)
@@ -37,6 +40,7 @@ class PortableXML(object):
 
 
 class SetUpPage(object):
+
     interval = 1000
 
     def __init__(self, assistant, xml):
@@ -55,16 +59,15 @@ class SetUpPage(object):
 
     def on_prepare(self, assistant, page):
         if page == self.page:
-            print "on_prepare", self
             self.timer = gobject.timeout_add(self.interval, self.update)
             self.on_show()
         else:
-            self.on_unprepare()
+            self.on_unshow()
 
     def update(self):
         pass
 
-    def on_unprepare(self):
+    def on_unshow(self):
         self.timer = None
 
     def on_show(self):
@@ -88,7 +91,7 @@ class BatteryPage(SetUpPage):
             pic = self.xml.get_object('battery-pic')
             text = self.xml.get_object('battery-instructions')
 
-            if portable_platform.get_ac_status():
+            if portable_platform.get_ac_status() or FAKE:
                 pic.set_from_file('img/photos/power-connected.jpg')
                 text.set_label('Power has been connected, yay!')
                 self.assistant.set_page_complete(self.page, True)
@@ -116,7 +119,7 @@ class NetworkPage(SetUpPage):
             self.checking = True
             def callback(self=self):
                 import gobject
-                if portable_platform.get_network_status():
+                if portable_platform.get_network_status() or FAKE:
                     gobject.idle_add(self.network_connected)
                 else:
                     gobject.idle_add(self.network_disconnected)
@@ -147,18 +150,14 @@ class VideoPage(SetUpPage):
         video.unset_flags(gtk.DOUBLE_BUFFERED)
         video.connect("expose-event", self.on_expose)
         video.connect("map-event", self.on_map)
-        video.connect("unmap-event", self.on_unprepare)
+        video.connect("unmap-event", self.on_unshow)
 
     def update(self, evt=None):
         if self.timer is not None:
-            print self, "update"
             if self.player is not None:
-                print "Getting player state"
-                if (gst.STATE_CHANGE_SUCCESS, gst.STATE_PLAYING) == self.player.get_state(timeout=1)[:-1]:
-                    print "After"
+                if (gst.STATE_CHANGE_SUCCESS, gst.STATE_PLAYING) == self.player.get_state(timeout=1)[:-1] or FAKE:
                     self.assistant.set_page_complete(self.page, True)
                     return True
-                print "After"
 
             self.assistant.set_page_complete(self.page, False)
             return True
@@ -183,8 +182,8 @@ class VideoPage(SetUpPage):
 
         self.player.set_state(gst.STATE_PLAYING)
 
-    def on_unprepare(self, *args):
-        SetUpPage.on_unprepare(self)
+    def on_unshow(self, *args):
+        SetUpPage.on_unshow(self)
 
         if self.player is not None:
             self.player.set_state(gst.STATE_NULL)
@@ -206,7 +205,6 @@ class VideoPage(SetUpPage):
             self.player.set_state(gst.STATE_NULL)
 
     def on_sync_message(self, bus, message):
-        print message
         if message.structure is None:
             return
         message_name = message.structure.get_name()
@@ -248,19 +246,58 @@ autovideosink
 
 
 class AudioPage(SetUpPage):
-    xmlname = "audio-inroom"
-    title = "Inroom Audio Setup"
-
     def __init__(self, flumotion, *args):
         self.flumotion = flumotion
+
         SetUpPage.__init__(self, *args)
 
+        self.volume_monitor = None
+
+    def on_show(self):
+        import volume_monitor
+
+        parent_widget = self.xml.get_object(self.box)
+        self.volume_monitor = volume_monitor.VolumeMonitor(self.flumotion.medium, self.flumotion.firewire, force_channels=1)
+
+        volume_widget = self.volume_monitor.widget
+        old_parent = volume_widget.get_parent()
+        if old_parent:
+            old_parent.remove(volume_widget)
+        parent_widget.pack_start(volume_widget)
+
+        def callback(uistate, self=self):
+            print "callback", uistate
+            self.volume_monitor.setUIState(uistate)
+
+        d = self.flumotion.medium.componentCallRemote(self.flumotion.firewire, 'getUIState')
+        d.addCallback(callback)
+
+    def on_unshow(self):
+        self.volume_monitor = None
+
+
+class AudioInRoomPage(AudioPage):
+    xmlname = "audio-inroom"
+    title = "Inroom Audio Setup"
+    box = "audio-inroom-box"
+
+class AudioStandAlonePage(AudioPage):
+    xmlname = "audio-standalone"
+    title = "Stand Alone Audio Setup"
+    box = "audio-standalone-box"
+
+
+
+class FlumotionConnection(object):
+
+    def __init__(self):
         from flumotion.common import log
         log.init()
 
         from flumotion.common import connection
-        from flumotion.twisted import pb
+        from flumotion.common import componentui
 
+        from flumotion.twisted import pb
         from flumotion.admin import admin
         self.medium = admin.AdminModel()
 
@@ -277,75 +314,28 @@ class AudioPage(SetUpPage):
         return d
 
     def planet_state(self, result):
-
         from flumotion.monitor.nagios import util
-        componentState = util.findComponent(result, '/default/producer-firewire')
-        from flumotion.common import componentui
-
-        import volume_monitor
-        self.volume_monitor = volume_monitor.VolumeMonitor(self.medium, componentState)
-
-        d = self.medium.componentCallRemote(componentState, 'getUIState')
-        d.addCallback(self.uistate)
-        return d
-
-    def uistate(self, uistate):
-        print "uistate!, creating volume_monitor"
-        print 'uistate', uistate
-        l = uistate.keys()
-        l.sort()
-        print 'Properties:'
-        for p in l:
-            print '- %s - %s' % (p, uistate.get(p))
-        uistate.addListener(
-            self, set_=self.stateSet, append=self.stateAppend,
-            remove=self.stateRemove)
-        self.uistate = uistate
-
-        self.volume_monitor.setUIState(uistate)
-
-        self.volume_monitor.wtree.get_widget('window1').show()
-
-    def stateSet(self, object, key, value):
-        print "set", object, key, value
-
-    def stateAppend(self, object, key, value):
-        print "append", object, key, value
-
-    def stateRemove(self, object, key, value):
-        print "remove", object, key, value
-
-    def disconnected(self, *args):
-        print "Disconnected", args
-
+        # For the audio monitoring
+        #self.firewire = util.findComponent(result, '/default/producer-firewire')
+        self.firewire = util.findComponent(result, '/default/producer-audio')
+        # For the start/stop of recordings
+        self.disk = util.findComponent(result, '/default/disk-loop')
 
 
 class App(object):
 
-    # This is a callback function. The data arguments are ignored
-    # in this example. More on callbacks below.
-    def hello(self, widget, data=None):
-        print "Hello World"
-
     def delete_event(self, widget, event, data=None):
-        # If you return FALSE in the "delete_event" signal handler,
-        # GTK will emit the "destroy" signal. Returning TRUE means
-        # you don't want the window to be destroyed.
-        # This is useful for popping up 'are you sure you want to quit?'
-        # type dialogs.
-        print "delete event occurred"
-
-        # Change FALSE to TRUE and the main window will not be destroyed
-        # with a "delete_event".
         return False
 
     def destroy(self, widget, data=None):
-        print "destroy signal occurred"
         gtk.main_quit()
 
     def __init__(self):
+        # Stop the screensaver and screen blanking
         self.inhibitor = inhibitor.Inhibitor()
         self.inhibitor.inhibit(reason="Video streaming!")
+
+        flumotion = FlumotionConnection()
 
         xml = PortableXML()
         self.xml = xml
@@ -358,22 +348,14 @@ class App(object):
         presentation = PresentationPage(assistant, xml)
         camera = CameraPage(assistant, xml)
 
-        # Setup the Flumotion connection object
-        from flumotion.common import log
-        log.init()
-        audio_inroom = AudioPage(None, assistant, xml)
+        audio_inroom = AudioInRoomPage(flumotion, assistant, xml)
+        audio_standalone = AudioStandAlonePage(flumotion, assistant, xml)
 
         interaction = xml.get_page("interaction")
         assistant.append_page(interaction)
         assistant.set_page_title(interaction, "Interaction Setup")
         assistant.set_page_type(interaction, gtk.ASSISTANT_PAGE_CONTENT)
         assistant.set_page_complete(interaction, False)
-
-        audio_standalone = xml.get_page("audio-standalone")
-        assistant.append_page(audio_standalone)
-        assistant.set_page_title(audio_standalone, "Standalone Audio Setup")
-        assistant.set_page_type(audio_standalone, gtk.ASSISTANT_PAGE_CONTENT)
-        assistant.set_page_complete(audio_standalone, False)
 
         # and the window
         assistant.show_all()

@@ -42,12 +42,14 @@ class VolumeMonitor(object):
     logCategory = 'volume'
     gladeFile = 'volume.glade'
 
-    def __init__(self, medium, component):
+    def __init__(self, medium, component, force_channels=100):
         self.medium = medium
         self.component = component
+        self.force_channels = force_channels
 
         self.wtree = gtk.glade.XML("volume_monitor.glade", "window1")
 
+        self.window = self.wtree.get_widget('window1')
         self.uiStateHandlers = None
 
         self.widget = self.wtree.get_widget('volume-widget')
@@ -74,6 +76,7 @@ class VolumeMonitor(object):
                                     'volume-decay': self.decaySet}
         for k, handler in self.uiStateHandlers.items():
             handler(state.get(k))
+
         # volume-allow-increase is static for lifetime of component
         # for soundcard it is false, for others that have a gst volume
         # element it is true
@@ -89,7 +92,6 @@ class VolumeMonitor(object):
 
         # Have to keep the state object around so call backs continue to occur.
         self.state = state
-
         state.addListener(self, set_=self.stateSet, append=None, remove=None)
 
     def stateSet(self, state, key, value):
@@ -136,7 +138,9 @@ class VolumeMonitor(object):
                 self.level_widgets.append(levelWidget)
 
     def peakSet(self, peak):
-        peak = peak[0:-1]
+        if len(peak) > self.force_channels:
+            peak = peak[0:self.force_channels]
+
         if len(peak) > len(self.level_widgets):
             self._createEnoughLevelWidgets(len(peak))
         for i in range(0, len(peak)):
@@ -144,7 +148,9 @@ class VolumeMonitor(object):
                 clamp(peak[i], -90.0, 0.0))
 
     def decaySet(self, decay):
-        decay = decay[0:-1]
+        if len(decay) > self.force_channels:
+            decay = decay[0:self.force_channels]
+
         if len(decay) > len(self.level_widgets):
             self._createEnoughLevelWidgets(len(decay))
         for i in range(0, len(decay)):

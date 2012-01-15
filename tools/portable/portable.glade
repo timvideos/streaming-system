@@ -366,48 +366,17 @@ As pictured below.</property>
           </packing>
         </child>
         <child>
-          <object class="GtkHBox" id="audio-inroom-test-box">
+          <object class="GtkLabel" id="audio-inroom-test-text">
             <property name="visible">True</property>
-            <child>
-              <object class="GtkLabel" id="audio-inroom-test-text">
-                <property name="visible">True</property>
-                <property name="label" translatable="yes">Get the presenter to say "Hello how are you" a couple of times,
+            <property name="label" translatable="yes">Get the presenter to say "Hello how are you" a couple of times,
 and adjust the slider until the audio indicater turns ORANGE when speaking.</property>
-              </object>
-              <packing>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkVBox" id="audio-inroom-test-adjust-box">
-                <property name="visible">True</property>
-                <child>
-                  <object class="GtkImage" id="audio-inroom-preview">
-                    <property name="visible">True</property>
-                    <property name="stock">gnome-stock-mic</property>
-                  </object>
-                  <packing>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkHScale" id="audio-inroom-test-adjust">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                  </object>
-                  <packing>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="position">1</property>
-              </packing>
-            </child>
           </object>
           <packing>
             <property name="position">2</property>
           </packing>
+        </child>
+        <child>
+          <placeholder/>
         </child>
       </object>
     </child>
@@ -495,48 +464,17 @@ and adjust the slider until the audio indicater turns ORANGE when speaking.</pro
           </packing>
         </child>
         <child>
-          <object class="GtkHBox" id="audio-standalone-test-box">
+          <object class="GtkLabel" id="audio-standalone-test-text">
             <property name="visible">True</property>
-            <child>
-              <object class="GtkLabel" id="audio-standalone-test-text">
-                <property name="visible">True</property>
-                <property name="label" translatable="yes">Get the presenter to say "Hello how are you" a couple of times,
+            <property name="label" translatable="yes">Get the presenter to say "Hello how are you" a couple of times,
 and adjust the slider until the audio indicater turns ORANGE when speaking.</property>
-              </object>
-              <packing>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkVBox" id="audio-standalone-test-adjust-box">
-                <property name="visible">True</property>
-                <child>
-                  <object class="GtkImage" id="audio-standalone-preview">
-                    <property name="visible">True</property>
-                    <property name="stock">gnome-stock-mic</property>
-                  </object>
-                  <packing>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkHScale" id="audio-standalone-test-adjust">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                  </object>
-                  <packing>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="position">1</property>
-              </packing>
-            </child>
           </object>
           <packing>
             <property name="position">2</property>
           </packing>
+        </child>
+        <child>
+          <placeholder/>
         </child>
       </object>
     </child>
