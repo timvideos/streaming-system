@@ -23,6 +23,11 @@ from flumotion.admin.command import common
 from flumotion.admin.command import main
 
 
+def eb(e):
+    print e
+    reactor.callLater(0, reactor.stop)
+
+
 class Register(common.AdminCommand):
     description = "Register this encoder on streamti.me server and report stats."
     usage = "-g [group]"
@@ -69,8 +74,6 @@ class Register(common.AdminCommand):
         self.getRootCommand().loginDeferred.addCallback(self._callback)
 
     def _callback(self, *args):
-        def eb(e):
-            print "error->", e
 
         d = self.getRootCommand().medium.callRemote('getPlanetState')
         def gotPlanetStateCb(planetState):
@@ -118,6 +121,7 @@ class Register(common.AdminCommand):
         # Schedule another register in 30 seconds
         d = defer.Deferred()
         d.addCallback(self._callback)
+        d.addErrback(eb)
         reactor.callLater(30, d.callback, ())
         return d
 
