@@ -195,15 +195,38 @@ class StatsHandler(webapp.RequestHandler):
     def get(self):
         servers = sorted(models.Encoder.all(), cmp=lambda a, b: cmp((a.group, a.bitrate), (b.group, b.bitrate)))
 
-        self.response.headers['Content-Type'] = 'text/plain'
+        self.response.headers['Content-Type'] = 'text/html'
         # Make sure this page isn't cached
         self.response.headers['Pragma'] = 'no-cache'
         self.response.headers['Cache-Control'] = 'no-cache'
         self.response.headers['Expires'] = '-1'
 
+        self.response.out.write('<html>')
+        self.response.out.write('   <head>')
+        self.response.out.write('       <link rel="stylesheet" type="text/css" href="/static/css/stats.css">')
+        self.response.out.write('   </head>')
+        self.response.out.write('   <body>')
+        self.response.out.write('       <table>')
+        self.response.out.write('           <tr>')
+        self.response.out.write('               <th>ip</th>')
+        self.response.out.write('               <th>group</th>')
+        self.response.out.write('               <th>clients</th>')
+        self.response.out.write('               <th>bitrate (bits/s)</th>')
+        self.response.out.write('               <th>bitrate (megabits/s)</th>')
+        self.response.out.write('               <th>lastseen</th>')
+        self.response.out.write('           </tr>')
         for server in servers:
-            self.response.out.write('ip:%s group:%s clients:%i bitrate:%i lastseen:%s\n' % (
-                server.ip, server.group, server.clients, server.bitrate, server.lastseen))
+            self.response.out.write('           <tr>')
+            self.response.out.write('               <td>%s</td>' % server.ip)
+            self.response.out.write('               <td>%s</td>' % server.group)
+            self.response.out.write('               <td>%i</td>' % server.clients)
+            self.response.out.write('               <td>%i b/s</td>' % server.bitrate)
+            self.response.out.write('               <td>%.2f MB/s</td>' % (server.bitrate/1e6))
+            self.response.out.write('               <td>%s</td>' % server.lastseen)
+            self.response.out.write('           </tr>')
+        self.response.out.write('       </table>')
+        self.response.out.write('   </body>')
+        self.response.out.write('</html>')
 
 
 class IPHandler(webapp.RequestHandler):
