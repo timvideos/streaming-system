@@ -33,7 +33,11 @@ vim: set ts=2 sw=2 et sts=2 ai:
     <tr>
 {% for group in groups %}
       <td class="title">
-        <div class="container_3"><h1><a href="/{{group}}">{{group}}</a></h1></div>
+        <div class="container_3">
+          <h1>
+            <a href="/{{group}}">{{group}}<span class="title_click">- Click to view live stream!</span></a>
+          </h1>
+        </div>
       </td>
 {% endfor %}
     </tr><tr>
@@ -147,14 +151,15 @@ $('#sponsor-1').hover(
    $('#sponsor-1-info').stop(true, true).slideUp();
   });
 
-function resize() {
+function resize_twitter() {
  $("#twitter-juitter").height(5);
- $("#twitter-juitter").height($("#twitter-cell").innerHeight()-30);
+ $("#twitter-juitter").height($("#twitter-cell").innerHeight()-5);
 }
-$.Juitter.onUpdate = resize;
-$(window).resize(resize);
+$.Juitter.onUpdate = resize_twitter;
+$(window).resize(resize_twitter);
 
 $(document).ready(function() {
+  resize_twitter();
   $.Juitter.start({
     live:"live-5",
     total: 20,
@@ -169,6 +174,7 @@ function schedule_callback() {
 {% for group in groups %}
   update_schedule($('#{{group|escapejs}}_title'), $('#{{group|escapejs}}_desc'), '{{group|escapejs}}');
 {% endfor %}
+  resize_twitter();
   setTimeout(schedule_callback, 60e3);
 }
 

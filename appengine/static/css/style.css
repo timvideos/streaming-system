@@ -96,7 +96,7 @@ img {
   background-color: #3d91d6;
 }
 
-h1 {
+.title h1 {
   padding: 0;
   margin: 0;
   margin-left: auto;
@@ -104,8 +104,15 @@ h1 {
   text-align: center;
 }
 
-h1 a {
+.title h1 a {
   text-decoration: none;
+}
+.title .title_click {
+  padding: 0;
+  margin: 0;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 12px;
 }
 
 .talk_title {
