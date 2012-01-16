@@ -61,10 +61,11 @@ class Register(common.AdminCommand):
 
         self.register_url = options.register_url
         self.ip = options.ip
+
         if not self.ip:
             while True:
                 try:
-                    self.ip = urllib2.urlopen('http://whatismyip.org').read().strip()
+                    self.ip = urllib2.urlopen("http://view.streamti.me/ip").read().strip()
                     break
                 except urllib2.URLError:
                     continue

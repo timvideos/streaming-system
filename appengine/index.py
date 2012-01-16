@@ -206,6 +206,18 @@ class StatsHandler(webapp.RequestHandler):
                 server.ip, server.group, server.clients, server.bitrate, server.lastseen))
 
 
+class IPHandler(webapp.RequestHandler):
+    """Print out the callers IP."""
+
+    def get(self):
+        self.response.headers['Content-Type'] = 'text/plain'
+        # Make sure this page isn't cached
+        self.response.headers['Pragma'] = 'no-cache'
+        self.response.headers['Cache-Control'] = 'no-cache'
+        self.response.headers['Expires'] = '-1'
+        self.response.out.write(self.request.remote_addr)
+
+
 class ScheduleProxy(webapp.RequestHandler):
 
     def get(self):
