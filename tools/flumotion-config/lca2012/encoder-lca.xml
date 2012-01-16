@@ -389,7 +389,7 @@ lca:Nk5neMA3Yq1Lo
       <property name="mount-point">/webcast-high.webm</property>
       <property name="burst-on-connect">True</property>
       <property name="port">8080</property>
-      <property name="bandwidth-limit">10000000</property>
+      <property name="bandwidth-limit">100000000</property> <!-- 100Mbit/s -->
       <property name="type">slave</property>
       <property name="client-limit">100</property>
       <property name="porter-socket-path">flu-8080.socket</property>
@@ -411,7 +411,7 @@ lca:Nk5neMA3Yq1Lo
       <property name="mount-point">/webcast-low.webm</property>
       <property name="burst-on-connect">True</property>
       <property name="port">8080</property>
-      <property name="bandwidth-limit">10000000</property>
+      <property name="bandwidth-limit">100000000</property> <!-- 100Mbit/s -->
       <property name="type">slave</property>
       <property name="client-limit">100</property>
       <property name="porter-socket-path">flu-8080.socket</property>
@@ -435,7 +435,7 @@ lca:Nk5neMA3Yq1Lo
       <property name="mount-point">/audio-only.ogg</property>
       <property name="burst-on-connect">True</property>
       <property name="port">8080</property>
-      <property name="bandwidth-limit">10000000</property>
+      <property name="bandwidth-limit">100000000</property> <!-- 100Mbit/s -->
       <property name="type">slave</property>
       <property name="client-limit">100</property>
       <property name="porter-socket-path">flu-8080.socket</property>
@@ -459,7 +459,7 @@ lca:Nk5neMA3Yq1Lo
       <property name="mount-point">/webcast-high.flv</property>
       <property name="burst-on-connect">True</property>
       <property name="port">8080</property>
-      <property name="bandwidth-limit">10000000</property>
+      <property name="bandwidth-limit">100000000</property> <!-- 100Mbit/s -->
       <property name="type">slave</property>
       <property name="client-limit">100</property>
       <property name="porter-socket-path">flu-8080.socket</property>
@@ -481,7 +481,7 @@ lca:Nk5neMA3Yq1Lo
       <property name="mount-point">/webcast-low.flv</property>
       <property name="burst-on-connect">True</property>
       <property name="port">8080</property>
-      <property name="bandwidth-limit">10000000</property>
+      <property name="bandwidth-limit">100000000</property> <!-- 100Mbit/s -->
       <property name="type">slave</property>
       <property name="client-limit">100</property>
       <property name="porter-socket-path">flu-8080.socket</property>
@@ -505,7 +505,7 @@ lca:Nk5neMA3Yq1Lo
       <property name="mount-point">/audio-only.aac</property>
       <property name="burst-on-connect">True</property>
       <property name="port">8080</property>
-      <property name="bandwidth-limit">10000000</property>
+      <property name="bandwidth-limit">100000000</property> <!-- 100Mbit/s -->
       <property name="type">slave</property>
       <property name="client-limit">100</property>
       <property name="porter-socket-path">flu-8080.socket</property>
@@ -529,7 +529,7 @@ lca:Nk5neMA3Yq1Lo
       <property name="mount-point">/audio-only.mp3</property>
       <property name="burst-on-connect">True</property>
       <property name="port">8080</property>
-      <property name="bandwidth-limit">10000000</property>
+      <property name="bandwidth-limit">100000000</property> <!-- 100Mbit/s -->
       <property name="type">slave</property>
       <property name="client-limit">100</property>
       <property name="porter-socket-path">flu-8080.socket</property>
