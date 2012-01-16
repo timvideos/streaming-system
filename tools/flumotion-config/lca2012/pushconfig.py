@@ -23,21 +23,27 @@ f.write(file('worker.xml').read() % locals())
 f.close()
 
 for room in rooms:
-	# Upload the encoder config
-	encoder_file = '/tmp/encoder-lca-%s.xml' % room
-	f = file(encoder_file, 'w')
-	f.write(file('encoder-lca.xml').read() % locals())
-	f.close()
+    print room
+    print "-"*80
+    # Upload the encoder config
+    encoder_file = '/tmp/encoder-lca-%s.xml' % room
+    f = file(encoder_file, 'w')
+    f.write(file('encoder-lca.xml').read() % locals())
+    f.close()
 
-	#subprocess.call("scp %s %s:/usr/local/etc/flumotion/managers/default/planet.xml" % (encoder_file, room))
-	#subprocess.call("scp %s %s:/usr/local/etc/flumotion/workers/default.xml" % (worker_file, room))
+    print "Encoder"
+    subprocess.call("scp %s %s:/usr/local/etc/flumotion/managers/default/planet.xml" % (encoder_file, room), shell=True)
+    subprocess.call("scp %s %s:/usr/local/etc/flumotion/workers/default.xml" % (worker_file, room), shell=True)
 
-	# Upload the collector config
-	collector_file = '/tmp/collector-lca-%s.xml' % room
-	config = file('collector-lca.xml').read() % locals()
-	f = file(collector_file, 'w')
-	f.write(config)
-	f.close()
+    # Upload the collector config
+    collector_file = '/tmp/collector-lca-%s.xml' % room
+    config = file('collector-lca.xml').read() % locals()
+    f = file(collector_file, 'w')
+    f.write(config)
+    f.close()
 
-	#subprocess.call("scp %s root@%s.front.lca:/usr/local/etc/flumotion/managers/default/planet.xml" % (encoder_file, room))
-	#subprocess.call("scp %s root@%s.front.lca:/usr/local/etc/flumotion/workers/default.xml" % (worker_file, room))
+    print "Collector"
+    subprocess.call("scp %s root@front.%s.lca:/usr/local/etc/flumotion/managers/default/planet.xml" % (collector_file, room), shell=True)
+    subprocess.call("scp %s root@front.%s.lca:/usr/local/etc/flumotion/workers/default.xml" % (worker_file, room), shell=True)
+    print "-"*80
+    print

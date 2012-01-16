@@ -31,7 +31,6 @@ lca:Nk5neMA3Yq1Lo
       <property name="username">phqCIZdJkjnx</property>
       <property name="socket-path">flu-8081.socket</property>
       <property name="password">ffDtYpfsEvOK</property>
-      <property name="interface">127.0.0.1</property>
       <property name="port">8081</property>
     </component>
     
@@ -43,8 +42,8 @@ lca:Nk5neMA3Yq1Lo
                project="flumotion"
                type="fgdp-producer"
                worker="localhost">
-      <property name="username">lca</property>
-      <property name="password"></property>
+      <property name="username">%(user)s</property>
+      <property name="password">%(password)s</property>
       <property name="host">0.0.0.0</property>
       <property name="port">15000</property>
     </component>
@@ -56,11 +55,6 @@ lca:Nk5neMA3Yq1Lo
                version="0.9.0.1">
       <eater name="default"><feed>producer-src</feed></eater>
       <clock-master>false</clock-master>
-      <property name="is-square">True</property>
-      <property name="framerate">25/1</property>
-      <property name="height">576</property>
-      <property name="width">768</property>
-      <property name="samplerate">192000</property>
     </component>
 
     <!-- Scale the video -->
@@ -84,7 +78,7 @@ lca:Nk5neMA3Yq1Lo
     <!-- ============================================================= -->
 
     <component name="encoder-video-loop"
-               type="x264-encoder"
+               type="pipeline-converter"
                label="encoder-video-loop"
                worker="localhost"
                project="flumotion"
@@ -92,9 +86,7 @@ lca:Nk5neMA3Yq1Lo
       <eater name="default">
         <feed alias="default">producer-decoder:video</feed>
       </eater>
-      <property name="keyframe-maxdistance">25</property>
-      <property name="bitrate">2200000</property>
-      <clock-master>false</clock-master>
+      <property name="pipeline">ffmpegcolorspace ! ffenc_flv bitrate=2000000</property>
     </component>
     <component name="encoder-audio-loop"
                type="faac-encoder"

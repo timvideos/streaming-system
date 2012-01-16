@@ -53,7 +53,7 @@
       <eater name="default">
         <feed alias="default">producer-audio-video:video</feed>
       </eater>
-      <property name="pipeline">ffmpegcolorspace ! ffenc_flv bitrate=200000</property>
+      <property name="pipeline">ffmpegcolorspace ! ffenc_flv bitrate=2000000</property>
     </component>
     
     <component name="encoder-audio"
