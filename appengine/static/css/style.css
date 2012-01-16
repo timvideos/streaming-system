@@ -129,13 +129,26 @@ img {
   margin: 0;
 }
 
-#sponsor-cell img {
+#sponsor-cell #sponsor-1 img {
   padding: 5px;
   height: 80px;
   display: block;
   float: left;
   margin-right: 10px;
   margin-left: 10px;
+}
+
+#sponsor-cell #sponsor-2 {
+  display: none;
+}
+
+#sponsor-cell #sponsor-2 img {
+  position: relative;
+  top: -10px;
+  height: 90px;
+  display: block;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 #sponsor-cell p {
@@ -151,7 +164,19 @@ img {
   height: auto;
 }
 
-#sponsor-front img {
+#sponsor-front #sponsor-1 img {
+  padding: 10px;
+  width: 150px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#sponsor-front #sponsor-1-info {
+  display: none;
+}
+
+#sponsor-front #sponsor-2 img {
   padding: 10px;
   width: 235px;
   display: block;

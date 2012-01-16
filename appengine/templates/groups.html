@@ -64,15 +64,23 @@ vim: set ts=2 sw=2 et sts=2 ai:
           <tr>
             <td style="width: 240px; vertical-align: top;">
               <div id="sponsor-front" class="container_3">
+               <div class='talk_info'>Streaming Sponsors</div>        
+               <div id="sponsor-1">
                 <a href="http://www.orionvm.com.au/"><img src="/static/img/orionvm.png"></a>
-                <p>
-                  OrionVM provides the world’s fastest cloud platform, specializing in
-                  Linux.
-                </p><p>
-                  To see the platform in action <a href="https://panel.orionvm.com.au/signup/">sign up</a>
-                  and mention linux.conf.au for $50 free credit.
-                </p>
+                <div id="sponsor-1-info">
+                  <p>
+                    OrionVM provides the world’s fastest cloud platform, specializing in
+                    Linux.
+                  </p><p>
+                    To see the platform in action <a href="https://panel.orionvm.com.au/signup/">sign up</a>
+                    and mention linux.conf.au for $50 free credit.
+                  </p>
                 </div>
+               </div>
+               <div id="sponsor-2">
+                <a href="http://www.aarnet.edu.au/"><img src="/static/img/aarnet.gif" alt="Australia's Academic and Research Network"></a>
+               </div>
+              </div>
             </td>
             <td id="twitter-cell" style="height: auto;">
               <div id="twitter-container" class="container_3" style="">
@@ -87,7 +95,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
         </table>
       </td>
     </tr><tr>
-      <td id="footer" colspan=2>
+      <td id="footer" colspan={{groups|length}}>
         <span id="footer-container" class="container_3">
 {% include "footer.html" %}
         </span>
@@ -95,6 +103,14 @@ vim: set ts=2 sw=2 et sts=2 ai:
     </tr>
   </table>
 <script type="text/javascript">
+
+$('#sponsor-1').hover(
+  function() {
+   $('#sponsor-1-info').stop(true, true).slideDown();
+  }, 
+  function() {
+   $('#sponsor-1-info').stop(true, true).slideUp();
+  });
 
 function resize() {
  $("#twitter-juitter").height(5);
