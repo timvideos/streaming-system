@@ -31,7 +31,7 @@ function current_session(group) {
         continue;
       }
 
-    var start = Date.parse(talk['Start'] += " GMT") + 39600000;
+    var start = Date.parse(talk['Start'] += " GMT") - 39600000;
     var duration_bits = talk['Duration'].split(':');
     var duration = parseInt(duration_bits[0])*60*60 + parseInt(duration_bits[1])*60 + parseInt(duration_bits[2]);
     var end = start + duration*1e3;
