@@ -32,13 +32,13 @@ vim: set ts=2 sw=2 et sts=2 ai:
   <table id="body-table">
     <tr>
 {% for group in groups %}
-      <td height=1>
-        <div class="container_3"><h1>{{group}}</h1></div>
+      <td class="title">
+        <div class="container_3"><h1><a href="/{{group}}">{{group}}</a></h1></div>
       </td>
 {% endfor %}
     </tr><tr>
 {% for group in groups %}
-      <td id="title">
+      <td>
         <div id="showing" class="container_4">
           <div id='{{group}}_info' class='talk_info' onclick='$(".talk_desc").fadeToggle();'>(More info)</div>
           <div id='{{group}}_title' class='talk_title'></div>
@@ -49,13 +49,17 @@ vim: set ts=2 sw=2 et sts=2 ai:
     </tr><tr>
 {% for group in groups %}
       <td>
-        <div class="container_2"><img src="http://49.156.17.92/{{group}}/latest.jpg" style="width: 200px; height: 200px";></div>
+        <div class="container_2" onClick="window.location='/{{group}}'">
+          <img src="http://49.156.17.92/{{group}}/latest.jpg" style="width: 200px; height: 200px";>
+        </div>
       </td>
 {% endfor %}
     </tr><tr>
 {% for group in groups %}
       <td>
-        <div class="container_3"><iframe class="chat-preview" src="http://extra.streamti.me/~irc/frameit.php?channel=%23lca2012-{{group}}"></iframe>
+        <div class="container_3" onClick="window.location='/{{group}}'">
+          <iframe class="chat-preview" src="http://extra.streamti.me/~irc/frameit.php?channel=%23lca2012-{{group}}"></iframe>
+        </div>
       </td>
 {% endfor %}
     </tr><tr>

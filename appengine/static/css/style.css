@@ -96,8 +96,16 @@ img {
   background-color: #3d91d6;
 }
 
-#title {
- height: 1%;
+h1 {
+  padding: 0;
+  margin: 0;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+h1 a {
+  text-decoration: none;
 }
 
 .talk_title {
