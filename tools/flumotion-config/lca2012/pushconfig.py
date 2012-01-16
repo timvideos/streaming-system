@@ -23,6 +23,8 @@ f.write(file('worker.xml').read() % locals())
 f.close()
 
 for room in rooms:
+    justintv = config.get('justintv', room)
+
     print room
     print "-"*80
     # Upload the encoder config
@@ -37,9 +39,8 @@ for room in rooms:
 
     # Upload the collector config
     collector_file = '/tmp/collector-lca-%s.xml' % room
-    config = file('collector-lca.xml').read() % locals()
     f = file(collector_file, 'w')
-    f.write(config)
+    f.write(file('collector-lca.xml').read() % locals())
     f.close()
 
     print "Collector"

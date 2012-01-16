@@ -114,6 +114,19 @@ lca:Nk5neMA3Yq1Lo
       <clock-master>false</clock-master>
     </component>
 
+    <component name="justintv"
+               type="pipeline-converter"
+               label="justintv"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">muxer-loop:default</feed>
+      </eater>
+      <clock-master>false</clock-master>
+      <property name="pipeline">tee name=t ! rtmpsink location=rtmp://live.justin.tv/app/%(justintv)s t.</property>
+    </component>
+
     <component name="http-loop"
                type="http-streamer"
                label="http-loop"
