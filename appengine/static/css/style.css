@@ -32,12 +32,12 @@ iframe {
   padding: 0;
 }
 
-.chat-preview {
-  overflow: hidden;
-}
-
 img {
   border: none;
+}
+
+.chat-preview {
+  overflow: hidden;
 }
 
 #body-table {
@@ -124,6 +124,19 @@ h1 a {
 .talk_desc {
   width: 100%;
   display: none;
+}
+
+img.video_preview {
+  width: 300px;
+  height: 217px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+img.video_preload {
+  width: 1px;
+  height: 1px;
 }
 
 #sponsor-cell {

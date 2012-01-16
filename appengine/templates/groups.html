@@ -48,9 +48,9 @@ vim: set ts=2 sw=2 et sts=2 ai:
 {% endfor %}
     </tr><tr>
 {% for group in groups %}
-      <td>
+      <td class="preview">
         <div class="container_2" onClick="window.location='/{{group}}'">
-          <img src="http://49.156.17.92/{{group}}/latest.jpg" style="width: 200px; height: 200px";>
+          <img id="video-preview-{{group}}" class="video_preview">
         </div>
       </td>
 {% endfor %}
@@ -58,7 +58,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
 {% for group in groups %}
       <td>
         <div class="container_3" onClick="window.location='/{{group}}'">
-          <iframe class="chat-preview" src="http://extra.streamti.me/~irc/frameit.php?channel=%23lca2012-{{group}}"></iframe>
+          <iframe id="chat-preview-{{group}}" class="chat_preview"></iframe>
         </div>
       </td>
 {% endfor %}
@@ -106,7 +106,38 @@ vim: set ts=2 sw=2 et sts=2 ai:
       </td>
     </tr>
   </table>
+  <div id=preload>
+{% for group in groups %}
+  <img id="video-preload-{{group}}" class="video_preload">
+{% endfor %}
+ 
+  </div>
 <script type="text/javascript">
+
+// Swap the preloaded video image into the main image
+{% for group in groups %}
+$('#video-preload-{{group|escapejs}}').load(function() {
+  $('#video-preview-{{group|escapejs}}').attr('src', $(this).attr('src'));
+  setTimeout(update_video, 5000);
+});
+{% endfor %}
+function update_video() {
+{% for group in groups %}
+ $('#video-preload-{{group|escapejs}}').attr(
+  'src', "http://extra.streamti.me/~irc/%23lca2012-{{group|urlencode}}/latest.png?time="+current_time()
+  );
+{% endfor %}
+}
+
+function update_chat() {
+{% for group in groups %}
+ $('#chat-preview-{{group|escapejs}}').attr(
+  'src', "http://extra.streamti.me/~irc/frameit.php?channel=%23lca2012-{{group|urlencode}}&time="+current_time()
+  );
+{% endfor %}
+  setTimeout(update_chat, 20000);
+}
+
 
 $('#sponsor-1').hover(
   function() {
@@ -130,6 +161,8 @@ $(document).ready(function() {
     searchType: "searchWord",
     searchObject: "{{ hashtag|urlencode }}",
     });
+  update_video();
+  update_chat();
 });
 
 function schedule_callback() {
