@@ -169,7 +169,7 @@ class RegisterHandler(webapp.RequestHandler):
 
 
 class GroupsTemplate(webapp.RequestHandler):
-    def get(self):
+    def get(self, template="groups"):
         # Get the currently active groups
         ten_mins_ago = datetime.datetime.now() - datetime.timedelta(minutes=10)
         groups = set()
@@ -183,15 +183,25 @@ class GroupsTemplate(webapp.RequestHandler):
         hashtag = " OR ".join(twitter)
 
         self.response.headers['Content-Type'] = 'text/html'
-        self.response.out.write(r('templates/groups.html', locals()))
-
+        self.response.out.write(r('templates/%s.html' % template, locals()))
 
 
 class StatsHandler(webapp.RequestHandler):
     """Print out some stats about registered encoders."""
 
     def get(self):
-        servers = sorted(models.Encoder.all(), cmp=lambda a, b: cmp((a.group, a.bitrate), (b.group, b.bitrate)))
+        inactive_servers = []
+        active_servers = []
+
+        ten_mins_ago = datetime.datetime.now() - datetime.timedelta(minutes=10)
+        for server in models.Encoder.all():
+            if server.lastseen < ten_mins_ago:
+                inactive_servers.append(server)
+            else:
+                active_servers.append(server)
+
+        active_servers = sorted(active_servers, cmp=lambda a, b: cmp((a.group, a.bitrate), (b.group, b.bitrate)))
+        inactive_servers = sorted(inactive_servers, cmp=lambda a, b: cmp((a.group, a.bitrate), (b.group, b.bitrate)))
 
         self.response.headers['Content-Type'] = 'text/html'
         # Make sure this page isn't cached
@@ -204,6 +214,14 @@ class StatsHandler(webapp.RequestHandler):
         self.response.out.write('       <link rel="stylesheet" type="text/css" href="/static/css/stats.css">')
         self.response.out.write('   </head>')
         self.response.out.write('   <body>')
+        self.response.out.write('      <h1>Active Servers</h1>')
+        self.table(active_servers)
+        self.response.out.write('      <h1>Non-Active Servers</h1>')
+        self.table(inactive_servers)
+        self.response.out.write('   </body>')
+        self.response.out.write('</html>')
+
+    def table(self, servers):
         self.response.out.write('       <table>')
         self.response.out.write('           <tr>')
         self.response.out.write('               <th>ip</th>')
@@ -223,8 +241,6 @@ class StatsHandler(webapp.RequestHandler):
             self.response.out.write('               <td>%s</td>' % server.lastseen)
             self.response.out.write('           </tr>')
         self.response.out.write('       </table>')
-        self.response.out.write('   </body>')
-        self.response.out.write('</html>')
 
 
 class IPHandler(webapp.RequestHandler):
