@@ -81,13 +81,6 @@ function jwplayer_modes(format, quality) {
   if (format == 'auto') {
     var modes = [];
 
-    var flash_modes = jwplayer_modes('flash', quality);
-    for (i in flash_modes) {
-      if (flash_modes[i].type == 'download') {
-        continue;
-      }
-      modes.push(flash_modes[i]);
-    }
     var html5_modes = jwplayer_modes('html5', quality);
     for (i in html5_modes) {
       if (html5_modes[i].type == 'download') {
@@ -95,6 +88,13 @@ function jwplayer_modes(format, quality) {
         continue;
       }
       modes.push(html5_modes[i]);
+    }
+    var flash_modes = jwplayer_modes('flash', quality);
+    for (i in flash_modes) {
+      if (flash_modes[i].type == 'download') {
+        continue;
+      }
+      modes.push(flash_modes[i]);
     }
   } else {
     var stream = jwplayer_streams(format);
