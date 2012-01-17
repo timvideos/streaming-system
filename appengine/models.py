@@ -13,10 +13,10 @@ from google.appengine.ext import db
 class Encoder(db.Model):
     """Amazon EC2 instance which does encoding."""
     group = db.StringProperty(required=True)
-    ip = db.StringProperty(required=True)
-    bitrate = db.IntegerProperty(default=0)
-    clients = db.IntegerProperty(default=0)
-    lastseen = db.DateTimeProperty(auto_now=True, required=True)
+    ip = db.StringProperty(required=True, indexed=False)
+    bitrate = db.IntegerProperty(default=0, indexed=False)
+    clients = db.IntegerProperty(default=0, indexed=False)
+    lastseen = db.DateTimeProperty(auto_now=True, required=True, indexed=False)
 
 
 class Collector(db.Model):
