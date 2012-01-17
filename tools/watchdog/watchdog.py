@@ -30,6 +30,7 @@ class WatchDog(common.AdminCommand):
     def eb(self, e):
         print "error", e
         self.getRootCommand().loginDeferred.unpause()
+        reactor.callLater(0, reactor.stop)
 
     def handleOptions(self, options):
         self.getRootCommand().loginDeferred.addCallback(self._callback)
