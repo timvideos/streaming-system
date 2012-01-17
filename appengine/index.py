@@ -61,6 +61,8 @@ class StaticTemplate(webapp.RequestHandler):
             group = 'caro'
         channel = channels[group]
 
+        justintv = channel.replace("-", "_")
+
         template = self.request.get('template', '')
         if not re.match('[a-z]+', template):
             template = 'index'
