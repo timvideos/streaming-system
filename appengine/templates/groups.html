@@ -136,7 +136,7 @@ function update_video() {
 function update_chat() {
 {% for group in groups %}
  $('#chat-preview-{{group|escapejs}}').attr(
-  'src', "http://extra.streamti.me/~irc/frameit.php?channel=%23lca2012-{{group|urlencode}}&time="+current_time()
+  'src', "http://extra.streamti.me/~irc/frameit-ng.php?channel=%23lca2012-{{group|urlencode}}&time="+current_time()
   );
 {% endfor %}
   setTimeout(update_chat, 20000);
