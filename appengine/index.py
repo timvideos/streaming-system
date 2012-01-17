@@ -102,7 +102,6 @@ class StreamsTemplate(webapp.RequestHandler):
 
         active_servers = []
         for server in q:
-            print server, server.lastseen, ten_mins_ago
             if server.lastseen < ten_mins_ago:
                 continue
             active_servers.append(server)
@@ -120,8 +119,6 @@ class StreamsTemplate(webapp.RequestHandler):
         self.response.headers['Cache-Control'] = 'no-cache'
         self.response.headers['Expires'] = '-1'
 
-        current_time = time.time()*1e3
-
         self.response.out.write(r('templates/streams.js', locals()))
 
 
@@ -135,8 +132,7 @@ class WhatsOnTemplate(webapp.RequestHandler):
         self.response.headers['Cache-Control'] = 'no-cache'
         self.response.headers['Expires'] = '-1'
 
-        current_time = time.time()*1e3
-
+        current_time = int(time.time())
         self.response.out.write(r('templates/whats_on.js', locals()))
 
 

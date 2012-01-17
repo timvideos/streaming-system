@@ -2,7 +2,7 @@
 // vim: set ts=2 sw=2 et sts=2 ai:
 
 var time_local = Date.now();
-var time_server = {{current_time}};
+var time_server = {{current_time}}*1000;
 function current_time() {
   return Date.now() - (time_local-time_server);
 }
