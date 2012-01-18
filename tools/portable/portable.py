@@ -169,6 +169,7 @@ class VideoPage(SetUpPage):
             if self.player is not None:
                 if (gst.STATE_CHANGE_SUCCESS, gst.STATE_PLAYING) == self.player.get_state(timeout=1)[:-1] or FAKE:
                     self.assistant.set_page_complete(self.page, True)
+                    self.focus_forward()
                     return True
 
             self.assistant.set_page_complete(self.page, False)
@@ -309,6 +310,8 @@ class AudioPage(SetUpPage):
                 if self.volume_monitor.state is not None:
                     return
                 self.volume_monitor.setUIState(firewire_uistate)
+                self.assistant.set_page_complete(self.page, True)
+                self.focus_forward()
 
             d = self.flumotion.medium.componentCallRemote(component, 'getUIState')
             d.addCallback(component_callback)
