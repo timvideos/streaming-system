@@ -176,7 +176,7 @@ function quality_set(value) {
       format = player_jwobject.renderingMode;
     }
     if (format)
-      player_jwobject.load(jwplayer_levels(format, value));
+      player_jwobject.load({{group}}_jwplayer_levels(format, value));
   }
   var option = $('input[name=quality][type=radio][value='+value+']');
   option.attr('checked', true);
@@ -241,7 +241,7 @@ function format_set(value) {
         }
       },
       skin: '/static/third_party/jwplayer/skin/glow.zip',
-      modes: jwplayer_modes(value, 'auto')
+      modes: {{group}}_jwplayer_modes(value, 'auto')
     };
     player_jwobject = jwplayer("player").setup(jwsettings);
     fit_player();

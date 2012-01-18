@@ -1,0 +1,109 @@
+{% comment %}
+-*- coding: utf-8 -*-
+vim: set ts=2 sw=2 et sts=2 ai:
+{% endcomment %}
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/third_party/jquery-extra/jquery.juitter-1.0.0.js"></script>
+{% for group in groups %}
+    <script type="text/javascript" src="/{{group}}/streams.js"></script>
+{% endfor %}
+    <script type="text/javascript" src="/static/third_party/jwplayer/jwplayer.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/tweet.css">
+    <link rel="stylesheet" type="text/css" href="/static/third_party/jquery-extra/jquery.juitter-1.0.0.css">
+    <title>Stream Time for Linux.conf.au!</title>
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-23123757-1']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+  </head>
+<body>
+  <table id="body-table">
+    <tr>
+{% for group in groups %}
+      <td class="container_1" style="height: 1em;">
+        <h1>{{group}}</h1>
+      </td>
+{% endfor %}
+    </tr><tr>
+{% for group in groups %}
+      <td class="container_2" style="height: 300px;">
+        <div id="{{group}}">
+        </div>
+      </td>
+{% endfor %}
+    </tr><tr>
+      <td id="twitter-cell" style="height: auto;" colspan={{groups|length}}>
+        <div id="twitter-container" class="container_3" style="">
+          <div id="twitter-sizer" class="sizer">
+            <div id="twitter-juitter">
+              <div id="juitterContainer"></div>
+            </div>
+          </div>
+        </div>
+      </td>
+    </tr><tr>
+      <td id="footer" colspan={{groups|length}}>
+        <span id="footer-container" class="container_3">
+{% include "footer.html" %}
+        </span>
+      </td>
+    </tr>
+  </table>
+  </div>
+<script type="text/javascript">
+
+function fit_player (group) {
+  if (player_jwobject) {
+  }
+}
+
+function jwplayers() {
+{% for group in groups %}
+    var jwsettings = {
+      autostart: true,
+      skin: '/static/third_party/jwplayer/skin/glow.zip',
+      modes: {{group}}_jwplayer_modes('html5', 'sd')
+    };
+    {{group}}_player_jwobject = jwplayer('{{group}}').setup(jwsettings);
+    {{group}}_player_jwobject.onReady(function() {
+      var player_sizer = $("#{{group}}");
+      {{group}}_player_jwobject.resize(player_sizer.width()-20, player_sizer.height()-20);
+    });
+{% endfor %}
+}
+
+function resize_twitter() {
+ $("#twitter-juitter").height(5);
+ $("#twitter-juitter").height($("#twitter-cell").innerHeight()-5);
+}
+$.Juitter.onUpdate = resize_twitter;
+
+function ready() {
+  $.Juitter.start({
+    live:"live-5",
+    total: 20,
+    searchType: "searchWord",
+    searchObject: encodeURIComponent("#lca2012 AND (stream OR streaming)"),
+    });
+  jwplayers();
+}
+$(document).ready(ready);
+
+    </script>
+</body>
+</html>

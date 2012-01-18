@@ -2,58 +2,58 @@
 // vim: set ts=2 sw=2 et sts=2 ai:
 
 // Server which is doing the streaming
-var streamer='http://{{server|escapejs}}:8080/';
+var {{group}}_streamer='http://{{server|escapejs}}:8080/';
 
-var html5_streams = {
+var {{group}}_html5_streams = {
   'modes': ['html5'],
   'hd': [
-    { 'file': streamer+'webcast-high.webm' },
+    { 'file': {{group}}_streamer+'webcast-high.webm' },
   ],
   'sd': [
-    { 'file': streamer+'webcast-low.webm' },
+    { 'file': {{group}}_streamer+'webcast-low.webm' },
   ],
-  'download': streamer+'webcast-low.webm'
+  'download': {{group}}_streamer+'webcast-low.webm'
 };
 
-var flash_streams = {
+var {{group}}_flash_streams = {
   'modes': ['flash'],
   'hd': [
-    { 'bitrate': 800, 'file': streamer+'webcast-high.flv', 'width': 720 }
+    { 'bitrate': 800, 'file': {{group}}_streamer+'webcast-high.flv', 'width': 720 }
   ],
   'sd': [
-    { 'bitrate': 300, 'file': streamer+'webcast-low.flv', 'width': 432 }
+    { 'bitrate': 300, 'file': {{group}}_streamer+'webcast-low.flv', 'width': 432 }
   ],
-  'download': streamer+'webcast-low.ogv',
+  'download': {{group}}_streamer+'webcast-low.ogv',
   'extra': {
     'src': '/static/third_party/jwplayer/player.swf'
   }
 };
 
-var audio_streams = {
+var {{group}}_audio_streams = {
   'modes': ['html5', 'flash'],
   'sd': [
-    { 'bitrate': 192, 'file': streamer+'audio-only.aac', 'width': 100 },
-    { 'bitrate': 128, 'file': streamer+'audio-only.ogg', 'width': 100 },
-    { 'bitrate': 48, 'file': streamer+'audio-only.mp3', 'width': 100 }
+    { 'bitrate': 192, 'file': {{group}}_streamer+'audio-only.aac', 'width': 100 },
+    { 'bitrate': 128, 'file': {{group}}_streamer+'audio-only.ogg', 'width': 100 },
+    { 'bitrate': 48, 'file': {{group}}_streamer+'audio-only.mp3', 'width': 100 }
   ],
-  'download': streamer+'audio-only.mp3',
+  'download': {{group}}_streamer+'audio-only.mp3',
   'extra': {
     'src': '/static/third_party/jwplayer/player.swf'
   }
 };
 
-function jwplayer_streams(format) {
+function {{group}}_jwplayer_streams(format) {
   if (format == 'html5') {
-    return html5_streams;
+    return {{group}}_html5_streams;
   } else if (format == 'flash') {
-    return flash_streams;
+    return {{group}}_flash_streams;
   } else if (format == 'audio') {
-    return audio_streams;
+    return {{group}}_audio_streams;
   }
 }
 
-function jwplayer_levels(format, quality) {
-  var stream = jwplayer_streams(format);
+function {{group}}_jwplayer_levels(format, quality) {
+  var stream = {{group}}_jwplayer_streams(format);
   var levels = [];
   if (quality == 'auto') {
     levels = $.extend(true, [], stream.sd);
@@ -74,14 +74,14 @@ function jwplayer_levels(format, quality) {
   return levels;
 }
 
-function jwplayer_modes(format, quality) {
+function {{group}}_jwplayer_modes(format, quality) {
   var modes = [];
   var download = '';
 
   if (format == 'auto') {
     var modes = [];
 
-    var html5_modes = jwplayer_modes('html5', quality);
+    var html5_modes = {{group}}_jwplayer_modes('html5', quality);
     for (i in html5_modes) {
       if (html5_modes[i].type == 'download') {
         download = html5_modes[i].download;
@@ -89,7 +89,7 @@ function jwplayer_modes(format, quality) {
       }
       modes.push(html5_modes[i]);
     }
-    var flash_modes = jwplayer_modes('flash', quality);
+    var flash_modes = {{group}}_jwplayer_modes('flash', quality);
     for (i in flash_modes) {
       if (flash_modes[i].type == 'download') {
         continue;
@@ -97,8 +97,8 @@ function jwplayer_modes(format, quality) {
       modes.push(flash_modes[i]);
     }
   } else {
-    var stream = jwplayer_streams(format);
-    var levels = jwplayer_levels(format, quality);
+    var stream = {{group}}_jwplayer_streams(format);
+    var levels = {{group}}_jwplayer_levels(format, quality);
 
     for (i in stream.modes) {
       var mode = {

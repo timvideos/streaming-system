@@ -21,6 +21,7 @@ application = webapp.WSGIApplication(
    ('/schedule.js', index.ScheduleProxy),
    ('/register', index.RegisterHandler),
    ('/stats', index.StatsHandler),
+   ('/(monitor)', index.GroupsTemplate),
    ('/ip', index.IPHandler),
    ('/(.+)', index.StaticTemplate),
    ('/', index.GroupsTemplate),
