@@ -35,54 +35,44 @@ class WatchDog(common.AdminCommand):
     def handleOptions(self, options):
         self.getRootCommand().loginDeferred.addCallback(self._callback)
 
-    def restart(self, component):
-        print component.get('name'), "- trying to stop"
-        def cb(error=None, self=self, component=component):
-            print component.get('name'), "- stopped!", ["Error", ""][error != None]
-            self.start(component)
-
-        d = self.getRootCommand().medium.callRemote(
-            'componentStop', component)
-        d.addCallback(cb)
-        d.addErrback(cb)
-
-    def start(self, component):
-        print component.get('name'), "- trying to start"
-        def cb(error=None, component=component):
-            print component.get('name'), "- started!", ["Error", ""][error != None]
-
-        d = self.getRootCommand().medium.callRemote(
-            'componentStart', component)
-        d.addCallback(cb)
-        d.addErrback(cb)
-
     def _callback(self, *args):
+        if not hasattr(self, 'dead'):
+            self.dead = {}
+
+        if sum(self.dead.values()) > 10:
+            print "Found to many inactive items:", self.dead
+            subprocess.call('/etc/init.d/flumotion restart', shell=True)
+            del self.dead
+
         self.getRootCommand().loginDeferred.pause()
         print
         print datetime.datetime.now()
+        print "Dead count:", self.dead
+
         d = self.getRootCommand().medium.callRemote('getPlanetState')
         def gotPlanetStateCb(planetState, self=self):
             for f in planetState.get('flows') + [planetState.get('atmosphere')]:
                 ds = []
                 for component in sorted(f.get('components'), cmp=lambda a, b: cmp(a.get('name'), b.get('name'))):
                     name = component.get('name')
+                    if name == "justintv":
+                        continue
+
                     mood = component.get('mood')
 
                     print "%30s %10s (%i)" % (
                         name, moods.get(mood).name, mood)
 
-                    if moods.get(mood) in (moods.sad, moods.sleeping):
-                        self.restart(component)
+                    if moods.get(mood) in (moods.sad,):
+                        self.dead[name] = 4 + self.dead.get(name, 0)
+                    if moods.get(mood) not in (moods.happy, moods.waking):
+                        self.dead[name] = 1 + self.dead.get(name, 0)
 
             reactor.callLater(1, self._callback)
 
         d.addCallback(gotPlanetStateCb)
         d.addErrback(self.eb)
         return d
-
-    def _connectedCb(self, result):
-        print 'Connected to manager.'
-        #self.loginDeferred.callback(result)
 
 
 class Command(main.Command):
