@@ -6,6 +6,7 @@
 """Simple pages."""
 
 # Python imports
+import ConfigParser
 import datetime
 import logging
 import os
@@ -21,41 +22,19 @@ from google.appengine.api import urlfetch
 import models
 from utils.render import render as r
 
-twitter = ['@linuxconfau', '#linux.conf.au', '#lca2012']
-
-channels = {
-    'caro': 'lca2012-caro',
-    'c001': 'lca2012-c001',
-    'studio': 'lca2012-studio',
-    't101': 'lca2012-t101',
-    'studio1': 'lca2012-studio1',
-    'studio2': 'lca2012-studio2',
-    'studio2': 'lca2012-studio2',
-    't102': 'lca2012-t102',
-}
+CONFIG = ConfigParser.ConfigParser()
+CONFIG.read(['config.ini'])
+GROUPS = CONFIG.get('config', 'groups').split()
 
 # IP Address which are considered "In Room"
-LOCALIPS = [
-    "^141\.132\.24",
-    "^141\.132\.25",
-    "^141\.132\.26",
-    "^141\.132\.27",
-    "^141\.132\.28",
-    "^141\.132\.29",
-    "^141\.132\.30",
-    "^141\.132\.31",
-    "^2405:4600:3004:3:",
-    "^2405:4600:3004:4:",
-]
-
-BACKUP_SERVER = ''
+LOCALIPS = [x[1] for x in CONFIG.items('localips')]
 
 
 def check_group(group):
     group = group.lower()
     if not re.match('[a-z/]+', group):
         group = None
-    if group not in channels:
+    if group not in GROUPS:
         group = None
     return group
 
@@ -69,8 +48,8 @@ class StaticTemplate(webapp.RequestHandler):
             self.redirect('/')
             return
 
-        channel = channels[group]
-        justintv = channel.replace("-", "_")
+        channel = CONFIG.get('groups', group)
+        justintv = CONFIG.get('justintv', group)
 
         template = self.request.get('template', '')
         if not re.match('[a-z]+', template):
@@ -87,7 +66,10 @@ class StaticTemplate(webapp.RequestHandler):
         else:
             screen = False
 
-        hashtag = " OR ".join(twitter)
+        try:
+            hashtag = CONFIG.get('twitter', group)
+        except ConfigParser.NoOptionError, e:
+            hashtag = CONFIG.get('twitter', 'default')
 
         self.response.headers['Content-Type'] = 'text/html'
         self.response.out.write(r('templates/%s.html' % template, locals()))
@@ -104,7 +86,7 @@ class StreamsTemplate(webapp.RequestHandler):
             self.out.write("window.src = '/';\n");
             return
 
-        channel = channels[group]
+        channel = CONFIG.get('groups', group)
 
         # Get all the active streaming severs for this channel
         ten_mins_ago = datetime.datetime.now() - datetime.timedelta(minutes=10)
@@ -119,7 +101,7 @@ class StreamsTemplate(webapp.RequestHandler):
 
         if not active_servers:
             # FIXME: Technical difficulties server....
-            self.out.write("window.src = '/';\n");
+            self.response.out.write("window.src = '/';\n");
             return
         else:
             # Choose the least loaded server
@@ -146,8 +128,6 @@ class WhatsOnTemplate(webapp.RequestHandler):
         self.response.out.write(r('templates/whats_on.js', locals()))
 
 
-SECRET='tellnoone'
-
 class RegisterHandler(webapp.RequestHandler):
     """Registers an encoding server into the application."""
 
@@ -155,12 +135,12 @@ class RegisterHandler(webapp.RequestHandler):
         self.response.headers['Content-Type'] = 'text/plain'
 
         secret = self.request.get('secret')
-        if secret != SECRET:
+        if secret != CONFIG.get('config', 'secret'):
             self.response.out.write('ERROR SECRET\n')
             return
 
         group = self.request.get('group')
-        if group not in channels:
+        if group not in GROUPS:
             self.response.out.write('ERROR GROUP\n')
             return
 
@@ -190,7 +170,7 @@ class GroupsTemplate(webapp.RequestHandler):
 
         global channels
 
-        hashtag = " OR ".join(twitter)
+        hashtag = CONFIG.get('twitter', 'default')
 
         self.response.headers['Content-Type'] = 'text/html'
         self.response.out.write(r('templates/%s.html' % template, locals()))
