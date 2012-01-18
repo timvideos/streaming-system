@@ -39,6 +39,12 @@ def check_group(group):
     return group
 
 
+def nocache(headers):
+    headers['Pragma'] = 'no-cache'
+    headers['Cache-Control'] = 'max-age=0, no-cache, no-store, private, must-revalidate'
+    headers['Expires'] = 'Wed, 11 Jan 1984 05:00:00 GMT'
+
+
 class StaticTemplate(webapp.RequestHandler):
     """Renders the HTML templates."""
 
@@ -80,6 +86,7 @@ class StreamsTemplate(webapp.RequestHandler):
 
     def get(self, group):
         self.response.headers['Content-Type'] = 'text/javascript'
+        nocache(self.response.headers)
 
         group = check_group(group)
         if not group:
@@ -108,9 +115,6 @@ class StreamsTemplate(webapp.RequestHandler):
             server = sorted(active_servers, cmp=lambda a, b: cmp(a.bitrate, b.bitrate))[0].ip
 
         # Make sure this page isn't cached, otherwise the server load balancing won't work.
-        self.response.headers['Pragma'] = 'no-cache'
-        self.response.headers['Cache-Control'] = 'no-cache'
-        self.response.headers['Expires'] = '-1'
         self.response.out.write(r('templates/streams.js', locals()))
 
 
@@ -119,10 +123,7 @@ class WhatsOnTemplate(webapp.RequestHandler):
 
     def get(self):
         self.response.headers['Content-Type'] = 'text/javascript'
-        # Make sure this page isn't cached, otherwise the server load balancing won't work.
-        self.response.headers['Pragma'] = 'no-cache'
-        self.response.headers['Cache-Control'] = 'no-cache'
-        self.response.headers['Expires'] = '-1'
+        nocache(self.response.headers)
 
         current_time = int(time.time())
         self.response.out.write(r('templates/whats_on.js', locals()))
@@ -133,6 +134,7 @@ class RegisterHandler(webapp.RequestHandler):
 
     def post(self):
         self.response.headers['Content-Type'] = 'text/plain'
+        nocache(self.response.headers)
 
         secret = self.request.get('secret')
         if secret != CONFIG.get('config', 'secret'):
@@ -194,10 +196,7 @@ class StatsHandler(webapp.RequestHandler):
         inactive_servers = sorted(inactive_servers, cmp=lambda a, b: cmp((a.group, a.bitrate), (b.group, b.bitrate)))
 
         self.response.headers['Content-Type'] = 'text/html'
-        # Make sure this page isn't cached
-        self.response.headers['Pragma'] = 'no-cache'
-        self.response.headers['Cache-Control'] = 'no-cache'
-        self.response.headers['Expires'] = '-1'
+        nocache(self.response.headers)
 
         self.response.out.write('<html>')
         self.response.out.write('   <head>')
@@ -238,21 +237,15 @@ class IPHandler(webapp.RequestHandler):
 
     def get(self):
         self.response.headers['Content-Type'] = 'text/plain'
-        # Make sure this page isn't cached
-        self.response.headers['Pragma'] = 'no-cache'
-        self.response.headers['Cache-Control'] = 'no-cache'
-        self.response.headers['Expires'] = '-1'
+        nocache(self.response.headers)
         self.response.out.write(self.request.remote_addr)
 
 
 class ScheduleProxy(webapp.RequestHandler):
+    """Get the json schedule from LCA and put it in our domain so we can AJAX it."""
 
     def get(self):
         self.response.headers['Content-Type'] = 'text/javascript'
-        # Make sure this page isn't cached, otherwise the server load balancing won't work.
-        #self.response.headers['Pragma'] = 'no-cache'
-        #self.response.headers['Cache-Control'] = 'no-cache'
-        #self.response.headers['Expires'] = '-1'
 
         schedule = memcache.get('schedule')
         if not schedule:
