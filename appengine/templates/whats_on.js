@@ -4,7 +4,7 @@
 var time_local = Date.now();
 var time_server = {{current_time}}*1000;
 function current_time() {
-  return Date.now() - (time_local-time_server);
+  return Date.now(); // - (time_local-time_server);
 }
 
 var schedule = [];
