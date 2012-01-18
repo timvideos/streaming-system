@@ -50,17 +50,26 @@ LOCALIPS = [
 
 BACKUP_SERVER = ''
 
+
+def check_group(group):
+    group = group.lower()
+    if not re.match('[a-z/]+', group):
+        group = None
+    if group not in channels:
+        group = None
+    return group
+
+
 class StaticTemplate(webapp.RequestHandler):
     """Renders the HTML templates."""
 
     def get(self, group):
-        # FIXME(mithro): This shouldn't be duplicated.
-        if not re.match('[a-z/]+', group):
-            group = 'caro'
-        if group not in channels:
-            group = 'caro'
-        channel = channels[group]
+        group = check_group(group)
+        if not group:
+            self.redirect('/')
+            return
 
+        channel = channels[group]
         justintv = channel.replace("-", "_")
 
         template = self.request.get('template', '')
@@ -88,11 +97,13 @@ class StreamsTemplate(webapp.RequestHandler):
     """Renders the streams.js file."""
 
     def get(self, group):
-        # FIXME(mithro): This shouldn't be duplicated.
-        if not re.match('[a-z/]+', group):
-            group = 'caro'
-        if group not in channels:
-            group = 'caro'
+        self.response.headers['Content-Type'] = 'text/javascript'
+
+        group = check_group(group)
+        if not group:
+            self.out.write("window.src = '/';\n");
+            return
+
         channel = channels[group]
 
         # Get all the active streaming severs for this channel
@@ -108,17 +119,16 @@ class StreamsTemplate(webapp.RequestHandler):
 
         if not active_servers:
             # FIXME: Technical difficulties server....
-            server = BACKUP_SERVER
+            self.out.write("window.src = '/';\n");
+            return
         else:
             # Choose the least loaded server
             server = sorted(active_servers, cmp=lambda a, b: cmp(a.bitrate, b.bitrate))[0].ip
 
-        self.response.headers['Content-Type'] = 'text/javascript'
         # Make sure this page isn't cached, otherwise the server load balancing won't work.
         self.response.headers['Pragma'] = 'no-cache'
         self.response.headers['Cache-Control'] = 'no-cache'
         self.response.headers['Expires'] = '-1'
-
         self.response.out.write(r('templates/streams.js', locals()))
 
 
