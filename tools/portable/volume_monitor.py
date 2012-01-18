@@ -50,6 +50,7 @@ class VolumeMonitor(object):
         self.wtree = gtk.glade.XML("volume_monitor.glade", "window1")
 
         self.window = self.wtree.get_widget('window1')
+        self.state = None
         self.uiStateHandlers = None
 
         self.widget = self.wtree.get_widget('volume-widget')

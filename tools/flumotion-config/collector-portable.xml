@@ -29,7 +29,7 @@
       <property name="height">0</property>
       <property name="width">655</property>
       <property name="decoder">ffdec_dvvideo</property>
-      <property name="guid">9025895499050107</property>
+      <property name="guid">%(firewire_guid)s</property>
       <clock-master>true</clock-master>
     </component>
 
@@ -45,7 +45,7 @@
       <property name="pipeline">
 videobox top=0 bottom=0 left=0 right=-199 border-alpha=0 !
 mix.sink_1
-v4l2src device=/dev/video1 !
+v4l2src device=%(camera_device)s !
 image/jpeg,width=640,height=480,framerate=(fraction)24/1 !
 jpegdec !
 videocrop left=80 right=80 top=0 bottom=0 !

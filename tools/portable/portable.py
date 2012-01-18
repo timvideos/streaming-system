@@ -3,6 +3,8 @@
 # -*- coding: utf-8 -*-
 # vim: set ts=4 sw=4 et sts=4 ai:
 
+import ConfigParser
+import subprocess
 import sys
 import threading
 
@@ -16,12 +18,22 @@ import gtk.glade
 
 from twisted.internet import error, defer, reactor
 from twisted.python import log as twistedlog
+        
+from flumotion.admin import admin
+from flumotion.common import log
+from flumotion.common import connection
+from flumotion.common import componentui
+from flumotion.common.planet import moods
+from flumotion.monitor.nagios import util
+from flumotion.twisted import pb
 
 import inhibitor
 import portable_platform
 
+CONFIG = ConfigParser.ConfigParser()
+CONFIG.read(['config.ini'])
 
-FAKE=True
+FAKE=CONFIG.getboolean('config', 'fake')
 
 
 class PortableXML(object):
@@ -219,12 +231,13 @@ class PresentationPage(VideoPage):
 
     # FIXME: Need to keep this in sync with producer-firewire in flumotion-config/collector-portable.xml
     video_pipeline = """\
-dv1394src !
+dv1394src guid=%s !
 queue leaky=2 max-size-time=1000000000 !
 dvdemux name=demux !
+dvdec !
 videoscale !
 autovideosink
-"""
+""" % CONFIG.get('firewire', 'guid')
     video_component = 'presentation-preview'
 
 
@@ -234,13 +247,13 @@ class CameraPage(VideoPage):
 
     # FIXME: Need to keep this in sync with composite-video the flumotion-config/collector-portable.xml
     video_pipeline = """\
-v4l2src device=/dev/video1 !
+v4l2src device=%s !
 image/jpeg,width=640,height=480,framerate=(fraction)24/1 !
 jpegdec !
 videocrop left=80 right=80 top=0 bottom=0 !
 videoscale !
 autovideosink
-"""
+""" % CONFIG.get('camera', 'device')
     video_component = 'camera-preview'
 
 
@@ -253,25 +266,58 @@ class AudioPage(SetUpPage):
         self.volume_monitor = None
 
     def on_show(self):
-        import volume_monitor
+        config = open('../flumotion-config/collector-portable.xml').read()
+        camera_device = CONFIG.get('camera', 'device')
+        firewire_guid = CONFIG.get('firewire', 'guid')
 
-        parent_widget = self.xml.get_object(self.box)
-        self.volume_monitor = volume_monitor.VolumeMonitor(self.flumotion.medium, self.flumotion.firewire, force_channels=1)
+        d = self.flumotion.medium.loadConfiguration(config % locals())
+        
+        def loaded(*args):
+            print "Full configuration loaded."
+            self.update()
 
-        volume_widget = self.volume_monitor.widget
-        old_parent = volume_widget.get_parent()
-        if old_parent:
-            old_parent.remove(volume_widget)
-        parent_widget.pack_start(volume_widget)
+        d.addCallback(loaded)
+        d.addErrback(twistedlog.err)
 
-        def callback(uistate, self=self):
-            print "callback", uistate
-            self.volume_monitor.setUIState(uistate)
+    def update(self, evt=None):
+        if self.timer is None:
+            return False
 
-        d = self.flumotion.medium.componentCallRemote(self.flumotion.firewire, 'getUIState')
-        d.addCallback(callback)
+        self.set_state()
+        return True
+
+    def set_state(self):
+        
+        def planet_callback(uistate, self=self):
+            component = util.findComponent(uistate, '/default/producer-firewire')
+
+            if self.volume_monitor is None:
+                import volume_monitor
+                parent_widget = self.xml.get_object(self.box)
+                self.volume_monitor = volume_monitor.VolumeMonitor(self.flumotion.medium, component, force_channels=1)
+
+                volume_widget = self.volume_monitor.widget
+                old_parent = volume_widget.get_parent()
+                if old_parent:
+                    old_parent.remove(volume_widget)
+                parent_widget.pack_start(volume_widget)
+
+            if moods.get(component.get('mood')) is not moods.happy:
+                return
+
+            def component_callback(firewire_uistate, self=self):
+                if self.volume_monitor.state is not None:
+                    return
+                self.volume_monitor.setUIState(firewire_uistate)
+
+            d = self.flumotion.medium.componentCallRemote(component, 'getUIState')
+            d.addCallback(component_callback)
+
+        d = self.flumotion.get_planet_state()
+        d.addCallback(planet_callback)
 
     def on_unshow(self):
+        self.flumotion.connected()
         self.volume_monitor = None
 
 
@@ -279,6 +325,7 @@ class AudioInRoomPage(AudioPage):
     xmlname = "audio-inroom"
     title = "Inroom Audio Setup"
     box = "audio-inroom-box"
+
 
 class AudioStandAlonePage(AudioPage):
     xmlname = "audio-standalone"
@@ -290,14 +337,8 @@ class AudioStandAlonePage(AudioPage):
 class FlumotionConnection(object):
 
     def __init__(self):
-        from flumotion.common import log
         log.init()
 
-        from flumotion.common import connection
-        from flumotion.common import componentui
-
-        from flumotion.twisted import pb
-        from flumotion.admin import admin
         self.medium = admin.AdminModel()
 
         i = connection.PBConnectionInfo(
@@ -307,18 +348,20 @@ class FlumotionConnection(object):
         d.addErrback(twistedlog.err)
 
     def connected(self, *args):
-        d = self.medium.callRemote('getPlanetState')
-        d.addCallback(self.planet_state)
+        print "Connected to flumotion."
+        d = self.medium.cleanComponents()
+        
+        def loaded(*args):
+            print "Configuration cleared."
+
+        d.addCallback(loaded)
         d.addErrback(twistedlog.err)
         return d
 
-    def planet_state(self, result):
-        from flumotion.monitor.nagios import util
-        # For the audio monitoring
-        #self.firewire = util.findComponent(result, '/default/producer-firewire')
-        self.firewire = util.findComponent(result, '/default/producer-audio')
-        # For the start/stop of recordings
-        self.disk = util.findComponent(result, '/default/disk-loop')
+    def get_planet_state(self):
+        d = self.medium.callRemote('getPlanetState')
+        d.addErrback(twistedlog.err)
+        return d
 
 
 class App(object):
@@ -330,6 +373,8 @@ class App(object):
         gtk.main_quit()
 
     def __init__(self):
+        subprocess.call('sudo /etc/init.d/flumotion restart', shell=True)
+
         # Stop the screensaver and screen blanking
         self.inhibitor = inhibitor.Inhibitor()
         self.inhibitor.inhibit(reason="Video streaming!")
@@ -348,13 +393,13 @@ class App(object):
         camera = CameraPage(assistant, xml)
 
         audio_inroom = AudioInRoomPage(flumotion, assistant, xml)
-        audio_standalone = AudioStandAlonePage(flumotion, assistant, xml)
+        #audio_standalone = AudioStandAlonePage(flumotion, assistant, xml)
 
-        interaction = xml.get_page("interaction")
-        assistant.append_page(interaction)
-        assistant.set_page_title(interaction, "Interaction Setup")
-        assistant.set_page_type(interaction, gtk.ASSISTANT_PAGE_CONTENT)
-        assistant.set_page_complete(interaction, False)
+        #interaction = xml.get_page("interaction")
+        #assistant.append_page(interaction)
+        #assistant.set_page_title(interaction, "Interaction Setup")
+        #assistant.set_page_type(interaction, gtk.ASSISTANT_PAGE_CONTENT)
+        #assistant.set_page_complete(interaction, False)
 
         # and the window
         assistant.show_all()
