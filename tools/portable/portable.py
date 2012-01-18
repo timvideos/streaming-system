@@ -219,10 +219,9 @@ class PresentationPage(VideoPage):
 
     # FIXME: Need to keep this in sync with producer-firewire in flumotion-config/collector-portable.xml
     video_pipeline = """\
-v4l2src device=/dev/video1 !
-image/jpeg,width=640,height=480,framerate=(fraction)24/1 !
-jpegdec !
-videocrop left=80 right=80 top=0 bottom=0 !
+dv1394src !
+queue leaky=2 max-size-time=1000000000 !
+dvdemux name=demux !
 videoscale !
 autovideosink
 """

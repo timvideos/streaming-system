@@ -682,7 +682,7 @@ and adjust the slider until the audio indicater turns ORANGE when speaking.</pro
         <child>
           <object class="GtkImage" id="camera-example">
             <property name="visible">True</property>
-            <property name="stock">gtk-missing-image</property>
+            <property name="pixbuf">img/photos/speaker.png</property>
           </object>
           <packing>
             <property name="position">1</property>
