@@ -77,7 +77,10 @@ function jwplayers() {
     var jwsettings = {
       autostart: true,
       skin: '/static/third_party/jwplayer/skin/glow.zip',
-      modes: {{group}}_jwplayer_modes('html5', 'sd')
+      modes: {{group}}_jwplayer_modes('flash', 'sd'),
+      plugins: {
+        'qualitymonitor-2': {},
+      }
     };
     {{group}}_player_jwobject = jwplayer('{{group}}').setup(jwsettings);
     {{group}}_player_jwobject.onReady(function() {
