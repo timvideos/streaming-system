@@ -8,6 +8,8 @@
 __author__ = "mithro@mithis.com (Tim 'mithro' Ansell)"
 
 import datetime
+import pprint
+import subprocess
 import time
 import urllib
 import urllib2
@@ -30,27 +32,37 @@ class WatchDog(common.AdminCommand):
     def eb(self, e):
         print "error", e
         self.getRootCommand().loginDeferred.unpause()
+        del self.dead
         reactor.callLater(0, reactor.stop)
 
     def handleOptions(self, options):
         self.getRootCommand().loginDeferred.addCallback(self._callback)
 
     def _callback(self, *args):
-        if not hasattr(self, 'dead'):
-            self.dead = {}
-
-        if sum(self.dead.values()) > 10:
-            print "Found to many inactive items:", self.dead
-            subprocess.call('/etc/init.d/flumotion restart', shell=True)
-            del self.dead
 
         self.getRootCommand().loginDeferred.pause()
         print
         print datetime.datetime.now()
-        print "Dead count:", self.dead
+
+        if not hasattr(self, 'dead'):
+            self.dead = {}
+        else:
+            print "Dead:"
+            total = 0
+            for name, amount in self.dead.items():
+                print "%30s %10.2f" % (name, amount)
+                total += amount
+            print "-"*45
+            print "%30s %10.2f" % ("total", total)
+            print
+
+        if sum(self.dead.values()) > 10:
+            subprocess.call('/etc/init.d/flumotion restart', shell=True)
+            self.eb('Restarting!')
+            return
 
         d = self.getRootCommand().medium.callRemote('getPlanetState')
-        def gotPlanetStateCb(planetState, self=self):
+        def gotPlanetStateCb(planetState, self=self, dead=self.dead):
             for f in planetState.get('flows') + [planetState.get('atmosphere')]:
                 ds = []
                 for component in sorted(f.get('components'), cmp=lambda a, b: cmp(a.get('name'), b.get('name'))):
@@ -60,13 +72,16 @@ class WatchDog(common.AdminCommand):
 
                     mood = component.get('mood')
 
-                    print "%30s %10s (%i)" % (
-                        name, moods.get(mood).name, mood)
+                    if mood != moods.happy:
+                        print "%30s %10s (%i)" % (
+                            name, moods.get(mood).name, mood)
 
                     if moods.get(mood) in (moods.sad,):
-                        self.dead[name] = 4 + self.dead.get(name, 0)
-                    if moods.get(mood) not in (moods.happy, moods.waking):
-                        self.dead[name] = 1 + self.dead.get(name, 0)
+                        dead[name] = 4 + dead.get(name, 0)
+                    elif moods.get(mood) in (moods.hungry, moods.sleeping):
+                        dead[name] = 0.1 + dead.get(name, 0)
+                    elif moods.get(mood) not in (moods.happy, moods.waking):
+                        dead[name] = 1 + dead.get(name, 0)
 
             reactor.callLater(1, self._callback)
 
