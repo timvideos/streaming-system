@@ -56,7 +56,7 @@ class WatchDog(common.AdminCommand):
             print "%30s %10.2f" % ("total", total)
             print
 
-        if sum(self.dead.values()) > 10:
+        if sum(self.dead.values()) > 30:
             subprocess.call('/etc/init.d/flumotion restart', shell=True)
             self.eb('Restarting!')
             return
@@ -77,7 +77,7 @@ class WatchDog(common.AdminCommand):
                             name, moods.get(mood).name, mood)
 
                     if moods.get(mood) in (moods.sad,):
-                        dead[name] = 4 + dead.get(name, 0)
+                        dead[name] = 5 + dead.get(name, 0)
                     elif moods.get(mood) in (moods.hungry, moods.sleeping):
                         dead[name] = 0.1 + dead.get(name, 0)
                     elif moods.get(mood) not in (moods.happy, moods.waking):
