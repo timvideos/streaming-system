@@ -3,3 +3,4 @@ amazon/default.pem
 *.pyc
 .*
 tools/portable/img/*.png
+*.sqlite3
