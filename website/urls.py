@@ -11,8 +11,8 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
 
-    url(r'', include('website.frontend.urls')),
-    url(r'^tracker/', include('website.tracker.urls')),
+    url(r'^tracker/', include('tracker.urls')),
+    url(r'', include('frontend.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
@@ -21,7 +21,7 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 )
 
-from website import settings
+import settings
 if settings.DEBUG:
     urlpatterns += patterns('',
         (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'static'}),

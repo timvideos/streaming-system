@@ -16,12 +16,14 @@ import re
 from django import http
 from django.shortcuts import render_to_response
 from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_exempt
 
 # Our App imports
-import models
+from common.views.simple import never_cache_redirect_to
+from tracker import models
 
 CONFIG = ConfigParser.ConfigParser()
-CONFIG.read([os.path.dirname(__file__)+'/config.ini'])
+CONFIG.read([os.path.dirname(__file__)+'/../config.ini'])
 GROUPS = CONFIG.get('config', 'groups').split()
 
 # IP Address which are considered "In Room"
@@ -44,7 +46,6 @@ def streams(request, group):
     group = check_group(group)
     if not group:
         response = http.HttpResponse()
-        nocache(response)
         response.write("window.src = '/';\n");
         return response
 
@@ -64,7 +65,6 @@ def streams(request, group):
     if not active_servers:
         # FIXME: Technical difficulties server....
         response = http.HttpResponse()
-        nocache(response)
         response.write("window.src = '/';\n");
         return response
     else:
@@ -75,33 +75,35 @@ def streams(request, group):
     return render_to_response('streams.js', locals(), content_type='text/javascript')
 
 
+@csrf_exempt
 @never_cache
-def register(request, group):
+def register(request):
     """Registers an encoding server into the application."""
-    response = http.HttpResponse(content_type='text/plain')
-    nocache(response)
+    if request.method != 'POST':
+        return never_cache_redirect_to(request, url="/")
 
-    secret = request.get('secret')
+    response = http.HttpResponse(content_type='text/plain')
+
+    secret = request.POST['secret']
     if secret != CONFIG.get('config', 'secret'):
         response.write('ERROR SECRET\n')
         return
 
-    group = request.get('group')
+    group = request.POST['group']
     if group not in GROUPS:
         response.write('ERROR GROUP\n')
         return
 
-    ip = request.get('ip')
-    clients = int(request.get('clients'))
-    bitrate = int(request.get('bitrate'))
+    ip = request.META['REMOTE_ADDR']
+    clients = int(request.POST['clients'])
+    bitrate = int(request.POST['bitrate'])
 
     s = models.Encoder(
-            key_name='%s-%s' % (group, ip),
             group=group,
             ip=ip,
             clients=clients,
             bitrate=bitrate)
-    s.put()
+    s.save()
     response.write('OK\n')
     return response
 
@@ -109,6 +111,7 @@ def register(request, group):
 @never_cache
 def stats(request):
     """Print out some stats about registered encoders."""
+    logging.info('stats!')
     response = http.HttpResponse()
 
     inactive_servers = []
@@ -125,9 +128,8 @@ def stats(request):
     inactive_servers = sorted(inactive_servers, cmp=lambda a, b: cmp((a.group, a.bitrate), (b.group, b.bitrate)))
 
     response['Content-Type'] = 'text/html'
-    nocache(response)
 
-    def table(self, servers):
+    def table(servers):
         response.write('       <table>')
         response.write('           <tr>')
         response.write('               <th>ip</th>')
@@ -159,14 +161,4 @@ def stats(request):
     table(inactive_servers)
     response.write('   </body>')
     response.write('</html>')
-    return response
-
-
-@never_cache
-def ip(request):
-    """Print out the callers IP."""
-    response = http.HttpResponse(content_type='text/plain')
-    nocache(response)
-    response.write(request.META['REMOTE_ADDR'])
-
     return response

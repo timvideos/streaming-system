@@ -36,17 +36,26 @@ class Register(common.AdminCommand):
         self.parser.add_option('-g', '--group',
             action="store", dest="group",
             help="group this machine is encoding for")
+
         default = 'http://view.streamti.me/register'
         self.parser.add_option('-r', '--register',
             action="store", dest="register_url",
             help="Server to register on. (defaults to %s)" % default,
             default=default)
+
         self.parser.add_option('-s', '--secret',
             action="store", dest="secret",
             help="Secret that the is shared with the server")
-        self.parser.add_option('-i', '--ip',
-            action="store", dest="ip",
-            help="Override the *public* ip address of this server")
+
+        self.parser.add_option('-f', '--fake',
+            action="store", dest="fake",
+            help="Don't connect to flumotion, instead just pretend")
+
+        default = 30
+        self.parser.add_option('-i', '--interval',
+            action="store", dest="interval",
+            help="How often to update the system state (defaults to %i)." % default,
+            default=default)
 
     def handleOptions(self, options):
         if not options.group:
@@ -60,22 +69,19 @@ class Register(common.AdminCommand):
         self.secret = options.secret
 
         self.register_url = options.register_url
-        self.ip = options.ip
 
-        if not self.ip:
-            while True:
-                try:
-                    self.ip = urllib2.urlopen("http://view.streamti.me/ip").read().strip()
-                    break
-                except urllib2.URLError:
-                    continue
-        print 'My IP address is:', self.ip
+        self.interval = options.interval
 
         # call our callback after connecting
-        self.getRootCommand().loginDeferred.addCallback(self._callback)
+        if options.fake is not None:
+            totals = eval(options.fake)
+            while True:
+                self.send_update(totals)
+                time.sleep(self.interval)
+        else:
+            self.getRootCommand().loginDeferred.addCallback(self._callback)
 
     def _callback(self, *args):
-
         d = self.getRootCommand().medium.callRemote('getPlanetState')
         def gotPlanetStateCb(planetState):
             for f in planetState.get('flows'):
@@ -107,23 +113,27 @@ class Register(common.AdminCommand):
         clients = sum(x[1] for x in totals)
         bitrate = sum(x[2] for x in totals)
 
-        r = urllib2.urlopen(
-            self.register_url,
-            urllib.urlencode((
-                ('secret', self.secret),
-                ('group', self.group),
-                ('ip', self.ip),
-                ('clients', clients),
-                ('bitrate', bitrate),
-                ))
-            )
+        try:
+            r = urllib2.urlopen(
+                self.register_url,
+                urllib.urlencode((
+                    ('secret', self.secret),
+                    ('group', self.group),
+                    ('clients', clients),
+                    ('bitrate', bitrate),
+                    ))
+                )
+        except urllib2.HTTPError, e:
+            print e
+            print e.read()
+            raise
         print "Registered at", datetime.datetime.now(), "result", r.read().strip(), 'clients:', clients, 'bitrate:', bitrate/1e6, 'megabits/second'
 
         # Schedule another register in 30 seconds
         d = defer.Deferred()
         d.addCallback(self._callback)
         d.addErrback(eb)
-        reactor.callLater(30, d.callback, ())
+        reactor.callLater(self.interval, d.callback, ())
         return d
 
 

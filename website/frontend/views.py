@@ -19,7 +19,8 @@ from django.shortcuts import render_to_response
 from django.views.decorators.cache import cache_control
 
 # Our App imports
-import models
+from common.views.simple import never_cache_redirect_to
+from tracker import models
 
 CONFIG = ConfigParser.ConfigParser()
 CONFIG.read([os.path.dirname(__file__)+'/../config.ini'])
@@ -43,7 +44,7 @@ def group(request, group):
 
     group = check_group(group)
     if not group:
-        return django.views.generic.simple.redirect_to(request, url='/')
+        return never_cache_redirect_to(request, url="/")
 
     channel = CONFIG.get('groups', group)
     justintv = CONFIG.get('justintv', group)

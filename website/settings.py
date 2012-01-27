@@ -100,7 +100,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-ROOT_URLCONF = 'website.urls'
+ROOT_URLCONF = 'urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -109,8 +109,9 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = (
-    'website.frontend',
-    'website.tracker',
+    'frontend',
+    'tracker',
+    'django_extensions',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -133,7 +134,15 @@ LOGGING = {
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler'
-        }
+        },
+        'null': {
+            'level':'DEBUG',
+            'class':'django.utils.log.NullHandler',
+        },
+        'console':{
+            'level':'DEBUG',
+            'class':'logging.StreamHandler',
+        },
     },
     'loggers': {
         'django.request': {
@@ -141,5 +150,10 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
-    }
+        '': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'filters': [],
+        },
+    },
 }

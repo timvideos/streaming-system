@@ -5,7 +5,7 @@
 
 from django.conf.urls.defaults import patterns, include, url
 
-from website.frontend import views
+from frontend import views
 
 urlpatterns = patterns('',
     url(r'^(monitor)$', views.index),
