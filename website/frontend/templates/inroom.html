@@ -1,36 +1,18 @@
+{% extends "base.html" %}
 {% comment %}
 -*- coding: utf-8 -*-
 vim: set ts=2 sw=2 et sts=2 ai:
 {% endcomment %}
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+
+{% block head %}
     <script type="text/javascript" src="/static/third_party/jquery-extra/jquery.juitter-1.0.0.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <link rel="stylesheet" type="text/css" href="/static/css/tweet.css">
     <link rel="stylesheet" type="text/css" href="/static/third_party/jquery-extra/jquery.juitter-1.0.0.css">
     <title>Tim's Video Streaming for {{ group|upper }}</title>
+{% endblock %}
 
-<script type="text/javascript">
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-23123757-1']);
-  _gaq.push(['_setDomainName', 'none']);
-  _gaq.push(['_setAllowLinker', true]);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-</script>
-
-  </head>
-<body>
-
-  <table id="body-table">
-    <tr>
+{% block content %}
       <th id="options" colspan=2>
         <div class="options-group container_1">
           Tweet&nbsp;with&nbsp;hashtag:&nbsp;{{hashtag}}
@@ -55,23 +37,18 @@ vim: set ts=2 sw=2 et sts=2 ai:
       <td id="chat-cell" style="width: 60%;">
         <div id="chat-container" class="container_3">
           <div id="chat-sizer" class="sizer">
-{% if screen %}
+            {% if screen %}
             <iframe id="chat-frame"
               src="http://webchat.freenode.net?nick=videoscreen-{{group|urlencode}}&channels={{ group|urlencode }}&uio=MTA9dHJ1ZSYxMT0yMzYe4"></iframe>
-{% else %}
+            {% else %}
             <iframe id="chat-frame" src="http://webchat.freenode.net?channels={{ group|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
-{% endif %}
+            {% endif %}
           </div>
         </div>
       </td>
-    </tr><tr>
-      <td id="footer" colspan=2>
-        <span id="footer-container" class="container_3">
-{% include "footer.html" %}
-        </span>
-      </td>
-    </tr>
-  </table>
+{% endblock %}
+
+{% block script %}
 <script type="text/javascript">
 function resize() {
  $("#twitter-juitter").height(5);
@@ -90,5 +67,4 @@ $(document).ready(function() {
     });
 });
 </script>  
-</body>
-</html>
+{% endblock %}

@@ -1,282 +1,164 @@
+{% extends "base.html" %}
 {% comment %}
 -*- coding: utf-8 -*-
 vim: set ts=2 sw=2 et sts=2 ai:
 {% endcomment %}
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-    <script type="text/javascript" src="/static/third_party/jquery-extra/jquery.relatedtweets-1.0.min.js"></script>
-    <script type="text/javascript" src="/static/third_party/jwplayer/jwplayer.js"></script>
-    <script type="text/javascript" src="/whats_on.js"></script>
-    <script type="text/javascript" src="/{{ group }}/streams.js"></script>
+
+{% block head %}
+    <script type="text/javascript" src="/static/third_party/jquery-extra/jquery.juitter-1.0.0.js"></script>
+    <script type="text/javascript" src="/static/js/whats_on.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <link rel="stylesheet" type="text/css" href="/static/css/tweet.css">
-    <title>Tim's Video Streaming for {{ group|upper }}</title>
+    <link rel="stylesheet" type="text/css" href="/static/third_party/jquery-extra/jquery.juitter-1.0.0.css">
+    <title>Stream Time ---INDEX PAGE---</title>
+{% endblock %}
 
-<script type="text/javascript">
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-23123757-1']);
-  _gaq.push(['_setDomainName', 'none']);
-  _gaq.push(['_setAllowLinker', true]);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-</script>
-
-  </head>
-<body>
-
-  <table id="body-table">
-    <tr>
-      <td id="title" colspan=2>
+{% block content %}
+    {% for group in groups %}
+      <td class="title">
+        <div class="container_3">
+          <h1>
+            <a href="/{{group}}">{{group}}<span class="title_click">- Click to view live stream!</span></a>
+          </h1>
+        </div>
+      </td>
+    {% endfor %}
+    </tr><tr>
+    {% for group in groups %}
+      <td>
         <div id="showing" class="container_4">
-          <div id='talk_info' class='talk_info' onclick='$(".talk_desc").fadeToggle();'>(More info)</div>
-          <div id='talk_title' class='talk_title'></div>
-          <div id='talk_desc' class='talk_desc'></div>
+          <div id='{{group}}_info' class='talk_info' onclick='$(".talk_desc").fadeToggle();'>(More info)</div>
+          <div id='{{group}}_title' class='talk_title'></div>
+          <div id='{{group}}_desc' class='talk_desc'></div>
         </div>
-      </td><td>
       </td>
+    {% endfor %}
     </tr><tr>
-      <td id="options" colspan=2>
-        <div class="options-group container_1">
-          Video Format:
-          <form id="format">
-            <ul>
-              <li><input type="radio" name="format" value="videooff">Video Off
-              <li><input type="radio" name="format" value="auto" checked>Auto
-              <li><input type="radio" name="format" value="flash">Flash
-              <li><input type="radio" name="format" value="html5">HTML5
-              <li><input type="radio" name="format" value="justintv">Justin.tv
-              <li><input type="radio" name="format" value="audio">Audio Only
-            </ul>
-          </form>
-        </div>
-        <div id="quality-container" class="options-group container_1">
-          Quality:
-          <form id="quality">
-            <ul>
-              <li><input type="radio" name="quality" value="auto" checked>Auto
-              <li><input type="radio" name="quality" value="hd">HD on
-              <li><input type="radio" name="quality" value="sd">HD off
-            </ul>
-          </form>
-        </div>
-        <div id="quality-container" class="options-group container_1">
-          Backup Stream <a href="http://justin.tv/{{ justintv }}">at Justin.tv</a>
+    {% for group in groups %}
+      <td class="preview">
+        <div class="container_2" onClick="window.location='/{{group}}'">
+          <img id="video-preview-{{group}}" class="video_preview">
         </div>
       </td>
+    {% endfor %}
     </tr><tr>
-      <td id="player-cell" rowspan=2>
-        <div id="player-container" class="container_2">
-          <div id="player-sizer" class="sizer">
-            <a href="" id="player"></a>
-          </div>
+    {% for group in groups %}
+      <td>
+        <div class="container_3" onClick="window.location='/{{group}}'">
+          <iframe id="chat-preview-{{group}}" class="chat_preview"></iframe>
         </div>
       </td>
-      <td id="sponsor-cell" class="container_3">
-        <div id='sponsor-hide' class='talk_info' onclick='sponsor_hide();'>(Hide)</div>
-        <div id='sponsor-1'>
-          <a href="http://www.orionvm.com.au/"><img src="/static/img/orionvm.png"></a>
-          <div>
-            <p>
-              OrionVM provides the world’s fastest cloud platform, specializing in
-              Linux.
-            </p><p>
-              To see the platform in action <a href="https://panel.orionvm.com.au/signup/">sign up</a>
-              and mention linux.conf.au for $50 free credit.
-            </p>
-          </div>
-        </div>
-        <div id='sponsor-2'>
-          <a href="http://www.aarnet.edu.au/"><img src="/static/img/aarnet.gif" alt="Australia's Academic and Research Network"></a>
-        </div>
-      </td>
+    {% endfor %}
     </tr><tr>
-      <td id="chat-cell">
-        <div id="chat-container" class="container_3">
-          <div id="chat-sizer" class="sizer">
-            <iframe id="chat-frame" src="http://webchat.freenode.net?channels={{ channel|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
-          </div>
-        </div>
+      <td colspan={{groups|length}}>
+        <table style="height: 100%; width: 100%;">
+          <tr>
+            <td style="width: 240px; vertical-align: top;">
+              <div id="sponsor-front" class="container_3">
+               <div class='talk_info'>Streaming Sponsors</div>        
+               <div id="sponsor-1">
+                <a href="http://www.orionvm.com.au/"><img src="/static/img/orionvm.png"></a>
+                <div id="sponsor-1-info">
+                  <p>
+                    OrionVM provides the world’s fastest cloud platform, specializing in
+                    Linux.
+                  </p><p>
+                    To see the platform in action <a href="https://panel.orionvm.com.au/signup/">sign up</a>
+                    and mention linux.conf.au for $50 free credit.
+                  </p>
+                </div>
+               </div>
+               <div id="sponsor-2">
+                <a href="http://www.aarnet.edu.au/"><img src="/static/img/aarnet.gif" alt="Australia's Academic and Research Network"></a>
+               </div>
+              </div>
+            </td>
+            <td id="twitter-cell" style="height: auto;">
+              <div id="twitter-container" class="container_3" style="">
+                <div id="twitter-sizer" class="sizer">
+                  <div id="twitter-juitter">
+                    <div id="juitterContainer"></div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </table>
       </td>
-    </tr><tr>
-      <td id="twitter-cell" colspan=2>
-        <div id="twitter-container" class="container_3">
-          <div id="twitter-sizer" class="sizer">
-            <div class="related-tweets" options="{debug: false}">Related tweets loading....</div>
-            <div id="twitter-search">Search on Twitter:
-              <a class=tag href="http://search.twitter.com/search?q={{ hashtag|urlencode }}" rel="tag">{{ hashtag }}</a>
-            </div>
-          </div>
-        </div>
-      </td>
-    </tr><tr>
-      <td id="footer" colspan=2>
-        <span id="footer-container" class="container_3">
-{% include "footer.html" %}
-        </span>
-      </td>
-    </tr>
-  </table>
+{% endblock %}
+
+
+{% block footer %}
+  <div id=preload>
+{% for group in groups %}
+  <img id="video-preload-{{group}}" class="video_preload">
+{% endfor %}
+  </div>
+{% endblock %}
+
+
+{% block script %}
 <script type="text/javascript">
+// Swap the preloaded video image into the main image
+{% for group in groups %}
+$('#video-preload-{{group|escapejs}}').load(function() {
+  $('#video-preview-{{group|escapejs}}').attr('src', $(this).attr('src'));
+  setTimeout(update_video, 5000);
+});
+{% endfor %}
+function update_video() {
+{% for group in groups %}
+ $('#video-preload-{{group|escapejs}}').attr(
+  'src', "http://extra.streamti.me/~irc/%23lca2012-{{group|urlencode}}/latest.png?time="+current_time()
+  );
+{% endfor %}
+}
 
-function sponsor_swap_a() {
-  var s = $("#sponsor-1:visible");
-  if (s.length > 0) {
-    s.fadeToggle(2000, function() {
-      $("#sponsor-2").fadeToggle();
+function update_chat() {
+{% for group in groups %}
+ $('#chat-preview-{{group|escapejs}}').attr(
+  'src', "http://extra.streamti.me/~irc/frameit-ng.php?channel=%23lca2012-{{group|urlencode}}&time="+current_time()
+  );
+{% endfor %}
+  setTimeout(update_chat, 20000);
+}
+
+
+$('#sponsor-1').hover(
+  function() {
+   $('#sponsor-1-info').stop(true, true).slideDown();
+  }, 
+  function() {
+   $('#sponsor-1-info').stop(true, true).slideUp();
+  });
+
+function resize_twitter() {
+ $("#twitter-juitter").height(5);
+ $("#twitter-juitter").height($("#twitter-cell").innerHeight()-5);
+}
+$.Juitter.onUpdate = resize_twitter;
+$(window).resize(resize_twitter);
+
+$(document).ready(function() {
+  resize_twitter();
+  $.Juitter.start({
+    live:"live-5",
+    total: 20,
+    searchType: "searchWord",
+    searchObject: "{{ hashtag|urlencode }}",
     });
-    setTimeout(sponsor_swap_b, 6000);
-  }
-}
-function sponsor_swap_b() {
-  var s = $("#sponsor-2:visible");
-  if (s.length > 0) {
-    s.fadeToggle(2000, function() {
-      $("#sponsor-1").fadeToggle();
-    });
-    setTimeout(sponsor_swap_a, 6000);
-  }
-}
-
-function sponsor_hide() {
-  $("#sponsor-cell").hide();
-}
-
-/**
- * Resize the player to fit the window.
- */
-function fit_player () {
-  var player_sizer = $("#player-cell");
-  if (player_jwobject) {
-    player_jwobject.resize(player_sizer.width()-20, player_sizer.height()-20);
-  }
-}
-
-// When the window's size changes, so does ours.
-$(window).resize(fit_player);
-
-/**
- * HD stream options
- */
-var quality_option = $('input[name=quality][type=radio]');
-function quality_set(value) {
-  if (player_jwobject) {
-    var format = player_format;
-    if (value == format)
-      return;
-
-    if (player_format == 'auto') {
-      format = player_jwobject.renderingMode;
-    }
-    if (format)
-      player_jwobject.load({{group}}_jwplayer_levels(format, value));
-  }
-  var option = $('input[name=quality][type=radio][value='+value+']');
-  option.attr('checked', true);
-}
-function quality_change(evt) {
-  var value = $('input[name=quality][type=radio]:checked').val();
-  quality_set(value);
-}
-quality_option.change(quality_change);
-
-/**
- * Format of the streaming.
- */
-var player_jwobject = null;
-var player_format = null;
-var format_option = $('input[name=format][type=radio]');
-function format_set(value) {
-
-  // Clean up the previous player
-  if (player_jwobject) {
-    player_jwobject.remove();
-    player_jwobject = null;
-  }
-  if (player_format == "justintv") {
-    swobject.removeSWF("player");
-  }
-
-  var jwplayer_create = false;
-  if (value == 'novideo') {
-  }
-  if (value == 'justintv') {
-    var flashvars = {
-      "start_volume": 0.5,
-      "backgroundImage": "",
-      "channel": "{{ justintv }}",
-      "hostname": "www.justin.tv",
-      "auto_play": true
-    };
-    var params = {
-      "allowFullScreen": true,
-      "allowScriptAccess": "always",
-      "allowNetworking": "all",
-      "movie": "http://www.justin.tv/widgets/live_embed_player.swf"
-    };
-
-    var url = "http://www.justin.tv/widgets/live_embed_player.swf?";
-    for (value in flashvars) {
-      url = url + "&" + value + "=" + flashvars[value];
-    }
-    swfobject.embedSWF(url, "player", "100%", "100%", "9.0.0", null, flashvars, params);
-  }
-
-  if (value == 'auto' || value == 'flash' || value == 'html5' || value == 'audio') {
-    // Create the player
-    var jwsettings = {
-      autostart: true,
-      plugins: {
-        'gapro-2': {
-          'trackstarts': true,
-          'trackpercentage': false,
-          'trackseconds': true
-        }
-      },
-      skin: '/static/third_party/jwplayer/skin/glow.zip',
-      modes: {{group}}_jwplayer_modes(value, 'auto')
-    };
-    player_jwobject = jwplayer("player").setup(jwsettings);
-    fit_player();
-    player_jwobject.onReady(fit_player);
-
-    // Enable the quality widget
-    $('#quality-container').show();
-  } else {
-    // Disable the quality widget
-    $('#quality-container').hide();
-  }
-
-  player_format = value;
-
-  var option = $('input[name=format][type=radio][value='+value+']');
-  option.attr('checked', true);
-}
-function format_change(evt) {
-  var value = $('input[name=format][type=radio]:checked').val();
-  format_set(value);
-}
-format_option.change(format_change);
-
-format_change();
-quality_change();
+  update_video();
+  update_chat();
+});
 
 function schedule_callback() {
-  update_schedule($('#talk_title'), $('#talk_desc'), '{{group|escapejs}}');
+{% for group in groups %}
+  update_schedule($('#{{group|escapejs}}_title'), $('#{{group|escapejs}}_desc'), '{{group|escapejs}}');
+{% endfor %}
+  resize_twitter();
   setTimeout(schedule_callback, 60e3);
-  fit_player();
-  setTimeout(sponsor_swap_a, 2000);
 }
 
 get_schedule(schedule_callback);
-
-    </script>
-</body>
-</html>
+</script>
+{% endblock %}
