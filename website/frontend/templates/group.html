@@ -13,7 +13,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
     <script type="text/javascript" src="/static/js/streams.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <link rel="stylesheet" type="text/css" href="/static/css/tweet.css">
-    <title>Stream Time for {{ group|upper }}</title>
+    <title>Streaming for {{ config.title }}</title>
 {% endblock %}
 
 {% block content %}
@@ -51,7 +51,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
           </form>
         </div>
         <div id="quality-container" class="options-group container_1">
-          Backup Stream <a href="http://justin.tv/{{ justintv }}">at Justin.tv</a>
+          Backup Stream <a href="http://justin.tv/{{ config.justintv }}">at Justin.tv</a>
         </div>
       </td>
     </tr><tr>
@@ -72,19 +72,19 @@ vim: set ts=2 sw=2 et sts=2 ai:
               Linux.
             </p><p>
               To see the platform in action <a href="https://panel.orionvm.com.au/signup/">sign up</a>
-              and mention linux.conf.au for $50 free credit.
+              and mention {{ config.title }} for $50 free credit.
             </p>
           </div>
         </div>
         <div id='sponsor-2'>
-          <a href="http://www.aarnet.edu.au/"><img src="/static/img/aarnet.gif" alt="Australia's Academic and Research Network"></a>
+          <a href="{{ config.link }}"><img src="{{ config.logo }}" alt="{{ config.title }}"></a>
         </div>
       </td>
     </tr><tr>
       <td id="chat-cell">
         <div id="chat-container" class="container_3">
           <div id="chat-sizer" class="sizer">
-            <iframe id="chat-frame" src="http://webchat.freenode.net?channels={{ channel|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
+            <iframe id="chat-frame" src="http://webchat.freenode.net?channels={{ config.channel|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
           </div>
         </div>
       </td>
@@ -94,7 +94,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
           <div id="twitter-sizer" class="sizer">
             <div class="related-tweets" options="{debug: false}">Related tweets loading....</div>
             <div id="twitter-search">Search on Twitter:
-              <a class=tag href="http://search.twitter.com/search?q={{ hashtag|urlencode }}" rel="tag">{{ hashtag }}</a>
+              <a class=tag href="http://search.twitter.com/search?q={{ config.twitter|urlencode }}" rel="tag">{{ config.twitter }}</a>
             </div>
           </div>
         </div>
@@ -189,7 +189,7 @@ function format_set(value) {
     var flashvars = {
       "start_volume": 0.5,
       "backgroundImage": "",
-      "channel": "{{ justintv }}",
+      "channel": "{{ config.justintv }}",
       "hostname": "www.justin.tv",
       "auto_play": true
     };

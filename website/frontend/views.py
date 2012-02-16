@@ -10,6 +10,7 @@ import ConfigParser
 import datetime
 import logging
 import os
+import sys
 import time
 import re
 
@@ -22,56 +23,44 @@ from django.views.decorators.cache import cache_control
 from common.views.simple import never_cache_redirect_to
 from tracker import models
 
-CONFIG = ConfigParser.ConfigParser()
-CONFIG.read([os.path.dirname(__file__)+'/../config.ini'])
-GROUPS = CONFIG.get('config', 'groups').split()
-
-# IP Address which are considered "In Room"
-LOCALIPS = [x[1] for x in CONFIG.items('localips')]
+sys.path.append(os.path.realpath(os.path.dirname(__file__)+"/../.."))
+import config as common_config
+CONFIG = common_config.config_load()
 
 
 def check_group(group):
     group = group.lower()
     if not re.match('[a-z/]+', group):
         group = None
-    if group not in GROUPS:
+    if group not in CONFIG.keys():
         group = None
     return group
 
 
 def group(request, group):
-    response = http.HttpResponse()
-
     group = check_group(group)
     if not group:
         return never_cache_redirect_to(request, url="/")
 
-    channel = CONFIG.get('groups', group)
-    justintv = CONFIG.get('justintv', group)
+    config = common_config.config_all(CONFIG, group)
 
-    template = request.get('template', '')
+    template = request.GET.get('template', 'group')
     if not re.match('[a-z]+', template):
-        template = 'index'
-
         # Is the request coming from the room?
         for ipregex in LOCALIPS:
             if re.match(ipregex, request.remote_addr):
                 template = 'inroom'
+                break
+        else:
+            return never_cache_redirect_to(request, url="/")
 
-    screenstr = request.get('screen', 'False')
+    screenstr = request.GET.get('screen', 'False')
     if screenstr.lower()[0] in ('y', 't'):
         screen = True
     else:
         screen = False
 
-    try:
-        hashtag = CONFIG.get('twitter', group)
-    except ConfigParser.NoOptionError, e:
-        hashtag = CONFIG.get('twitter', 'default')
-
-    response['Content-Type'] = 'text/html'
-    response.write(render_to_response('%s.html' % template, locals()))
-    return response
+    return render_to_response('%s.html' % template, locals())
 
 
 def index(request, template="index"):
@@ -83,9 +72,10 @@ def index(request, template="index"):
             continue
         groups.add(server.group)
 
-    global channels
+    channels = CONFIG.keys()
+    channels.remove('config')
 
-    hashtag = CONFIG.get('twitter', 'default')
+    config = common_config.config_all(CONFIG, 'default')
     return render_to_response('%s.html' % template, locals())
 
 
