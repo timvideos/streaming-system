@@ -43,7 +43,7 @@
       <property name="filename">/tmp/dvsource</property>
       <clock-master>true</clock-master>
     </component>
-    
+
     <component name="encoder-video"
                type="pipeline-converter"
                label="encoder-video"
@@ -130,7 +130,7 @@
         <feed alias="default">muxer-audio-video:default</feed>
       </eater>
       <property name="username">%(user)s</property>
-      <property name="host">%(room)s.streamti.me</property>
+      <property name="host">%(group)s.streamti.me</property>
       <property name="password">%(password)s</property>
       <property name="port">15000</property>
       <clock-master>false</clock-master>
