@@ -1,4 +1,14 @@
-<planet name="planet">
+<?xml version="1.0"?>
+<planet>
+
+  <manager name="planet">
+    <host>0.0.0.0</host>
+    <component name="manager-bouncer" type="htpasswdcrypt-bouncer">
+      <property name="data">
+%(user)s:%(crypt)s
+</property>
+    </component>
+  </manager>
   
   <atmosphere>
     <component name="porter-http"
@@ -12,7 +22,6 @@
       <property name="password">egMLHlXjuUgt</property>
       <property name="port">8800</property>
     </component>
-    
   </atmosphere>
   
   <flow name="default">
@@ -31,9 +40,9 @@
       <property name="video-format">8</property>
       <clock-master>true</clock-master>
     </component>
-		   
+
     <component name="encoder-video"
-               type="x264-encoder"
+               type="pipeline-converter"
                label="encoder-video"
                worker="localhost"
                project="flumotion"
@@ -41,11 +50,7 @@
       <eater name="default">
         <feed alias="default">producer-sdi:video</feed>
       </eater>
-      <property name="keyframe-maxdistance">25</property>
-      <property name="bitrate">22000000</property>
-      <property name="quality">4</property>
-      <property name="append-string">threads=4</property>
-      <clock-master>false</clock-master>
+      <property name="pipeline">ffmpegcolorspace ! ffenc_flv bitrate=10000000</property>
     </component>
     
     <component name="encoder-audio"
@@ -121,9 +126,9 @@
       <eater name="default">
         <feed alias="default">muxer-audio-video:default</feed>
       </eater>
-      <property name="username">user</property>
-      <property name="host">49.156.19.78</property>
-      <property name="password">test</property>
+      <property name="username">%(user)s</property>
+      <property name="host">%(group)s.streamti.me</property>
+      <property name="password">%(password)s</property>
       <property name="port">15000</property>
       <clock-master>false</clock-master>
     </component>

@@ -13,8 +13,8 @@ if [ ! -e /etc/apt/sources.list.d/gstreamer-developers-ppa-lucid.list ]; then
 fi
 
 # Pin the PPA's gstreamer packages.
-if grep "gstreamer" /etc/apt/preferences; then
-  echo "gstreamer pinned."
+if grep "streamtime" /etc/apt/preferences; then
+  echo "Our gstreamer repository pinned."
 else
   # Create a sources.d like directory.
   if [ ! -d /etc/apt/preferences.d ]; then
@@ -22,14 +22,13 @@ else
   fi
 
   # Put our pin there.
-  cat >> /etc/apt/preferences.d/gstreamer-developers-ppa-lucid <<EOF
-Explanation: Give the gstreamer PPA higher priority than anything else
+  cat > /etc/apt/preferences.d/gstreamer-streamtime-ppa-lucid <<EOF
+Explanation: Give the streamtime PPA higher priority than anything else
 Package: *
-Pin: release o=LP-PPA-gstreamer-developers
+Pin: release o=LP-PPA-streamtime
 Pin-Priority: 2000
 EOF
 
   # Put our pin onto the end of the real preferences file.
-  cat /etc/apt/preferences.d/gstreamer-developers-ppa-lucid \
-    >> /etc/apt/preferences
+  cat /etc/apt/preferences.d/* > /etc/apt/preferences
 fi
