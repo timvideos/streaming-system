@@ -25,7 +25,7 @@
       <property name="deinterlace-mode">auto</property>
       <property name="is-square">True</property>
       <property name="deinterlace-method">ffmpeg</property>
-      <property name="framerate">24/1</property>
+      <property name="framerate">30000/1001</property>
       <property name="height">0</property>
       <property name="width">655</property>
       <property name="decoder">ffdec_dvvideo</property>
@@ -43,6 +43,8 @@
         <feed alias="default">producer-firewire:video</feed>
       </eater>
       <property name="pipeline">
+videorate !
+video/x-raw-yuv,framerate=(fraction)24/1;video/x-raw/rgb,framerate=(fraction)24/1 !
 videobox top=0 bottom=0 left=0 right=-199 border-alpha=0 !
 mix.sink_1
 v4l2src device=%(camera_device)s !
@@ -68,7 +70,7 @@ videomixer name=mix sink_0::zorder=0 sink_1::zorder=1
         <feed alias="default">composite-video:default</feed>
       </eater>
       <property name="keyframe-maxdistance">24</property>
-      <property name="bitrate">22000000</property>
+      <property name="bitrate">1000000</property>
       <property name="quality">4</property>
       <property name="append-string">threads=4</property>
       <clock-master>false</clock-master>
@@ -109,7 +111,7 @@ videomixer name=mix sink_0::zorder=0 sink_1::zorder=1
       <eater name="default">
         <feed alias="default">muxer-audio-video:default</feed>
       </eater>
-      <property name="directory">/tmp/flumotion</property>
+      <property name="directory">/usr/local/var/output</property>
       <property name="rotate-type">none</property>
       <property name="start-recording">False</property>
       <clock-master>false</clock-master>
@@ -148,7 +150,7 @@ videomixer name=mix sink_0::zorder=0 sink_1::zorder=1
         <feed alias="default">muxer-audio-video:default</feed>
       </eater>
       <property name="username">user</property>
-      <property name="host">49.156.19.78</property>
+      <property name="host">portable.streamti.me</property>
       <property name="password">test</property>
       <property name="port">15000</property>
       <clock-master>false</clock-master>
