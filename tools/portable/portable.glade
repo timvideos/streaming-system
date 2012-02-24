@@ -483,33 +483,26 @@ and adjust the slider until the audio indicater turns ORANGE when speaking.</pro
     <child>
       <object class="GtkTable" id="preview-box">
         <property name="visible">True</property>
-        <property name="n_rows">2</property>
-        <property name="n_columns">2</property>
-        <child>
-          <object class="GtkImage" id="preview-video">
-            <property name="visible">True</property>
-            <property name="icon_name">video</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkVScale" id="preview-audio">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="right_attach">2</property>
-          </packing>
-        </child>
+        <property name="n_rows">3</property>
         <child>
           <object class="GtkHBox" id="preview-button-box">
+            <property name="height_request">50</property>
             <property name="visible">True</property>
             <child>
-              <placeholder/>
+              <object class="GtkHBox" id="audio-preview-box">
+                <property name="visible">True</property>
+                <child>
+                  <placeholder/>
+                </child>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
             </child>
             <child>
               <object class="GtkToggleButton" id="record">
                 <property name="label">gtk-media-record</property>
+                <property name="width_request">10</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -519,17 +512,16 @@ and adjust the slider until the audio indicater turns ORANGE when speaking.</pro
                 <property name="position">1</property>
               </packing>
             </child>
-            <child>
-              <object class="GtkToggleButton" id="stream">
-                <property name="label" translatable="yes">Stream</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-              </object>
-              <packing>
-                <property name="position">2</property>
-              </packing>
-            </child>
+          </object>
+          <packing>
+            <property name="top_attach">2</property>
+            <property name="bottom_attach">3</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkDrawingArea" id="video-preview">
+            <property name="height_request">400</property>
+            <property name="visible">True</property>
           </object>
           <packing>
             <property name="top_attach">1</property>
@@ -537,7 +529,10 @@ and adjust the slider until the audio indicater turns ORANGE when speaking.</pro
           </packing>
         </child>
         <child>
-          <placeholder/>
+          <object class="GtkLabel" id="success">
+            <property name="visible">True</property>
+            <property name="label" translatable="yes">Success! You are now streaming!</property>
+          </object>
         </child>
       </object>
     </child>

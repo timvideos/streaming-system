@@ -59,15 +59,16 @@ class SetUpPage(object):
         self.assistant = assistant
         self.xml = xml
 
-        self.page = xml.get_page(self.xmlname)
+        if not hasattr(self, 'page') or self.page is None:
+            self.page = xml.get_page(self.xmlname)
 
-        self.index = assistant.append_page(self.page)
-        assistant.set_page_title(self.page, self.title)
-        assistant.set_page_type(self.page, gtk.ASSISTANT_PAGE_CONTENT)
-        assistant.set_page_complete(self.page, False)
+            self.index = assistant.append_page(self.page)
+            assistant.set_page_title(self.page, self.title)
+            assistant.set_page_type(self.page, gtk.ASSISTANT_PAGE_CONTENT)
+            assistant.set_page_complete(self.page, False)
 
-        self.timer = None
-        assistant.connect("prepare", self.on_prepare)
+            self.timer = None
+            assistant.connect("prepare", self.on_prepare)
 
     def on_prepare(self, assistant, page):
         if page == self.page:
@@ -267,18 +268,11 @@ class AudioPage(SetUpPage):
         self.volume_monitor = None
 
     def on_show(self):
-        config = open('../flumotion-config/collector-portable.xml').read()
-        camera_device = CONFIG.get('camera', 'device')
-        firewire_guid = CONFIG.get('firewire', 'guid')
+        d = self.flumotion.load()
 
-        d = self.flumotion.medium.loadConfiguration(config % locals())
-        
         def loaded(*args):
-            print "Full configuration loaded."
             self.update()
-
         d.addCallback(loaded)
-        d.addErrback(twistedlog.err)
 
     def update(self, evt=None):
         if self.timer is None:
@@ -319,10 +313,6 @@ class AudioPage(SetUpPage):
         d = self.flumotion.get_planet_state()
         d.addCallback(planet_callback)
 
-    def on_unshow(self):
-        self.flumotion.connected()
-        self.volume_monitor = None
-
 
 class AudioInRoomPage(AudioPage):
     xmlname = "audio-inroom"
@@ -335,6 +325,29 @@ class AudioStandAlonePage(AudioPage):
     title = "Stand Alone Audio Setup"
     box = "audio-standalone-box"
 
+
+class SuccessPage(AudioPage, VideoPage):
+    xmlname = "preview"
+    title = "Success - Video streaming!"
+    box = "audio-preview-box"
+    
+    video_pipeline = """\
+playbin2 uri=http://localhost:8800/output
+"""
+    video_component = 'video-preview'
+
+    def __init__(self, flumotion, assistant, xml):
+        AudioPage.__init__(self, flumotion, assistant, xml)
+        VideoPage.__init__(self, assistant, xml)
+
+    def on_show(self):
+        return AudioPage.on_show(self)
+
+    def update(self):
+        return AudioPage.update(self) or VideoPage.update(self)
+    
+    def on_unshow(self):
+        return AudioPage.on_unshow(self)
 
 
 class FlumotionConnection(object):
@@ -366,6 +379,19 @@ class FlumotionConnection(object):
         d.addErrback(twistedlog.err)
         return d
 
+    def load(self):
+        config = open('../flumotion-config/collector-portable.xml').read()
+        camera_device = CONFIG.get('camera', 'device')
+        firewire_guid = CONFIG.get('firewire', 'guid')
+
+        d = self.medium.loadConfiguration(config % locals())
+        
+        def loaded(*args):
+            print "Full configuration loaded."
+
+        d.addCallback(loaded)
+        d.addErrback(twistedlog.err)
+        return d
 
 class App(object):
 
@@ -377,6 +403,8 @@ class App(object):
 
     def __init__(self):
         subprocess.call('sudo /etc/init.d/flumotion restart', shell=True)
+        subprocess.call('xset s off', shell=True)
+        subprocess.call('xset -dpms', shell=True)
 
         # Stop the screensaver and screen blanking
         self.inhibitor = inhibitor.Inhibitor()
@@ -403,6 +431,7 @@ class App(object):
         #assistant.set_page_title(interaction, "Interaction Setup")
         #assistant.set_page_type(interaction, gtk.ASSISTANT_PAGE_CONTENT)
         #assistant.set_page_complete(interaction, False)
+        success = SuccessPage(flumotion, assistant, xml)
 
         # and the window
         assistant.show_all()
