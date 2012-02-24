@@ -27,6 +27,8 @@ import sys
 LIBDIR = '/usr/local/lib'
 PROGRAM_PATH = 'portable.main'
 
+os.chdir(os.path.dirname(__file__))
+
 try:
     # setup the project root
     dir = os.path.dirname(os.path.abspath(__file__))
