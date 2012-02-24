@@ -1,0 +1,63 @@
+// Configuration file for application.
+// See config.private.json for private values.
+// vim: set ts=8 sw=8 et sts=8 ai ft=javascript:
+{
+	"config": {
+		"localips": [
+			"^127\\.",
+			"^74\\.125\\.56",
+			"^2620:0:1080"
+		],
+                "": ""
+	},
+	
+	"default": {
+		"channel":	"#streamtime",
+		"irclog":	"http://primary.streamti.me/~irc/frameit-ng.php?channel=%23streamtime",
+		"preview":	"http://primary.streamti.me/~irc/%23streamtime/latest.png",
+		"twitter":	"@mithro OR streamtime OR streamti.me",
+		"justintv":	"mithro1",
+		"logo":		"/static/logo/blank.png",
+                "link":         "http://view.streamti.me/",
+		"title":	"Unknown stream",
+                "": ""
+	},
+
+	"fp-syd": {
+		"channel":	"#fp-syd",
+		"irclog":	"http://primary.streamti.me/~irc/frameit-ng.php?channel=%23fp-syd",
+		"preview":	"http://primary.streamti.me/~irc/%23fp-syd/latest.png",
+		"twitter":	"@fp-syd OR #fp-syd",
+		"justintv":	"fp-syd",
+		"logo":		"/static/logo/fp-syd.png",
+		"link":		"http://fp-syd.ouroborus.net/",
+		"title":	"Functional Programming Sydney",
+                "": ""
+	},
+
+	"slug": {
+		"channel":	"#slug",
+		"irclog":	"http://primary.streamti.me/~irc/frameit-ng.php?channel=%23slug",
+		"preview":	"http://primary.streamti.me/~irc/%23slug/latest.png",
+		"twitter":	"@sydlug OR #sydlug",
+		"justintv":	"sydlug",
+		"logo": 	"/static/logo/slug.png",
+		"link":		"http://www.slug.org.au/",
+		"title":	"Sydney Linux User Group",
+                "": ""
+	},
+
+	"sypy": {
+		"channel":	"#sypy",
+		"irclog":	"http://primary.streamti.me/~irc/frameit-ng.php?channel=%23sypy",
+		"preview":	"http://primary.streamti.me/~irc/%23sypy/latest.png",
+		"twitter":	"@sypy OR #sypy",
+		"justintv":	"sypy",
+		"logo":		"/static/logo/sypy.png",
+		"link":		"http://sypy.org/",
+		"title":	"Sydney Python Group",
+                "": ""
+	},
+
+        "": {}
+}

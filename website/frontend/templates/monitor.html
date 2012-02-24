@@ -1,51 +1,34 @@
+{% extends "base.html" %}
 {% comment %}
 -*- coding: utf-8 -*-
 vim: set ts=2 sw=2 et sts=2 ai:
 {% endcomment %}
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+{% block head %}
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
     <script type="text/javascript" src="/static/third_party/jquery-extra/jquery.juitter-1.0.0.js"></script>
-{% for group in groups %}
+  {% for group in groups %}
     <script type="text/javascript" src="/{{group}}/streams.js"></script>
-{% endfor %}
+  {% endfor %}
     <script type="text/javascript" src="/static/third_party/jwplayer/jwplayer.js"></script>
-    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <link rel="stylesheet" type="text/css" href="/static/css/tweet.css">
     <link rel="stylesheet" type="text/css" href="/static/third_party/jquery-extra/jquery.juitter-1.0.0.css">
     <title>Stream Time for Linux.conf.au!</title>
+{% endblock %}
 
-<script type="text/javascript">
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-23123757-1']);
-  _gaq.push(['_setDomainName', 'none']);
-  _gaq.push(['_setAllowLinker', true]);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-</script>
-
-  </head>
-<body>
-  <table id="body-table">
-    <tr>
-{% for group in groups %}
+{% block body %}
+  {% for group in groups %}
       <td class="container_1" style="height: 1em;">
         <h1>{{group}}</h1>
       </td>
-{% endfor %}
+  {% endfor %}
     </tr><tr>
-{% for group in groups %}
+  {% for group in groups %}
       <td class="container_2" style="height: 300px;">
         <div id="{{group}}">
         </div>
       </td>
-{% endfor %}
+  {% endfor %}
     </tr><tr>
       <td id="twitter-cell" style="height: auto;" colspan={{groups|length}}>
         <div id="twitter-container" class="container_3" style="">
@@ -56,15 +39,9 @@ vim: set ts=2 sw=2 et sts=2 ai:
           </div>
         </div>
       </td>
-    </tr><tr>
-      <td id="footer" colspan={{groups|length}}>
-        <span id="footer-container" class="container_3">
-{% include "footer.html" %}
-        </span>
-      </td>
-    </tr>
-  </table>
-  </div>
+{% endblock %}
+
+{% block script %}
 <script type="text/javascript">
 
 function fit_player (group) {
@@ -107,6 +84,5 @@ function ready() {
 }
 $(document).ready(ready);
 
-    </script>
-</body>
-</html>
+</script>
+{% endblock %}

@@ -1,39 +1,22 @@
+{% extends "base.html" %}
 {% comment %}
 -*- coding: utf-8 -*-
 vim: set ts=2 sw=2 et sts=2 ai:
 {% endcomment %}
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+{% block head %}
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
     <script type="text/javascript" src="/static/third_party/jquery-extra/jquery.relatedtweets-1.0.min.js"></script>
     <script type="text/javascript" src="/static/third_party/jwplayer/jwplayer.js"></script>
-    <script type="text/javascript" src="/whats_on.js"></script>
-    <script type="text/javascript" src="/{{ group }}/streams.js"></script>
+    <script type="text/javascript" src="/static/js/whats_on.js"></script>
+    <script type="text/javascript" src="/static/js/streams.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <link rel="stylesheet" type="text/css" href="/static/css/tweet.css">
-    <title>Tim's Video Streaming for {{ group|upper }}</title>
+    <title>Streaming for {{ config.title }}</title>
+{% endblock %}
 
-<script type="text/javascript">
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-23123757-1']);
-  _gaq.push(['_setDomainName', 'none']);
-  _gaq.push(['_setAllowLinker', true]);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-</script>
-
-  </head>
-<body>
-
-  <table id="body-table">
-    <tr>
+{% block content %}
       <td id="title" colspan=2>
         <div id="showing" class="container_4">
           <div id='talk_info' class='talk_info' onclick='$(".talk_desc").fadeToggle();'>(More info)</div>
@@ -68,7 +51,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
           </form>
         </div>
         <div id="quality-container" class="options-group container_1">
-          Backup Stream <a href="http://justin.tv/{{ justintv }}">at Justin.tv</a>
+          Backup Stream <a href="http://justin.tv/{{ config.justintv }}">at Justin.tv</a>
         </div>
       </td>
     </tr><tr>
@@ -89,19 +72,19 @@ vim: set ts=2 sw=2 et sts=2 ai:
               Linux.
             </p><p>
               To see the platform in action <a href="https://panel.orionvm.com.au/signup/">sign up</a>
-              and mention linux.conf.au for $50 free credit.
+              and mention {{ config.title }} for $50 free credit.
             </p>
           </div>
         </div>
         <div id='sponsor-2'>
-          <a href="http://www.aarnet.edu.au/"><img src="/static/img/aarnet.gif" alt="Australia's Academic and Research Network"></a>
+          <a href="{{ config.link }}"><img src="{{ config.logo }}" alt="{{ config.title }}"></a>
         </div>
       </td>
     </tr><tr>
       <td id="chat-cell">
         <div id="chat-container" class="container_3">
           <div id="chat-sizer" class="sizer">
-            <iframe id="chat-frame" src="http://webchat.freenode.net?channels={{ channel|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
+            <iframe id="chat-frame" src="http://webchat.freenode.net?channels={{ config.channel|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
           </div>
         </div>
       </td>
@@ -111,19 +94,14 @@ vim: set ts=2 sw=2 et sts=2 ai:
           <div id="twitter-sizer" class="sizer">
             <div class="related-tweets" options="{debug: false}">Related tweets loading....</div>
             <div id="twitter-search">Search on Twitter:
-              <a class=tag href="http://search.twitter.com/search?q={{ hashtag|urlencode }}" rel="tag">{{ hashtag }}</a>
+              <a class=tag href="http://search.twitter.com/search?q={{ config.twitter|urlencode }}" rel="tag">{{ config.twitter }}</a>
             </div>
           </div>
         </div>
       </td>
-    </tr><tr>
-      <td id="footer" colspan=2>
-        <span id="footer-container" class="container_3">
-{% include "footer.html" %}
-        </span>
-      </td>
-    </tr>
-  </table>
+{% endblock %}
+
+{% block script %}
 <script type="text/javascript">
 
 function sponsor_swap_a() {
@@ -211,7 +189,7 @@ function format_set(value) {
     var flashvars = {
       "start_volume": 0.5,
       "backgroundImage": "",
-      "channel": "{{ justintv }}",
+      "channel": "{{ config.justintv }}",
       "hostname": "www.justin.tv",
       "auto_play": true
     };
@@ -276,7 +254,4 @@ function schedule_callback() {
 }
 
 get_schedule(schedule_callback);
-
-    </script>
-</body>
-</html>
+{% endblock %}

@@ -1,5 +1,5 @@
-amazon/config.json
-amazon/default.pem
 *.pyc
 .*
+config.private.json
 tools/portable/img/*.png
+*.sqlite3

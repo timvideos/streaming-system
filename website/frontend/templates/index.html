@@ -1,37 +1,20 @@
+{% extends "base.html" %}
 {% comment %}
 -*- coding: utf-8 -*-
 vim: set ts=2 sw=2 et sts=2 ai:
 {% endcomment %}
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+
+{% block head %}
     <script type="text/javascript" src="/static/third_party/jquery-extra/jquery.juitter-1.0.0.js"></script>
-    <script type="text/javascript" src="/whats_on.js"></script>
+    <script type="text/javascript" src="/static/js/whats_on.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <link rel="stylesheet" type="text/css" href="/static/css/tweet.css">
     <link rel="stylesheet" type="text/css" href="/static/third_party/jquery-extra/jquery.juitter-1.0.0.css">
-    <title>Stream Time for Linux.conf.au!</title>
+    <title>Stream Time ---INDEX PAGE---</title>
+{% endblock %}
 
-<script type="text/javascript">
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-23123757-1']);
-  _gaq.push(['_setDomainName', 'none']);
-  _gaq.push(['_setAllowLinker', true]);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-</script>
-
-  </head>
-<body>
-  <table id="body-table">
-    <tr>
-{% for group in groups %}
+{% block content %}
+    {% for group in groups %}
       <td class="title">
         <div class="container_3">
           <h1>
@@ -39,9 +22,9 @@ vim: set ts=2 sw=2 et sts=2 ai:
           </h1>
         </div>
       </td>
-{% endfor %}
+    {% endfor %}
     </tr><tr>
-{% for group in groups %}
+    {% for group in groups %}
       <td>
         <div id="showing" class="container_4">
           <div id='{{group}}_info' class='talk_info' onclick='$(".talk_desc").fadeToggle();'>(More info)</div>
@@ -49,23 +32,23 @@ vim: set ts=2 sw=2 et sts=2 ai:
           <div id='{{group}}_desc' class='talk_desc'></div>
         </div>
       </td>
-{% endfor %}
+    {% endfor %}
     </tr><tr>
-{% for group in groups %}
+    {% for group in groups %}
       <td class="preview">
         <div class="container_2" onClick="window.location='/{{group}}'">
           <img id="video-preview-{{group}}" class="video_preview">
         </div>
       </td>
-{% endfor %}
+    {% endfor %}
     </tr><tr>
-{% for group in groups %}
+    {% for group in groups %}
       <td>
         <div class="container_3" onClick="window.location='/{{group}}'">
           <iframe id="chat-preview-{{group}}" class="chat_preview"></iframe>
         </div>
       </td>
-{% endfor %}
+    {% endfor %}
     </tr><tr>
       <td colspan={{groups|length}}>
         <table style="height: 100%; width: 100%;">
@@ -102,22 +85,20 @@ vim: set ts=2 sw=2 et sts=2 ai:
           </tr>
         </table>
       </td>
-    </tr><tr>
-      <td id="footer" colspan={{groups|length}}>
-        <span id="footer-container" class="container_3">
-{% include "footer.html" %}
-        </span>
-      </td>
-    </tr>
-  </table>
+{% endblock %}
+
+
+{% block footer %}
   <div id=preload>
 {% for group in groups %}
   <img id="video-preload-{{group}}" class="video_preload">
 {% endfor %}
- 
   </div>
-<script type="text/javascript">
+{% endblock %}
 
+
+{% block script %}
+<script type="text/javascript">
 // Swap the preloaded video image into the main image
 {% for group in groups %}
 $('#video-preload-{{group|escapejs}}').load(function() {
@@ -179,7 +160,5 @@ function schedule_callback() {
 }
 
 get_schedule(schedule_callback);
-
-    </script>
-</body>
-</html>
+</script>
+{% endblock %}
