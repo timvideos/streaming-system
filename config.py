@@ -5,6 +5,7 @@
 
 import os
 import simplejson as json
+import warnings
 
 def _config_merge_into(dicta, dictb):
     for nameb, valueb in dictb.iteritems():
@@ -47,8 +48,9 @@ def config_load():
         raise IOError('Unable to open config.json\n%s' % e)
     try:
         config_private = json.load(_skip_start_comments(open(private_config)))
-    except ValueError, e:
-        raise IOError('Unable to open config_private.json\n%s' % e)
+    except (ValueError, IOError), e:
+        warnings.warn('Unable to open config_private.json\n%s' % e)
+        config_private = {}
 
     _config_merge_into(config, config_private)
 
