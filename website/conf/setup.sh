@@ -1,4 +1,14 @@
-#! /bin/sh
+#! /bin/bash
+
+function as_website {
+	su website -c "$*"
+	return $?
+}
+
+if [ x$USER != xroot ]; then
+	echo "Must be run as root!"
+	exit
+fi
 
 set -x
 
@@ -12,17 +22,30 @@ adduser $USER website
 adduser $USER website-run
 
 # Set up the website directory
-su website -c "git clone git://github.com/timsvideo/timsvideo.git ~/timsvideo"
-su website -c "ln -s ~/timsvideo ~/current"
+(
+if [ -d timsvideo ]; then
+	as_website "cd /home/website; git clone git://github.com/timsvideo/timsvideo.git timsvideo"
+else
+	as_website "cd /home/website/timsvideo; git pull" || exit
+fi
+cd /home/website/timsvideo
+export VERSION=$(git describe --tags --long)-$(date +%Y%m%d-%H%M%S)
+as_website cp -arf ../timsvideo ../timsvideo-$VERSION
+(cd website && as_website make prepare-serve)
+as_website rm /home/website/current
+as_website ln -s /home/website/timsvideo-$VERSION /home/website/current
+as_website chmod -R g+w /home/website
 # Need to get config-private.json
+# Need to get settings-private.py
+)
 
 # Add the init script
 cp init.conf /etc/init/website.conf
-ln -s /lib/init/upstart-job /etc/init.d/website
+ln -sf /lib/init/upstart-job /etc/init.d/website
 service website restart
 
 # Add the ngnix config
 apt-get install nginx
 cp nginx.conf /etc/nginx/sites-available/website
-ln -s /etc/nginx/sites-available/website /etc/nginx/sites-enabled/website
+ln -sf /etc/nginx/sites-available/website /etc/nginx/sites-enabled/website
 service nginx restart
