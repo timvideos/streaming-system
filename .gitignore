@@ -3,3 +3,12 @@
 config.private.json
 tools/portable/img/*.png
 *.sqlite3
+*.pyc
+*.swp
+website/website.sqlite*
+website/testing.sqlite*
+website/bin/
+website/include/
+website/lib/
+website/src/
+website/build/
