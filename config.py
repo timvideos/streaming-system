@@ -75,6 +75,12 @@ def config_all(config, group):
     return config_group
 
 
+def group_valid(config, group):
+    groups = config.keys()
+    groups.remove('config')
+    return group in groups
+
+
 if __name__ == "__main__":
     print "config.json"
     print "-"*80

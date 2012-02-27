@@ -22,29 +22,21 @@ from django.views.decorators.csrf import csrf_exempt
 from common.views.simple import never_cache_redirect_to
 from tracker import models
 
-CONFIG = ConfigParser.ConfigParser()
-CONFIG.read([os.path.dirname(__file__)+'/../config.ini'])
-GROUPS = CONFIG.get('config', 'groups').split()
+
+config_path = os.path.realpath(os.path.dirname(__file__)+"/../..")
+if config_path not in sys.path:
+    sys.path.append(config_path)
+import config as common_config
+CONFIG = common_config.config_load()
 
 # IP Address which are considered "In Room"
-LOCALIPS = [x[1] for x in CONFIG.items('localips')]
-
-
-def check_group(group):
-    group = group.lower()
-    if not re.match('[a-z/]+', group):
-        group = None
-    if group not in GROUPS:
-        group = None
-    return group
+LOCALIPS = CONFIG['config']['localips']
 
 
 @never_cache
 def streams(request, group):
     """Renders the streams.js file."""
-
-    group = check_group(group)
-    if not group:
+    if not common_config.group_valid(CONFIG, group):
         response = http.HttpResponse()
         response.write("window.src = '/';\n");
         return response
