@@ -10,11 +10,14 @@ from django.db import models
 
 class Encoder(models.Model):
     """Amazon EC2 instance which does encoding."""
-    group = models.CharField(blank=False, max_length=10, primary_key=True)
-    ip = models.IPAddressField(blank=False, primary_key=True)
+    group = models.CharField(blank=False, max_length=10)
+    ip = models.IPAddressField(blank=False)
     bitrate = models.IntegerField(default=0)
     clients = models.IntegerField(default=0)
     lastseen = models.DateTimeField(auto_now=True, blank=False)
+
+    class Meta:
+        unique_together = (("group", "ip"),)
 
 
 class Collector(models.Model):
@@ -22,3 +25,6 @@ class Collector(models.Model):
     group = models.CharField(blank=False, max_length=10)
     ip = models.IPAddressField(blank=False)
     lastseen = models.DateTimeField(auto_now=True, blank=False)
+
+    class Meta:
+        unique_together = (("group", "ip"),)
