@@ -111,6 +111,7 @@ TEMPLATE_DIRS = (
 INSTALLED_APPS = (
     'frontend',
     'tracker',
+    'documentation',
     'django_extensions',
     'django.contrib.auth',
     'django.contrib.contenttypes',
