@@ -45,8 +45,8 @@ Production Deployment
     be persisted across deployments, you may have to take care of this in your
     deploy script.
 
- *  To do the deployment, I use the setup.sh script in conf directory. It takes
-    a copy of the current code in ``~website/timsvideo`` and puts it in
+ *  To do the deployment, I use the ``setup.sh`` script in conf directory. It
+    takes a copy of the current code in ``~website/timsvideo`` and puts it in
     ``~website/$VERSION-$DATE-$TIME`` directory and then links
     ``~website/current`` to that.
 
