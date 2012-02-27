@@ -23,7 +23,9 @@ from django.views.decorators.cache import cache_control
 from common.views.simple import never_cache_redirect_to
 from tracker import models
 
-sys.path.append(os.path.realpath(os.path.dirname(__file__)+"/../.."))
+config_path = os.path.realpath(os.path.dirname(__file__)+"/../..")
+if config_path not in sys.path:
+    sys.path.append(config_path)
 import config as common_config
 CONFIG = common_config.config_load()
 
