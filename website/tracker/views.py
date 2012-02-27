@@ -10,8 +10,10 @@ import ConfigParser
 import datetime
 import logging
 import os
-import time
+import random
 import re
+import string
+import time
 
 from django import http
 from django.shortcuts import render_to_response
@@ -67,39 +69,6 @@ def streams(request, group):
     return render_to_response('streams.js', locals(), content_type='text/javascript')
 
 
-@csrf_exempt
-@never_cache
-def register(request):
-    """Registers an encoding server into the application."""
-    if request.method != 'POST':
-        return never_cache_redirect_to(request, url="/")
-
-    response = http.HttpResponse(content_type='text/plain')
-
-    secret = request.POST['secret']
-    if secret != CONFIG.get('config', 'secret'):
-        response.write('ERROR SECRET\n')
-        return
-
-    group = request.POST['group']
-    if group not in GROUPS:
-        response.write('ERROR GROUP\n')
-        return
-
-    ip = request.META['REMOTE_ADDR']
-    clients = int(request.POST['clients'])
-    bitrate = int(request.POST['bitrate'])
-
-    s = models.Encoder(
-            group=group,
-            ip=ip,
-            clients=clients,
-            bitrate=bitrate)
-    s.save()
-    response.write('OK\n')
-    return response
-
-
 @never_cache
 def stats(request):
     """Print out some stats about registered encoders."""
@@ -153,4 +122,167 @@ def stats(request):
     table(inactive_servers)
     response.write('   </body>')
     response.write('</html>')
+    return response
+
+###########################################################################################
+# Code which collects the client side system reporting.
+###########################################################################################
+
+class StatsError(SystemError):
+    pass
+
+
+def generate_salt():
+    return "".join(random.choice(string.ascii_letters) for x in range(16))
+
+
+def key(request, salt=None):
+    if salt is None:
+        salt = generate_salt()
+
+    in_data = [salt]
+    in_data.append(request.META['HTTP_USER_AGENT'])
+    in_data.append(request.META['REMOTE_ADDR'])
+    return hashlib.sha224.hexdigest()
+
+class error(object):
+    # All errors are between 0 and 1024
+    ERROR_GROUP = 1
+
+    # All warnings are above 1024
+    WARNING_COOKIE = 1025
+
+
+def client(request):
+    """Check the common information for an encoder request."""
+    if request.method != 'POST':
+        return never_cache_redirect_to(request, url="/")
+
+    response = http.HttpResponse(content_type='application/javascript')
+
+    group = request.POST['group']
+    if not common_config.group_valid(CONFIG, group):
+        response.write(simplejson.dumps({
+            'code': error.ERROR_GROUP,
+            'error': 'Unknown group',
+            }))
+        return response, None, None
+
+    # Check the cookie value
+    if 'user' not in request.COOKIES:
+        response.set_cookie('user', value=user_key(request))
+        response.write(simplejson.dumps({
+            'code': error.WARNING_COOKIE,
+            'error': 'No cookie set',
+            }))
+        return response, None, None
+
+    salt, digest = request.COOKIES['user'].split(':')
+    assert userid(request, salt) == digest
+
+    return None, group, ip
+
+
+def client_stats(request):
+    response, group, ip = client(request)
+    if reponse is not None:
+        return response
+
+    response = http.HttpResponse(content_type='application/javascript')
+
+    data = simplejson.loads(int(request.POST['data']))
+    data['ip'] = ip
+    data['user-agent'] = request.META['HTTP_USER_AGENT']
+    data['referrer'] = request.META['HTTP_REFERER']
+
+    s = models.ClientStats()
+
+
+###########################################################################################
+# Code which collects the encoder system reporting.
+###########################################################################################
+
+class EncoderError(SystemError):
+    pass
+
+def encoder(request):
+    """Check the common information for an encoder request."""
+    if request.method != 'POST':
+        return never_cache_redirect_to(request, url="/")
+
+    response = http.HttpResponse(content_type='text/plain')
+
+    secret = request.POST['secret']
+    if secret != CONFIG.get('config', 'secret'):
+        response.write('ERROR SECRET\n')
+        return response, None, None
+
+    group = request.POST['group']
+    if not common_config.group_valid(CONFIG, group):
+        response.write('ERROR GROUP\n')
+        return response, None, None
+
+    ip = request.META['REMOTE_ADDR']
+
+    return None, group, ip
+
+
+@csrf_exempt
+@never_cache
+def encoder_register(request):
+    """Registers an encoding server, plus a bunch of stats."""
+    response, group, ip = encoder(request)
+    if response is not None:
+        return response
+
+    data = simplejson.loads(int(request.POST['data']))
+    # Check that the data doesn't override these two important values
+    assert 'ip' not in data
+    assert 'group' not in data
+
+    s = models.Encoder(
+            group=group,
+            ip=ip,
+            **data)
+    s.save()
+
+    response = http.HttpResponse(content_type='text/plain')
+    response.write('OK\n')
+    return response
+
+
+# Log line format
+# 127.0.0.1 - frank [10/Oct/2000:13:55:36 -0700] "GET /apache_pb.gif HTTP/1.0" 200 2326
+# <ip> - <user> [<date>] "<request>" <status code> <bytes> "<referer>" "<user-agent>"
+@csrf_exempt
+@never_cache
+def encoder_logs(request):
+    """Saves the client's log files."""
+    response, group, ip = encoder(request)
+    if response is not None:
+        return response
+
+    # Take a lock on the file
+    while True:
+        logfile = file(os.path.join(CONFIG['config']['logdir'], "access-%s-%s.log" % (group, ip)), 'a')
+        try:
+            fcntl.lockf(logfile, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except IOError, e:
+            time.sleep(1)
+        else:
+            break
+
+    # Write out the log lines
+    logfile.write(request.POST['data'])
+    logfile.flush()
+
+    # Unlock the file
+    fcntl.lockf(logfile, fcntl.LOCK_UN)
+
+    # Close the file
+    logfile.close()
+
+    # Write out that everything went okay
+    response = http.HttpResponse(content_type='text/plain')
+    response.write('OK\n')
     return response
