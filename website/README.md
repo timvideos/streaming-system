@@ -45,37 +45,20 @@ Production Deployment
     be persisted across deployments, you may have to take care of this in your
     deploy script.
 
- *  For deployment, I simply ``ssh -A website@localhost``; this turns on agent
-    forwarding so that my usual SSH keys are used to pull the code from
-    bitbucket. For automated deployments, you can create a passwordless key
-    stored for the ``website`` user to use and upload it to Github as a
-    [deploy key][].
-
- *  To do the deployment, I use this simple script, which would benefit from a
-    ton more checking::
-
-        #!/bin/bash
-        TIMESTAMP=$(date +%Y%m%d-%H%M)
-        cd ~/
-        git clone git@github.com:sydney-linux-user-group/timsvideo.git ${TIMESTAMP}
-        cd ${TIMESTAMP}
-        make prepare-serve
+ *  To do the deployment, I use the setup.sh script in conf directory. It takes
+    a copy of the current code in ``~website/timsvideo`` and puts it in
+    ``~website/$VERSION-$DATE-$TIME`` directory and then links
+    ``~website/current`` to that.
 
     This makes it relatively easy to revert to an earlier version of the code.
 
  *  The app runs inside [Green Unicorn][], and is started by
     [upstart][]. Take a look at conf/init.conf
 
-    This solution is not perfect. ``upstart`` doesn't kill ``gunicorn``
-    properly, so a restart involves killing a few processes before using ``sudo
-    service slug start``.
-
-
  *  The app uses [nginx][] as a frontend, and to serve static files. Only a few
     changes from the default config are needed to accomplish this.
 
     Take a look at conf/nginx.conf
-
 
   [deploy key]: http://help.github.com/deploy-keys/
   [Green Unicorn]: http://gunicorn.org/
