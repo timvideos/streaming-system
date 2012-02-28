@@ -8,14 +8,18 @@
 # Python imports
 import ConfigParser
 import datetime
+import hashlib
 import logging
 import os
 import random
 import re
+import simplejson
 import string
+import sys
 import time
 
 from django import http
+from django.db import transaction
 from django.shortcuts import render_to_response
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
@@ -133,7 +137,7 @@ def generate_salt():
     return "".join(random.choice(string.ascii_letters) for x in range(16))
 
 
-def key(request, salt=None):
+def user_key(request, salt=None):
     """Generate a unique key for this user."""
     if salt is None:
         salt = generate_salt()
@@ -141,7 +145,7 @@ def key(request, salt=None):
     in_data = [salt]
     in_data.append(request.META['HTTP_USER_AGENT'])
     in_data.append(request.META['REMOTE_ADDR'])
-    return '%s:%s' % (salt, hashlib.sha224.hexdigest())
+    return '%s:%s' % (salt, hashlib.sha224("".join(in_data)).hexdigest())
 
 
 class error(object):
@@ -155,23 +159,22 @@ class error(object):
     WARNING_COOKIE = 1025
 
 
-def client(request):
+def client_common(request, group):
     """Check the common information for an client request."""
     if request.method != 'POST':
-        return never_cache_redirect_to(request, url="/")
+        return (never_cache_redirect_to(request, url="/"), None, None)
 
     response = http.HttpResponse(content_type='application/javascript')
 
-    group = request.POST['group']
     if not common_config.group_valid(CONFIG, group):
         response.write(simplejson.dumps({
             'code': error.ERROR_GROUP,
             'error': 'Unknown group',
             'next': -1,
             }))
-        return response, None, None
+        return (response, None, None)
 
-    # Check the cookie value
+    # Check the cookie value exists
     if 'user' not in request.COOKIES:
         response.set_cookie('user', value=user_key(request))
         response.write(simplejson.dumps({
@@ -179,12 +182,20 @@ def client(request):
             'error': 'No cookie set',
             'next': 0,
             }))
-        return response, None, None
+        return (response, None, None)
 
+    # Check the cookie value is valid
     salt, digest = request.COOKIES['user'].split(':')
-    assert userid(request, salt) == digest
+    if user_key(request, salt) != request.COOKIES['user']:
+        response.delete_cookie('user')
+        response.write(simplejson.dumps({
+            'code': error.WARNING_COOKIE,
+            'error': 'Cookie was invalid?',
+            'next': 0,
+            }))
+        return (response, None, None)
 
-    return None, group, request.COOKIES['user']
+    return (None, group, request.COOKIES['user'])
 
 
 def dump_request_headers(request):
@@ -194,24 +205,36 @@ def dump_request_headers(request):
 @csrf_exempt
 @never_cache
 @transaction.commit_on_success
-def client_stats(request):
-    response, group, user = client(request)
-    if reponse is not None:
+def client_stats(request, group, _now=None):
+    """
+    Save stats about a client.
+
+    Args:
+        request: Django request object.
+        group: Group to save stats about.
+        _now: A datetime.datetime object to pretend is "now". Used for testing
+              only.
+
+    Returns:
+        Django response object.
+    """
+    response, group, user = client_common(request, group)
+    if response is not None:
         return response
 
-    data = simplejson.loads(int(request.POST['data']))
-
-    dump = "".join(request.xreadlines())
-    print dump
+    data = simplejson.loads(request.POST['data'])
 
     data['user-agent'] = request.META['HTTP_USER_AGENT']
-    data['ip'] = reqest.META['REMOTE_ADDR']
-    data['referrer'] = request.META['HTTP_REFERER']
+    data['ip'] = request.META['REMOTE_ADDR']
+    if 'HTTP_REFERER' in request.META:
+        data['referrer'] = request.META['HTTP_REFERER']
 
     # Save the stats
     s = models.ClientStats(
         group=group,
         created_by=user)
+    if _now is not None:
+        s.created_on = _now
     s.save()
     s.from_dict(data)
 
@@ -219,18 +242,16 @@ def client_stats(request):
     response = http.HttpResponse(content_type='application/javascript')
     response.write(simplejson.dumps({
         'code': error.SUCCESS,
-        'next': 0,
+        'next': 5,
         }))
-
+    return response
 
 ###########################################################################################
 # Code which collects the encoder system reporting.
 ###########################################################################################
 
-class EncoderError(SystemError):
-    pass
 
-def encoder(request):
+def encoder_common(request, group):
     """Check the common information for an encoder request."""
     if request.method != 'POST':
         return never_cache_redirect_to(request, url="/")
@@ -255,9 +276,9 @@ def encoder(request):
 @csrf_exempt
 @never_cache
 @transaction.commit_on_success
-def encoder_register(request):
+def encoder_register(request, group):
     """Registers an encoding server, plus a bunch of stats."""
-    response, group, ip = encoder(request)
+    response, group, ip = encoder_common(request)
     if response is not None:
         return response
 
@@ -282,9 +303,9 @@ def encoder_register(request):
 # <ip> - <user> [<date>] "<request>" <status code> <bytes> "<referer>" "<user-agent>"
 @csrf_exempt
 @never_cache
-def encoder_logs(request):
+def encoder_logs(request, group):
     """Saves the client's log files."""
-    response, group, ip = encoder(request)
+    response, group, ip = encoder_common(request)
     if response is not None:
         return response
 
