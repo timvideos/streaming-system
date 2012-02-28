@@ -154,6 +154,7 @@ class error(object):
 
     # All errors are between 1 and 1024
     ERROR_GROUP = 1
+    ERROR_JSON = 2
 
     # All warnings are above 1024
     WARNING_COOKIE = 1025
@@ -222,7 +223,16 @@ def client_stats(request, group, _now=None):
     if response is not None:
         return response
 
-    data = simplejson.loads(request.POST['data'])
+    try:
+        data = simplejson.loads(request.POST['data'])
+    except simplejson.JSONDecodeError, e:
+        response = http.HttpResponse(content_type='application/javascript')
+        response.write(simplejson.dumps({
+            'code': error.ERROR_JSON,
+            'error': 'Invalid JSON: %s' % e,
+            'next': -1,
+            }))
+        return response
 
     data['user-agent'] = request.META['HTTP_USER_AGENT']
     data['ip'] = request.META['REMOTE_ADDR']

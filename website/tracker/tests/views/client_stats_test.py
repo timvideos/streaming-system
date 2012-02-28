@@ -6,6 +6,7 @@
 import simplejson
 import datetime
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase
 from django.test.client import RequestFactory
 
@@ -70,6 +71,9 @@ class ClientStatsTest(TestCase):
         self.assertGreater(content['code'], 0)
         self.assertLess(content['code'], 1024)
 
+        # On errors, no retry should be given
+        self.assertEqual(content['next'], -1)
+
     def assertWarningCode(self, content):
         # This should be a warning, hence greater than 1024
         self.assertGreater(content['code'], 1024)
@@ -124,6 +128,27 @@ class ClientStatsTest(TestCase):
         self.assertWarningCode(content)
         self.assertRetry(content)
         self.assertCookie(response, 'user', '')
+
+    def test_client_badjson(self):
+        factory = RequestFactory()
+        request = factory.post('/clientstats/a', {'data': '{'})
+        request.META['HTTP_USER_AGENT'] = 'Testing'
+        request.META['REMOTE_ADDR'] = '127.0.0.1'
+
+        user = views.user_key(request, salt='abc123')
+        request.COOKIES['user'] = user
+
+        response = views.client_stats(request, 'a', _now=self.NOW)
+
+        content = self.assertJSON(response)
+        self.assertErrorCode(content)
+
+        # Assert no stats where added..
+        self.assertRaises(
+            ObjectDoesNotExist,
+            models.ClientStats.objects.get,
+            created_by=user, created_on=self.NOW,
+            )
 
     def test_client_success(self):
         factory = RequestFactory()
