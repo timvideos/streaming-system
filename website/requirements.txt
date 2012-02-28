@@ -1,4 +1,5 @@
 -e git://github.com/mithro/git-cl.git#egg=git-cl
+-e git://github.com/mithro/django-testing-fixes.git#egg=django-testing-fixes
 Django==1.3.1
 django-live-server
 distribute>=0.6.14
