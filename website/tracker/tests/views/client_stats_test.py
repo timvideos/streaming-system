@@ -144,3 +144,7 @@ class ClientStatsTest(TestCase):
 
         # Assert some stuff is in the database
         stats = models.ClientStats.objects.get(created_by=user, created_on=self.NOW)
+        # FIXME: This changes everytime the list of default saved values changes.
+        self.assertListEqual(
+            ['ip', 'user-agent'],
+            list(str(x) for x in stats.name_and_values.all()))
