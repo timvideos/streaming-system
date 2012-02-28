@@ -128,25 +128,27 @@ def stats(request):
 # Code which collects the client side system reporting.
 ###########################################################################################
 
-class StatsError(SystemError):
-    pass
-
-
 def generate_salt():
+    """Generate a suitable ASCII alpha salt."""
     return "".join(random.choice(string.ascii_letters) for x in range(16))
 
 
 def key(request, salt=None):
+    """Generate a unique key for this user."""
     if salt is None:
         salt = generate_salt()
 
     in_data = [salt]
     in_data.append(request.META['HTTP_USER_AGENT'])
     in_data.append(request.META['REMOTE_ADDR'])
-    return hashlib.sha224.hexdigest()
+    return '%s:%s' % (salt, hashlib.sha224.hexdigest())
+
 
 class error(object):
-    # All errors are between 0 and 1024
+    """Class defining error messages which are returned to the client."""
+    SUCCESS = 0
+
+    # All errors are between 1 and 1024
     ERROR_GROUP = 1
 
     # All warnings are above 1024
@@ -154,7 +156,7 @@ class error(object):
 
 
 def client(request):
-    """Check the common information for an encoder request."""
+    """Check the common information for an client request."""
     if request.method != 'POST':
         return never_cache_redirect_to(request, url="/")
 
@@ -165,6 +167,7 @@ def client(request):
         response.write(simplejson.dumps({
             'code': error.ERROR_GROUP,
             'error': 'Unknown group',
+            'next': -1,
             }))
         return response, None, None
 
@@ -174,28 +177,50 @@ def client(request):
         response.write(simplejson.dumps({
             'code': error.WARNING_COOKIE,
             'error': 'No cookie set',
+            'next': 0,
             }))
         return response, None, None
 
     salt, digest = request.COOKIES['user'].split(':')
     assert userid(request, salt) == digest
 
-    return None, group, ip
+    return None, group, request.COOKIES['user']
 
 
+def dump_request_headers(request):
+    return dump
+
+
+@csrf_exempt
+@never_cache
+@transaction.commit_on_success
 def client_stats(request):
-    response, group, ip = client(request)
+    response, group, user = client(request)
     if reponse is not None:
         return response
 
-    response = http.HttpResponse(content_type='application/javascript')
-
     data = simplejson.loads(int(request.POST['data']))
-    data['ip'] = ip
+
+    dump = "".join(request.xreadlines())
+    print dump
+
     data['user-agent'] = request.META['HTTP_USER_AGENT']
+    data['ip'] = reqest.META['REMOTE_ADDR']
     data['referrer'] = request.META['HTTP_REFERER']
 
-    s = models.ClientStats()
+    # Save the stats
+    s = models.ClientStats(
+        group=group,
+        created_by=user)
+    s.save()
+    s.from_dict(data)
+
+    # Return success
+    response = http.HttpResponse(content_type='application/javascript')
+    response.write(simplejson.dumps({
+        'code': error.SUCCESS,
+        'next': 0,
+        }))
 
 
 ###########################################################################################
@@ -229,6 +254,7 @@ def encoder(request):
 
 @csrf_exempt
 @never_cache
+@transaction.commit_on_success
 def encoder_register(request):
     """Registers an encoding server, plus a bunch of stats."""
     response, group, ip = encoder(request)

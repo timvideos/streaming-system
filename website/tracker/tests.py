@@ -38,8 +38,7 @@ class StatsTest(TestCase):
         }
 
     def test_from_dict(self):
-
-        s = models.ClientStat(
+        s = models.ClientStats(
             group="",
             created_by="127.0.0.1",
             created_on=self.NOW)
@@ -47,7 +46,7 @@ class StatsTest(TestCase):
         s.from_dict(self.DATA)
 
         self.assertListEqual(
-            list(str(x) for x in models.Name.objects.all().order_by('name')), [
+            list(str(x) for x in models.ClientName.objects.all().order_by('name')), [
             "stat01.stat02",
             "stat01.stat03",
             "stat01.stat04",
@@ -61,45 +60,63 @@ class StatsTest(TestCase):
             ])
 
         self.assertListEqual(
-            list(str(x) for x in s.values.order_by(
-                'name', 'value_str', 'value_int', 'value_float')), [
-            'stat01.stat02 = str',
-            'stat01.stat03 = str',
-            'stat01.stat04 = 1',
-            'stat01.stat05 = 1',
-            'stat01.stat06 = 1.0',
-            'stat07 = str',
-            'stat08 = str',
-            'stat09 = 1',
-            'stat11 = 1.0',
-            'stat10 = 1',
+            list(str(x) for x in s.clientnamesandvalues_set.all()), [
+            '127.0.0.1@1330308683.0[stat01.stat02] = str',
+            '127.0.0.1@1330308683.0[stat01.stat03] = str',
+            '127.0.0.1@1330308683.0[stat01.stat04] = 1',
+            '127.0.0.1@1330308683.0[stat01.stat05] = 1',
+            '127.0.0.1@1330308683.0[stat01.stat06] = 1.0',
+            '127.0.0.1@1330308683.0[stat07] = str',
+            '127.0.0.1@1330308683.0[stat08] = str',
+            '127.0.0.1@1330308683.0[stat09] = 1',
+            '127.0.0.1@1330308683.0[stat11] = 1.0',
+            '127.0.0.1@1330308683.0[stat10] = 1',
             ])
 
-    def test_unique_values(self):
-        s = models.ClientStat(
+    def test_unique_strings(self):
+        s = models.ClientStats(
             group="",
             created_by="127.0.0.1",
             created_on=self.NOW)
         s.save()
         s.from_dict(self.DATA)
-        self.assertEqual(models.Value.objects.all().count(), 10)
+        self.assertEqual(models.ClientName.objects.all().count(), 10)
+        self.assertEqual(models.ClientNamesAndValues.objects.all().count(), 10)
+        self.assertEqual(models.ClientStringValue.objects.all().count(), 1)
 
-        s = models.ClientStat(
+        s = models.ClientStats(
             group="",
             created_by="127.0.0.2",
             created_on=self.NOW)
         s.save()
         s.from_dict(self.DATA)
 
-        self.assertEqual(models.Value.objects.all().count(), 10)
+        self.assertEqual(models.ClientName.objects.all().count(), 10)
+        self.assertEqual(models.ClientNamesAndValues.objects.all().count(), 20)
+        self.assertEqual(models.ClientStringValue.objects.all().count(), 1)
 
         updated_data = dict(**self.DATA)
         updated_data['stat10'] = 'Hello!'
-        s = models.ClientStat(
+        s = models.ClientStats(
             group="",
             created_by="127.0.0.3",
             created_on=self.NOW)
         s.save()
         s.from_dict(updated_data)
 
-        self.assertEqual(models.Value.objects.all().count(), 11)
+        self.assertEqual(models.ClientName.objects.all().count(), 10)
+        self.assertEqual(models.ClientNamesAndValues.objects.all().count(), 30)
+        self.assertEqual(models.ClientStringValue.objects.all().count(), 2)
+
+        updated_data = dict(**self.DATA)
+        updated_data['stat12'] = 'Hello!'
+        s = models.ClientStats(
+            group="",
+            created_by="127.0.0.4",
+            created_on=self.NOW)
+        s.save()
+        s.from_dict(updated_data)
+
+        self.assertEqual(models.ClientName.objects.all().count(), 11)
+        self.assertEqual(models.ClientNamesAndValues.objects.all().count(), 41)
+        self.assertEqual(models.ClientStringValue.objects.all().count(), 2)

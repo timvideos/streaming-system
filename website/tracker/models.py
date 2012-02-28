@@ -15,7 +15,7 @@ from django.db import models
 # These models make up the stats recording system.
 class Name(models.Model):
     """Name of a field on stat dictionary."""
-    name = models.CharField(max_length=255, db_index=True)
+    name = models.CharField(max_length=255, db_index=True, unique=True)
 
     def __repr__(self):
         return "%s(%s)" % (self.name, self.pk)
@@ -24,24 +24,38 @@ class Name(models.Model):
         return self.name
 
     class Meta:
-        unique_together = (("name",),)
+        abstract = True
 
 
-class Value(models.Model):
-    """Value of a field on a stat dictionary."""
-    name = models.ForeignKey('Name', db_index=True)
-    value_str = models.TextField(blank=True, null=True, db_index=True)
-    value_int = models.IntegerField(blank=True, null=True, db_index=True)
-    value_float = models.FloatField(blank=True, null=True, db_index=True)
+class StringValue(models.Model):
+    """A string value of a field on the stat dictionary."""
+    value = models.TextField(db_index=True, unique=True)
 
     class Meta:
+        abstract = True
+
+
+class NamesAndValues(models.Model):
+    """Value of a field on a stat dictionary."""
+    # stat = models.ForeignKey('$(name)sStat', db_index=True) # Defined in subclass
+    # name = models.ForeignKey('$(name)sName', db_index=True) # Defined in subclass
+
+    # Numbers are stored locally because the cost of a reference is more then
+    # just storing the number.
+    value_int = models.IntegerField(blank=True, null=True, db_index=True)
+    value_float = models.FloatField(blank=True, null=True, db_index=True)
+    # Strings are stored in another table because they are often expensive.
+    #value_str = models.ForeignKey('ValueString', blank=True, null=True, db_index=True, related_name="values") # Defined in subclass
+
+    class Meta:
+        abstract = True
         unique_together = (("name", "value_str", "value_int", "value_float"),)
 
-    @staticmethod
-    def value_dict(value):
+    @classmethod
+    def value_dict(cls, value):
         d = {}
         if isinstance(value, (str, unicode)):
-            d['value_str'] = value
+            d['value_str'] = cls.StringValueModel.objects.get_or_create(value=value)[0]
         elif isinstance(value, (int, long)):
             d['value_int'] = value
         elif isinstance(value, float):
@@ -52,7 +66,7 @@ class Value(models.Model):
 
     def value_get(self):
         if self.value_str is not None:
-            return self.value_str
+            return self.value_str.value
         elif self.value_int is not None:
             return self.value_int
         elif self.value_float is not None:
@@ -67,15 +81,15 @@ class Value(models.Model):
     value = property(value_get, value_set)
 
     def __unicode__(self):
-        return "%s = %s" % (self.name, self.value)
+        return "%s[%s] = %s" % (self.stat, self.name, self.value)
 
 
-class Stat(models.Model):
+class Stats(models.Model):
     """Some stats recorded from a client."""
     group = models.CharField(blank=False, max_length=10)
     created_on = models.DateTimeField(default=datetime.datetime.utcnow, db_index=True)
     created_by = models.TextField(db_index=True)
-    values = models.ManyToManyField('Value')
+    # name_and_values = models.ManyToManyField('$(name)sName', through='$(name)sNamesAndValues') # Defined in subclass
 
     class Meta:
         abstract = True
@@ -90,16 +104,45 @@ class Stat(models.Model):
             if isinstance(item, dict):
                 self.from_dict(item, key+".")
             else:
-                self.values.add(
-                    Value.objects.get_or_create(
-                        name=Name.objects.get_or_create(
-                            name="%s%s" % (prefix, key))[0],
-                        **Value.value_dict(item))[0])
+                nav = self.NamesAndValuesModel.objects.get_or_create(
+                    stat=self,
+                    name=self.NameModel.objects.get_or_create(
+                        name="%s%s" % (prefix, key))[0],
+                    **self.NamesAndValuesModel.value_dict(item))[0]
 
+STATS_TABLES = """
+class %(name)sName(Name):
+    class Meta(Name.Meta):
+        pass
 
-class ClientStat(Stat):
-    pass
+class %(name)sStringValue(StringValue):
+    class Meta(StringValue.Meta):
+        pass
 
+class %(name)sNamesAndValues(NamesAndValues):
+    NameModel = %(name)sName
+    StringValueModel = %(name)sStringValue
+
+    stat = models.ForeignKey('%(name)sStats', db_index=True)
+    name = models.ForeignKey('%(name)sName', db_index=True) # Defined in subclass
+
+    value_str = models.ForeignKey('%(name)sStringValue', blank=True, null=True, db_index=True, related_name="values")
+
+    class Meta(NamesAndValues.Meta):
+        pass
+
+class %(name)sStats(Stats):
+    NameModel = %(name)sName
+    NamesAndValuesModel = %(name)sNamesAndValues
+
+    name_and_values = models.ManyToManyField('%(name)sName', through='%(name)sNamesAndValues')
+
+    class Meta(Stats.Meta):
+        pass
+"""
+
+exec(STATS_TABLES % {'name': 'Client'})
+exec(STATS_TABLES % {'name': 'Server'})
 
 # These models make up the broadcasting reporting system.
 class Encoder(models.Model):
