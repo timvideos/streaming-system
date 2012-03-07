@@ -162,3 +162,7 @@ LOGGING = {
 
 TEST_RUNNER = "django_testing_fixes.suite.TestSuiteRunner"
 
+try:
+    from private.settings import *
+except ImportError:
+    pass
