@@ -68,8 +68,7 @@ def index(request, template="index"):
             continue
         groups.add(server.group)
 
-    groups = CONFIG.keys()
-    groups.remove('config')
+    groups = common_config.groups(CONFIG)
 
     config = common_config.config_all(CONFIG, 'default')
     return render_to_response('%s.html' % template, locals())

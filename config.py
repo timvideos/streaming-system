@@ -75,10 +75,16 @@ def config_all(config, group):
     return config_group
 
 
-def group_valid(config, group):
+def groups(config):
     groups = config.keys()
     groups.remove('config')
-    return group in groups
+    groups.remove('default')
+    groups.remove('')
+    return groups
+
+
+def group_valid(config, group):
+    return group in groups(config)
 
 
 if __name__ == "__main__":
