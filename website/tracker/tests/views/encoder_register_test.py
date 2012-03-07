@@ -73,7 +73,7 @@ class EncoderRegisterTest(TestCase):
         response = views.encoder_register(request)
         self.assertPlainText(response, "ERROR Assert")
 
-    def test_encoder_register_bad_data_group(self):
+    def test_encoder_register_good(self):
         factory = RequestFactory()
         request = factory.post(
             '/encoder/register',
@@ -85,3 +85,48 @@ class EncoderRegisterTest(TestCase):
 """})
         response = views.encoder_register(request)
         self.assertPlainText(response, "OK")
+
+        encoders = models.Encoder.objects.all()
+        self.assertEqual(1, len(encoders))
+        self.assertEqual(1, encoders[0].overall_bitrate)
+        self.assertEqual(2, encoders[0].overall_clients)
+
+    def test_encoder_register_good_extended(self):
+        factory = RequestFactory()
+        request = factory.post(
+            '/encoder/register',
+            {'group': 'a', 'secret': 's', 'data': """
+{
+    "overall_bitrate": 1,
+    "overall_clients": 2,
+    "loop_bitrate": 3,
+    "loop_clients": 4,
+    "webm_high_bitrate": 5,
+    "webm_high_clients": 6,
+    "webm_low_bitrate": 7,
+    "webm_low_clients": 8,
+    "flv_high_bitrate": 9,
+    "flv_high_clients": 10,
+    "flv_low_bitrate": 11,
+    "flv_low_clients": 12,
+    "ogg_high_bitrate": 13,
+    "ogg_high_clients": 14,
+    "aac_high_bitrate": 15,
+    "aac_high_clients": 16,
+    "mp3_high_bitrate": 17,
+    "mp3_high_clients": 18
+}
+"""})
+        response = views.encoder_register(request)
+        self.assertPlainText(response, "OK")
+
+        encoders = models.Encoder.objects.all()
+        self.assertEqual(1, len(encoders))
+        self.assertEqual(1, encoders[0].overall_bitrate)
+        self.assertEqual(2, encoders[0].overall_clients)
+        self.assertEqual(3, encoders[0].loop_bitrate)
+        self.assertEqual(4, encoders[0].loop_clients)
+        self.assertEqual(5, encoders[0].webm_high_bitrate)
+        self.assertEqual(6, encoders[0].webm_high_clients)
+        self.assertEqual(7, encoders[0].webm_low_bitrate)
+        self.assertEqual(8, encoders[0].webm_low_clients)

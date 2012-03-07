@@ -170,15 +170,15 @@ class Encoder(models.Model):
     flv_low_clients = models.IntegerField(blank=True, null=True)
     flv_low_bitrate = models.IntegerField(blank=True, null=True)
     # -- Audio only versions
-    ogg_clients = models.IntegerField(blank=True, null=True)
-    ogg_bitrate = models.IntegerField(blank=True, null=True)
+    ogg_high_clients = models.IntegerField(blank=True, null=True)
+    ogg_high_bitrate = models.IntegerField(blank=True, null=True)
     aac_high_clients = models.IntegerField(blank=True, null=True)
     aac_high_bitrate = models.IntegerField(blank=True, null=True)
     mp3_high_clients = models.IntegerField(blank=True, null=True)
     mp3_high_bitrate = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        unique_together = (("group", "ip"),)
+        unique_together = (("group", "ip", "lastseen"),)
 
 
 class Collector(models.Model):
