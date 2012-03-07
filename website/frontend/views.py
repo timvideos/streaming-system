@@ -13,10 +13,14 @@ import os
 import sys
 import time
 import re
+import urllib2
+
+from bs4 import BeautifulSoup
 
 from django import http
 from django.core.cache import cache
 from django.shortcuts import render_to_response
+from django.views.decorators.cache import cache_page
 from django.views.decorators.cache import cache_control
 
 # Our App imports
@@ -30,18 +34,8 @@ import config as common_config
 CONFIG = common_config.config_load()
 
 
-def check_group(group):
-    group = group.lower()
-    if not re.match('[a-z/]+', group):
-        group = None
-    if group not in CONFIG.keys():
-        group = None
-    return group
-
-
 def group(request, group):
-    group = check_group(group)
-    if not group:
+    if not common_config.group_valid(CONFIG, group):
         return never_cache_redirect_to(request, url="/")
 
     config = common_config.config_all(CONFIG, group)
@@ -74,8 +68,8 @@ def index(request, template="index"):
             continue
         groups.add(server.group)
 
-    channels = CONFIG.keys()
-    channels.remove('config')
+    groups = CONFIG.keys()
+    groups.remove('config')
 
     config = common_config.config_all(CONFIG, 'default')
     return render_to_response('%s.html' % template, locals())
@@ -92,3 +86,39 @@ def schedule(request):
         cache.set('schedule', schedule, 120)
     response.write(schedule)
     return response
+
+
+@cache_control(must_revalidate=True, max_age=600)
+def logs(request, group):
+    if not common_config.group_valid(CONFIG, group):
+        return never_cache_redirect_to(request, url="/")
+
+    config = common_config.config_all(CONFIG, group)
+
+    log = config['irclog']
+    soup = BeautifulSoup(urllib2.urlopen(log).read())
+
+    # Fix up the css link
+    l = soup.find("link")
+    l['href'] = "%s/%s" % (os.path.dirname(log), l['href'])
+
+    # Remove the unwanted decoration.
+    [x.decompose() for x in soup.find_all("div", {"class": "navigation"})]
+    [x.decompose() for x in soup.find_all("div", {"class": "generatedby"})]
+    [x.decompose() for x in soup.find_all("h1")]
+    [x.decompose() for x in soup.find_all("div", {"class": "searchbox"})]
+
+    # Reverse the table rows.
+    table = soup.find("table")
+    new_order = []
+    for row in list(table.children):
+        new_order.insert(0, row.extract())
+    for row in new_order:
+        table.append(row)
+
+    table['style'] = "font-size: 8pt;"
+
+    response = http.HttpResponse(content_type='text/html')
+    response.write(soup)
+    return response
+

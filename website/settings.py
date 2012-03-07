@@ -111,7 +111,9 @@ TEMPLATE_DIRS = (
 INSTALLED_APPS = (
     'frontend',
     'tracker',
+    'documentation',
     'django_extensions',
+    'django_testing_fixes',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -157,3 +159,6 @@ LOGGING = {
         },
     },
 }
+
+TEST_RUNNER = "django_testing_fixes.suite.TestSuiteRunner"
+

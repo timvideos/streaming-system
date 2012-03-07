@@ -57,7 +57,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
               <div id="sponsor-front" class="container_3">
                <div class='talk_info'>Streaming Sponsors</div>        
                <div id="sponsor-1">
-                <a href="http://www.orionvm.com.au/"><img src="/static/img/orionvm.png"></a>
+                <a href="http://www.orionvm.com.au/"><img src="/static/logos/orionvm.png"></a>
                 <div id="sponsor-1-info">
                   <p>
                     OrionVM provides the world’s fastest cloud platform, specializing in
@@ -67,9 +67,6 @@ vim: set ts=2 sw=2 et sts=2 ai:
                     and mention linux.conf.au for $50 free credit.
                   </p>
                 </div>
-               </div>
-               <div id="sponsor-2">
-                <a href="http://www.aarnet.edu.au/"><img src="/static/img/aarnet.gif" alt="Australia's Academic and Research Network"></a>
                </div>
               </div>
             </td>
@@ -117,7 +114,7 @@ function update_video() {
 function update_chat() {
 {% for group in groups %}
  $('#chat-preview-{{group|escapejs}}').attr(
-  'src', "http://extra.streamti.me/~irc/frameit-ng.php?channel=%23lca2012-{{group|urlencode}}&time="+current_time()
+  'src', "/{{group|urlencode}}/logs"
   );
 {% endfor %}
   setTimeout(update_chat, 20000);

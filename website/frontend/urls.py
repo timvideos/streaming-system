@@ -9,6 +9,7 @@ from frontend import views
 
 urlpatterns = patterns('',
     url(r'^(monitor)$', views.index),
+    url(r'^(.+)/logs?$', views.logs),
     url(r'^(.+)$', views.group),
     url(r'^$', views.index),
    )

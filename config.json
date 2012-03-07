@@ -13,7 +13,7 @@
 	
 	"default": {
 		"channel":	"#streamtime",
-		"irclog":	"http://primary.streamti.me/~irc/frameit-ng.php?channel=%23streamtime",
+		"irclog":	"http://primary.streamti.me/~irc/%23streamtime/latest.log.html",
 		"preview":	"http://primary.streamti.me/~irc/%23streamtime/latest.png",
 		"twitter":	"@mithro OR streamtime OR streamti.me",
 		"justintv":	"mithro1",
@@ -25,7 +25,7 @@
 
 	"fp-syd": {
 		"channel":	"#fp-syd",
-		"irclog":	"http://primary.streamti.me/~irc/frameit-ng.php?channel=%23fp-syd",
+		"irclog":	"http://primary.streamti.me/~irc/%23fp-syd/latest.log.html",
 		"preview":	"http://primary.streamti.me/~irc/%23fp-syd/latest.png",
 		"twitter":	"@fp-syd OR #fp-syd",
 		"justintv":	"fp-syd",
@@ -37,7 +37,7 @@
 
 	"slug": {
 		"channel":	"#slug",
-		"irclog":	"http://primary.streamti.me/~irc/frameit-ng.php?channel=%23slug",
+		"irclog":	"http://primary.streamti.me/~irc/%23slug/latest.log.html",
 		"preview":	"http://primary.streamti.me/~irc/%23slug/latest.png",
 		"twitter":	"@sydlug OR #sydlug",
 		"justintv":	"sydlug",
@@ -49,7 +49,7 @@
 
 	"sypy": {
 		"channel":	"#sypy",
-		"irclog":	"http://primary.streamti.me/~irc/frameit-ng.php?channel=%23sypy",
+		"irclog":	"http://primary.streamti.me/~irc/%23sypy/latest.log.html",
 		"preview":	"http://primary.streamti.me/~irc/%23sypy/latest.png",
 		"twitter":	"@sypy OR #sypy",
 		"justintv":	"sypy",

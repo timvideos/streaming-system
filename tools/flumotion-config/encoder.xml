@@ -21,6 +21,11 @@ user:m7dJC19OBcGI2
       <property name="socket-path">flu-8080.socket</property>
       <property name="password">ffDtYpfsEvOK</property>
       <property name="port">8080</property>
+      <plugs>
+        <plug socket="flumotion.component.plugs.loggers.Logger" type="requestlogger-file">
+          <property name="logfile">/usr/local/var/log/flumotion/access.log</property>
+        </plug>
+      </plugs>
     </component>
     <component name="porter-loop"
                type="porter"
@@ -32,6 +37,11 @@ user:m7dJC19OBcGI2
       <property name="socket-path">flu-8081.socket</property>
       <property name="password">ffDtYpfsEvOK</property>
       <property name="port">8081</property>
+      <plugs>
+        <plug socket="flumotion.component.plugs.loggers.Logger" type="requestlogger-file">
+          <property name="logfile">/usr/local/var/log/flumotion/local.log</property>
+        </plug>
+      </plugs>
     </component>
     
   </atmosphere>
@@ -114,19 +124,6 @@ user:m7dJC19OBcGI2
       <clock-master>false</clock-master>
     </component>
 
-    <component name="justintv"
-               type="pipeline-converter"
-               label="justintv"
-               worker="localhost"
-               project="flumotion"
-               version="0.9.0.1">
-      <eater name="default">
-        <feed alias="default">muxer-loop:default</feed>
-      </eater>
-      <clock-master>false</clock-master>
-      <property name="pipeline">tee name=t ! queue ! rtmpsink location=rtmp://live.justin.tv/app/%(justintv)s  t. ! queue</property>
-    </component>
-
     <component name="http-loop"
                type="http-streamer"
                label="http-loop"
@@ -149,6 +146,20 @@ user:m7dJC19OBcGI2
       <plugs>
       </plugs>
     </component>
+
+    <component name="justintv"
+               type="pipeline-converter"
+               label="justintv"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">muxer-loop:default</feed>
+      </eater>
+      <clock-master>false</clock-master>
+      <property name="pipeline">tee name=t ! queue ! rtmpsink location=rtmp://live.justin.tv/app/%(justintv)s  t. ! queue</property>
+    </component>
+
     <!-- ============================================================= -->
     <!-- = Video Encoding                                            = -->
     <!-- ============================================================= -->
