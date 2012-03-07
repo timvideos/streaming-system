@@ -155,27 +155,27 @@ class Encoder(models.Model):
     overall_clients = models.IntegerField(default=0)
 
     # Loop back is not included in the overall values
-    loop_bitrate = models.IntegerField(blank=True)
-    loop_clients = models.IntegerField(blank=True)
+    loop_bitrate = models.IntegerField(blank=True, null=True)
+    loop_clients = models.IntegerField(blank=True, null=True)
 
     # Keep these values in-sync with the encoder.xml config
     # -- HTML5's webm
-    loop_webm_high_clients = models.IntegerField(blank=True)
-    loop_webm_high_bitrate = models.IntegerField(blank=True)
-    loop_webm_low_clients = models.IntegerField(blank=True)
-    loop_webm_low_bitrate = models.IntegerField(blank=True)
+    webm_high_clients = models.IntegerField(blank=True, null=True)
+    webm_high_bitrate = models.IntegerField(blank=True, null=True)
+    webm_low_clients = models.IntegerField(blank=True, null=True)
+    webm_low_bitrate = models.IntegerField(blank=True, null=True)
     # -- H.264 flash
-    loop_flv_high_clients = models.IntegerField(blank=True)
-    loop_flv_high_bitrate = models.IntegerField(blank=True)
-    loop_flv_low_clients = models.IntegerField(blank=True)
-    loop_flv_low_bitrate = models.IntegerField(blank=True)
+    flv_high_clients = models.IntegerField(blank=True, null=True)
+    flv_high_bitrate = models.IntegerField(blank=True, null=True)
+    flv_low_clients = models.IntegerField(blank=True, null=True)
+    flv_low_bitrate = models.IntegerField(blank=True, null=True)
     # -- Audio only versions
-    loop_ogg_clients = models.IntegerField(blank=True)
-    loop_ogg_bitrate = models.IntegerField(blank=True)
-    loop_aac_high_clients = models.IntegerField(blank=True)
-    loop_aac_high_bitrate = models.IntegerField(blank=True)
-    loop_mp3_high_clients = models.IntegerField(blank=True)
-    loop_mp3_high_bitrate = models.IntegerField(blank=True)
+    ogg_clients = models.IntegerField(blank=True, null=True)
+    ogg_bitrate = models.IntegerField(blank=True, null=True)
+    aac_high_clients = models.IntegerField(blank=True, null=True)
+    aac_high_bitrate = models.IntegerField(blank=True, null=True)
+    mp3_high_clients = models.IntegerField(blank=True, null=True)
+    mp3_high_bitrate = models.IntegerField(blank=True, null=True)
 
     class Meta:
         unique_together = (("group", "ip"),)

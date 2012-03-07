@@ -8,6 +8,7 @@
 __author__ = "mithro@mithis.com (Tim 'mithro' Ansell)"
 
 import datetime
+import simplejson
 import time
 import urllib
 import urllib2
@@ -110,8 +111,12 @@ class Register(common.AdminCommand):
         return d
 
     def send_update(self, totals):
-        clients = sum(x[1] for x in totals)
-        bitrate = sum(x[2] for x in totals)
+        data = {"overall_clients": 0, "overall_bitrate": 0}
+        for name, clients, bits in totals:
+            data[name+"_clients"] = int(clients)
+            data[name+"_bitrate"] = float(bitrate)
+            data["overall_clients"] += clients
+            data["overall_bitrate"] += bitrate
 
         try:
             r = urllib2.urlopen(
@@ -119,15 +124,16 @@ class Register(common.AdminCommand):
                 urllib.urlencode((
                     ('secret', self.secret),
                     ('group', self.group),
-                    ('clients', clients),
-                    ('bitrate', bitrate),
+                    ('data', simplejson.dumps(data)),
                     ))
                 )
         except urllib2.HTTPError, e:
             print e
             print e.read()
             raise
-        print "Registered at", datetime.datetime.now(), "result", r.read().strip(), 'clients:', clients, 'bitrate:', bitrate/1e6, 'megabits/second'
+        print "Registered at", datetime.datetime.now(), "result", r.read().strip(),
+        print 'clients:', data['overall_clients'],
+        print 'bitrate:', data['overall_bitrate'], bitrate/1e6, 'megabits/second'
 
         # Schedule another register in 30 seconds
         d = defer.Deferred()

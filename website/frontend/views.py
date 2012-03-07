@@ -88,8 +88,7 @@ def schedule(request):
     return response
 
 
-#@cache_control(must_revalidate=True, max_age=600)
-#@cache_page(600)
+@cache_control(must_revalidate=True, max_age=600)
 def logs(request, group):
     if not common_config.group_valid(CONFIG, group):
         return never_cache_redirect_to(request, url="/")

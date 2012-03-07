@@ -17,6 +17,7 @@ import simplejson
 import string
 import sys
 import time
+import traceback
 
 from django import http
 from django.db import transaction
@@ -261,7 +262,7 @@ def client_stats(request, group, _now=None):
 ###########################################################################################
 
 
-def encoder_common(request, group):
+def encoder_common(request):
     """Check the common information for an encoder request."""
     if request.method != 'POST':
         return never_cache_redirect_to(request, url="/")
@@ -269,7 +270,7 @@ def encoder_common(request, group):
     response = http.HttpResponse(content_type='text/plain')
 
     secret = request.POST['secret']
-    if secret != CONFIG.get('config', 'secret'):
+    if secret != CONFIG.get('config')['secret']:
         response.write('ERROR SECRET\n')
         return response, None, None
 
@@ -286,26 +287,32 @@ def encoder_common(request, group):
 @csrf_exempt
 @never_cache
 @transaction.commit_on_success
-def encoder_register(request, group):
+def encoder_register(request):
     """Registers an encoding server, plus a bunch of stats."""
     response, group, ip = encoder_common(request)
     if response is not None:
         return response
 
-    data = simplejson.loads(int(request.POST['data']))
-    # Check that the data doesn't override these two important values
-    assert 'ip' not in data
-    assert 'group' not in data
+    try:
+        data = simplejson.loads(request.POST['data'])
+        # Check that the data doesn't override these two important values
+        assert 'ip' not in data
+        assert 'group' not in data
 
-    s = models.Encoder(
-            group=group,
-            ip=ip,
-            **data)
-    s.save()
+        s = models.Encoder(
+                group=group,
+                ip=ip,
+                **data)
+        s.save()
 
-    response = http.HttpResponse(content_type='text/plain')
-    response.write('OK\n')
-    return response
+        response = http.HttpResponse(content_type='text/plain')
+        response.write('OK\n')
+        return response
+    except Exception, e:
+        response = http.HttpResponse(content_type='text/plain')
+        response.write('ERROR %s\n' % e.__class__.__name__)
+        traceback.print_exc(file=response)
+        return response
 
 
 # Log line format
@@ -313,7 +320,7 @@ def encoder_register(request, group):
 # <ip> - <user> [<date>] "<request>" <status code> <bytes> "<referer>" "<user-agent>"
 @csrf_exempt
 @never_cache
-def encoder_logs(request, group):
+def encoder_logs(request):
     """Saves the client's log files."""
     response, group, ip = encoder_common(request)
     if response is not None:
