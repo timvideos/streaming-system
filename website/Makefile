@@ -51,7 +51,7 @@ install: lib/python2.6/site-packages/ez_setup.py lib/python2.6/site-packages/dis
 
 prepare-serve: install
 	$(ACTIVATE) && python manage.py collectstatic --noinput
-	$(ACTIVATE) && python manage.py syncdb
+#	$(ACTIVATE) && python manage.py syncdb
 
 lint: install
 	@# R0904 - Disable "Too many public methods" warning
