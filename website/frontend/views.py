@@ -65,6 +65,7 @@ def index(request, template="index"):
     for group in sorted(CONFIG.groups()):
         groups[group] = CONFIG.config(group)
 
+    default = CONFIG['default']
     return render_to_response('%s.html' % template, locals())
 
 
@@ -75,7 +76,7 @@ def schedule(request):
 
     schedule = cache.get('schedule')
     if not schedule:
-        schedule = urllib.fetch('http://lca2012.linux.org.au/programme/schedule/json').content
+        schedule = urllib.fetch('https://us.pycon.org/2012/schedule/json').content
         cache.set('schedule', schedule, 120)
     response.write(schedule)
     return response
@@ -90,6 +91,9 @@ def logs(request, group):
 
     log = config['irclog']
     soup = BeautifulSoup(urllib2.urlopen(log).read())
+
+    body = soup.find("body")
+    body['style'] = "background: transparent;"
 
     # Fix up the css link
     l = soup.find("link")

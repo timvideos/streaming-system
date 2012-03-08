@@ -1,0 +1,55 @@
+@font-face {
+  font-family: 'LeagueGothicRegular';
+  src: url('https://us.pycon.org/2012/site_media/static/fonts/league_gothic-webfont.eot');
+  src: url('https://us.pycon.org/2012/site_media/static/fonts/league_gothic-webfont.eot?#iefix') format('embedded-opentype'),
+       url('https://us.pycon.org/2012/site_media/static/fonts/league_gothic-webfont.woff') format('woff'),
+       url('https://us.pycon.org/2012/site_media/static/fonts/league_gothic-webfont.ttf') format('truetype'),
+       url('https://us.pycon.org/2012/site_media/static/fonts/league_gothic-webfont.svg#LeagueGothicRegular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  background-image: url('/static/img/bg.png');
+}
+
+div {
+  border-radius: 5px;
+}
+
+div.container_3 {
+  border: 0;
+  background: transparent;
+}
+
+h1 a {
+  font-family: LeagueGothicRegular, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.04em;
+  color: #006E91;
+  font-variant: small-caps;
+  text-shadow: 0 1px 0 #f9f2e6;
+}
+
+#twitter-container {
+  border: 3px solid #e3dfd4;
+  background: #f5f5f5;
+}
+
+div.chat {
+  border: 1px solid #e3dfd4;
+  background: #f5f5f5;
+}
+
+hr {
+  clear:both;
+  width:100%;
+  margin:15px 0;
+  height:2px;
+  background:none;
+  border:0;
+  background: url('https://us.pycon.org/2012/site_media/static/img/thin_stripe.png') repeat-x 0 0;
+}
+
+.sponsor-cell {
+  width: 130px;
+}

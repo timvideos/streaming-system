@@ -15,8 +15,8 @@ vim: set ts=2 sw=2 et sts=2 ai:
 
 {% block content %}
     {% for group, details in groups.items %}
-      <td class="title">
-        <div class="container_3">
+      <td>
+        <div id="{{group}}_title" class="title">
           <h1>
             <a href="/{{group}}">{{details.title}}<br><span class="title_click">Click to view live stream!</span></a>
           </h1>
@@ -26,7 +26,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
     </tr><tr>
     {% for group, details in groups.items %}
       <td>
-        <div id="showing" class="container_4">
+        <div id="{{group}}_abstract" class="talk_abstract">
           <div id='{{group}}_info' class='talk_info' onclick='$(".talk_desc").fadeToggle();'>(More info)</div>
           <div id='{{group}}_title' class='talk_title'></div>
           <div id='{{group}}_desc' class='talk_desc'></div>
@@ -35,7 +35,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
     {% endfor %}
     </tr><tr>
     {% for group, details in groups.items %}
-      <td class="preview">
+      <td id="{{group}}_preview" class="preview">
         <div class="container_2" onClick="window.location='/{{group}}'">
           <img id="video-preview-{{group}}" class="video_preview">
         </div>
@@ -44,7 +44,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
     </tr><tr>
     {% for group, details in groups.items %}
       <td>
-        <div class="container_3" onClick="window.location='/{{group}}'">
+        <div id="{{group}}_chat" class="chat" onClick="window.location='/{{group}}'">
           <iframe id="chat-preview-{{group}}" class="chat_preview"></iframe>
         </div>
       </td>
@@ -53,25 +53,15 @@ vim: set ts=2 sw=2 et sts=2 ai:
       <td colspan={{groups|length}}>
         <table style="height: 100%; width: 100%;">
           <tr>
-            <td style="width: 240px; vertical-align: top;">
-              <div id="sponsor-front" class="container_3">
-               <div class='talk_info'>Streaming Sponsors</div>        
+            <td class="sponsor-cell">
+              <div id="sponsor-front" class="sponsor">
                <div id="sponsor-1">
-                <a href="http://www.orionvm.com.au/"><img src="/static/logos/orionvm.png"></a>
-                <div id="sponsor-1-info">
-                  <p>
-                    OrionVM provides the world’s fastest cloud platform, specializing in
-                    Linux.
-                  </p><p>
-                    To see the platform in action <a href="https://panel.orionvm.com.au/signup/">sign up</a>
-                    and mention linux.conf.au for $50 free credit.
-                  </p>
-                </div>
+                <a href="http://us.pycon.org/"><img src="/static/logos/pycon.png"></a>
                </div>
               </div>
             </td>
             <td id="twitter-cell" style="height: auto;">
-              <div id="twitter-container" class="container_3" style="">
+              <div id="twitter-container">
                 <div id="twitter-sizer" class="sizer">
                   <div id="twitter-juitter">
                     <div id="juitterContainer"></div>
@@ -142,7 +132,7 @@ $(document).ready(function() {
     live:"live-5",
     total: 20,
     searchType: "searchWord",
-    searchObject: "{{ hashtag|urlencode }}",
+    searchObject: "{{ default.twitter|urlencode }}",
     });
   update_video();
   update_chat();
