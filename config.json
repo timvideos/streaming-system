@@ -5,57 +5,65 @@
 	"config": {
 		"localips": [
 			"^127\\.",
-			"^74\\.125\\.56",
-			"^2620:0:1080"
+                        "^66\\.78\\.236\\.243"
 		],
                 "": ""
 	},
 	
 	"default": {
-		"channel":	"#streamtime",
-		"irclog":	"http://primary.streamti.me/~irc/%23streamtime/latest.log.html",
-		"preview":	"http://primary.streamti.me/~irc/%23streamtime/latest.png",
-		"twitter":	"@mithro OR streamtime OR streamti.me",
-		"justintv":	"mithro1",
-		"logo":		"/static/logo/blank.png",
-                "link":         "http://view.streamti.me/",
+		"channel":	"#pycon",
+		"irclog":	"http://pycon.streamti.me/~irc/%23pycon/latest.log.html",
+		"preview":	"http://pycon.streamti.me/~irc/%23pycon/latest.png",
+		"twitter":	"@pycon OR #pycon OR #pyconus",
+		"logo":		"/static/logo/pycon.png",
+                "link":         "https://us.pycon.org/2012/schedule/",
 		"title":	"Unknown stream",
+                "justintv":     "",
                 "": ""
 	},
 
-	"fp-syd": {
-		"channel":	"#fp-syd",
-		"irclog":	"http://primary.streamti.me/~irc/%23fp-syd/latest.log.html",
-		"preview":	"http://primary.streamti.me/~irc/%23fp-syd/latest.png",
-		"twitter":	"@fp-syd OR #fp-syd",
-		"justintv":	"fp-syd",
-		"logo":		"/static/logo/fp-syd.png",
-		"link":		"http://fp-syd.ouroborus.net/",
-		"title":	"Functional Programming Sydney",
+	"track-1": {
+		"channel":	"#pycon-track-1",
+		"irclog":	"http://primary.streamti.me/~irc/%23pycon-track-1/latest.log.html",
+		"preview":	"http://primary.streamti.me/~irc/%23pycon-track-1/latest.png",
+		"justintv":	"pycon-track-1",
+		"title":	"Track I (D5)",
                 "": ""
 	},
 
-	"slug": {
-		"channel":	"#slug",
-		"irclog":	"http://primary.streamti.me/~irc/%23slug/latest.log.html",
-		"preview":	"http://primary.streamti.me/~irc/%23slug/latest.png",
-		"twitter":	"@sydlug OR #sydlug",
-		"justintv":	"sydlug",
-		"logo": 	"/static/logo/slug.png",
-		"link":		"http://www.slug.org.au/",
-		"title":	"Sydney Linux User Group",
+	"track-2": {
+		"channel":	"#pycon-track-2",
+		"irclog":	"http://primary.streamti.me/~irc/%23pycon-track-2/latest.log.html",
+		"preview":	"http://primary.streamti.me/~irc/%23pycon-track-2/latest.png",
+		"justintv":	"pycon-track-2",
+		"title":	"Track II (E1)",
                 "": ""
 	},
 
-	"sypy": {
-		"channel":	"#sypy",
-		"irclog":	"http://primary.streamti.me/~irc/%23sypy/latest.log.html",
-		"preview":	"http://primary.streamti.me/~irc/%23sypy/latest.png",
-		"twitter":	"@sypy OR #sypy",
-		"justintv":	"sypy",
-		"logo":		"/static/logo/sypy.png",
-		"link":		"http://sypy.org/",
-		"title":	"Sydney Python Group",
+	"track-3": {
+		"channel":	"#pycon-track-3",
+		"irclog":	"http://primary.streamti.me/~irc/%23pycon-track-3/latest.log.html",
+		"preview":	"http://primary.streamti.me/~irc/%23pycon-track-3/latest.png",
+		"justintv":	"pycon-track-3",
+		"title":	"Track III (E2)",
+                "": ""
+	},
+
+	"track-4": {
+		"channel":	"#pycon-track-4",
+		"irclog":	"http://primary.streamti.me/~irc/%23pycon-track-4/latest.log.html",
+		"preview":	"http://primary.streamti.me/~irc/%23pycon-track-4/latest.png",
+		"justintv":	"pycon-track-4",
+		"title":	"Track IV (E3)",
+                "": ""
+	},
+
+	"track-5": {
+		"channel":	"#pycon-track-5",
+		"irclog":	"http://primary.streamti.me/~irc/%23pycon-track-5/latest.log.html",
+		"preview":	"http://primary.streamti.me/~irc/%23pycon-track-5/latest.png",
+		"justintv":	"pycon-track-5",
+		"title":	"Track V (E4)",
                 "": ""
 	},
 

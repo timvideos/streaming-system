@@ -17,12 +17,14 @@ class EncoderRegisterTest(TestCase):
     maxDiff = None
 
     def setUp(self):
-        views.CONFIG = {
+        views.CONFIG = views.CONFIG.__class__({
             'config': {
                 'secret': 's',
             },
+            'default' : {
+            },
             'a': {},
-        }
+        })
 
     def assertPlainText(self, response, text):
         self.assertEqual(response['Content-Type'], 'text/plain')

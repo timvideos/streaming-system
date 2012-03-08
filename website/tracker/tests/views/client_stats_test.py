@@ -86,7 +86,10 @@ class ClientStatsTest(TestCase):
         pass
 
     def setUp(self):
-        views.CONFIG = {'config': {}, 'a': {}}
+        views.CONFIG = views.CONFIG.__class__({
+            'config': {},
+            'default' : {},
+            'a': {}})
 
     def test_client_common_error_on_get(self):
         factory = RequestFactory()

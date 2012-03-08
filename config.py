@@ -9,10 +9,6 @@ import warnings
 
 def _config_merge_into(dicta, dictb):
     for nameb, valueb in dictb.iteritems():
-        if nameb == "":
-            del dicta[nameb]
-            continue
-
         if nameb in dicta:
             valuea = dicta[nameb]
             assert isinstance(valuea, dict), "%r not dict" % valuea
@@ -34,6 +30,15 @@ def _skip_start_comments(f):
     return f
 
 
+def _clean_empty(dicta):
+    if "" in dicta:
+        del dicta[""]
+
+    for name, value in dicta.items():
+        if isinstance(value, dict):
+            _clean_empty(value)
+
+
 def config_load():
     """Load configuration and return dictionary."""
     myloc = os.path.dirname(__file__)
@@ -52,6 +57,13 @@ def config_load():
         warnings.warn('Unable to open config_private.json\n%s' % e)
         config_private = {}
 
+    _clean_empty(config)
+    _clean_empty(config_private)
+
+    only_private = set(config_private.keys()) - set(config.keys())
+    assert not only_private, (
+        'Private config has the following extra keys: %s' % only_private)
+
     _config_merge_into(config, config_private)
 
     all_keys = set(config['default'].keys())
@@ -63,28 +75,38 @@ def config_load():
             'Group %s has invalid keys: %s' % (
                 group_name, group_keys.difference(all_keys))
 
-    return config
+    return ConfigWrapper(config)
 
 
-def config_all(config, group):
-    """Get a dictionary containing configuration values."""
-    assert group in config
-    config_group = {}
-    for name, default_value in config['default'].iteritems():
-        config_group[name] = config[group].get(name, default_value)
-    return config_group
+class ConfigWrapper(dict):
 
+    def groups(self):
+        """Get a list of groups defined in the config file."""
+        groups = self.keys()
+        groups.remove('config')
+        groups.remove('default')
+        return list(sorted(groups))
 
-def groups(config):
-    groups = config.keys()
-    groups.remove('config')
-    groups.remove('default')
-    groups.remove('')
-    return groups
+    def config(self, group):
+        """Get a dictionary containing configuration values for a group."""
+        assert group in self
+        config_group = {}
+        for name, default_value in self['default'].iteritems():
+            config_group[name] = self[group].get(name, default_value)
 
+        for name, value in config_group.iteritems():
+            context = dict(config_group)
+            context['group'] = group
+            try:
+                config_group[name] = value % context
+            except:
+                pass
 
-def group_valid(config, group):
-    return group in groups(config)
+        return config_group
+
+    def valid(self, group):
+        """Check if a given group is valid."""
+        return group in self.groups()
 
 
 if __name__ == "__main__":
@@ -100,8 +122,11 @@ if __name__ == "__main__":
     print
     print "Merged config"
     print "-"*80
-    config = config_load()
+    CONFIG = config_load()
     import pprint
-    pprint.pprint(config)
+    pprint.pprint(CONFIG)
     print "-"*80
+    for group in CONFIG.groups():
+        print group
+        pprint.pprint(CONFIG.config(group))
 

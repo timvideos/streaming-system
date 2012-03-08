@@ -43,12 +43,10 @@ LOCALIPS = CONFIG['config']['localips']
 @never_cache
 def streams(request, group):
     """Renders the streams.js file."""
-    if not common_config.group_valid(CONFIG, group):
+    if not CONFIG.valid(group):
         response = http.HttpResponse()
         response.write("window.src = '/';\n");
         return response
-
-    channel = CONFIG.get('groups', group)
 
     # Get all the active streaming severs for this channel
     ten_mins_ago = datetime.datetime.now() - datetime.timedelta(minutes=10)
@@ -168,7 +166,7 @@ def client_common(request, group):
 
     response = http.HttpResponse(content_type='application/javascript')
 
-    if not common_config.group_valid(CONFIG, group):
+    if not CONFIG.valid(group):
         response.write(simplejson.dumps({
             'code': error.ERROR_GROUP,
             'error': 'Unknown group',
@@ -275,7 +273,7 @@ def encoder_common(request):
         return response, None, None
 
     group = request.POST['group']
-    if not common_config.group_valid(CONFIG, group):
+    if not CONFIG.valid(group):
         response.write('ERROR GROUP\n')
         return response, None, None
 

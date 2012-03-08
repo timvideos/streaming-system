@@ -108,9 +108,12 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
-INSTALLED_APPS = (
+OUR_APPS = (
     'frontend',
     'tracker',
+)
+
+INSTALLED_APPS = OUR_APPS + (
     'documentation',
     'django_extensions',
     'django_testing_fixes',

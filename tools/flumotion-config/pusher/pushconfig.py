@@ -5,13 +5,16 @@
 
 """Push config to a bunch of flumotion box."""
 
-import ConfigParser
 import optparse
 import subprocess
 
+config_path = os.path.realpath(os.path.dirname(__file__)+"/../../..")
+if config_path not in sys.path:
+    sys.path.append(config_path)
+import config as common_config
+CONFIG = common_config.config_load()
 
-CONFIG = ConfigParser.ConfigParser()
-CONFIG.read(['config.ini'])
+
 
 OPTIONS = optparse.OptionParser()
 OPTIONS.add_option("-e", "--encoders",
@@ -28,17 +31,20 @@ OPTIONS.add_option("--no-collectors",
                   help="Don't push configs to collectors.")
 
 def main(args):
-    user = CONFIG.get('config', 'user')
-    password = CONFIG.get('config', 'password')
-    crypt = CONFIG.get('config', 'crypt')
-    rooms = CONFIG.get('config', 'rooms').split()
+    user = CONFIG['config']['user']
+    password = CONFIG['config']['password']
+    crypt = CONFIG['config']['crypt']
+    rooms = common_config.groups(CONFIG)
 
     (options, args) = OPTIONS.parse_args()
+
+    worker_context = dict(CONFIG['config'])
+    #worker_context['flumotion-encoders'] = worker_context['flumotion-encoders'] % CONFIG
 
     # Write the worker
     worker_file = '/tmp/worker.xml'
     f = file(worker_file, 'w')
-    f.write(file('worker.xml').read() % locals())
+    f.write(file('worker.xml').read() % CONFIG['config'])
     f.close()
 
     for room in rooms:
