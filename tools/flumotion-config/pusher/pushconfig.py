@@ -5,15 +5,21 @@
 
 """Push config to a bunch of flumotion box."""
 
+import crypt
 import optparse
+import os
 import subprocess
+import sys
 
-config_path = os.path.realpath(os.path.dirname(__file__)+"/../../..")
+mypath = os.path.dirname(__file__)
+if not mypath:
+    mypath = "."
+
+config_path = os.path.realpath(mypath+"/../../..")
 if config_path not in sys.path:
     sys.path.append(config_path)
 import config as common_config
 CONFIG = common_config.config_load()
-
 
 
 OPTIONS = optparse.OptionParser()
@@ -31,53 +37,53 @@ OPTIONS.add_option("--no-collectors",
                   help="Don't push configs to collectors.")
 
 def main(args):
-    user = CONFIG['config']['user']
-    password = CONFIG['config']['password']
-    crypt = CONFIG['config']['crypt']
-    rooms = common_config.groups(CONFIG)
-
     (options, args) = OPTIONS.parse_args()
 
-    worker_context = dict(CONFIG['config'])
-    #worker_context['flumotion-encoders'] = worker_context['flumotion-encoders'] % CONFIG
+    general_context = dict(CONFIG['config'])
 
     # Write the worker
-    worker_file = '/tmp/worker.xml'
-    f = file(worker_file, 'w')
-    f.write(file('worker.xml').read() % CONFIG['config'])
-    f.close()
 
-    for room in rooms:
-        justintv = CONFIG.get('justintv', room)
+    for group in CONFIG.groups():
+        config = CONFIG.config(group)
+        print config
+        config['flumotion-password-crypt'] = crypt.crypt(
+            config['flumotion-password'],
+            config['flumotion-salt'])
+        config['group'] = group
 
-        print room
+        print group
         print "-"*80
+
+        worker_file = '/tmp/worker-%s.xml' % group
+        f = file(worker_file, 'w')
+        f.write(file('worker.xml').read() % config)
+        f.close()
 
         # Upload the encoder config
         if options.encoders:
-            host = CONFIG.get('encoders', room)
+            host = config['flumotion-encoder']
 
-            encoder_file = '/tmp/encoder-lca-%s.xml' % room
+            encoder_file = '/tmp/encoder-lca-%s.xml' % group
             f = file(encoder_file, 'w')
-            f.write(file('encoder-lca.xml').read() % locals())
+            f.write(file('encoder.xml').read() % config)
             f.close()
 
             print "Encoder - %s" % host
-            subprocess.call("scp %s %s:/usr/local/etc/flumotion/managers/default/planet.xml" % (encoder_file, host), shell=True)
-            subprocess.call("scp %s %s:/usr/local/etc/flumotion/workers/default.xml" % (worker_file, host), shell=True)
+            subprocess.call("echo scp %s %s:/usr/local/etc/flumotion/managers/default/planet.xml" % (encoder_file, host), shell=True)
+            subprocess.call("echo scp %s %s:/usr/local/etc/flumotion/workers/default.xml" % (worker_file, host), shell=True)
 
         # Upload the collector config
         if options.collectors:
-            host = CONFIG.get('collectors', room)
+            host = config['flumotion-collector']
 
-            collector_file = '/tmp/collector-lca-%s.xml' % room
+            collector_file = '/tmp/collector-lca-%s.xml' % group
             f = file(collector_file, 'w')
-            f.write(file('collector-lca.xml').read() % locals())
+            f.write(file('collector.xml').read() % config)
             f.close()
 
             print "Collector - %s" % host
-            subprocess.call("scp %s %s:/usr/local/etc/flumotion/managers/default/planet.xml" % (collector_file, host), shell=True)
-            subprocess.call("scp %s %s:/usr/local/etc/flumotion/workers/default.xml" % (worker_file, host), shell=True)
+            subprocess.call("echo scp %s %s:/usr/local/etc/flumotion/managers/default/planet.xml" % (collector_file, host), shell=True)
+            subprocess.call("echo scp %s %s:/usr/local/etc/flumotion/workers/default.xml" % (worker_file, host), shell=True)
 
         print "-"*80
         print

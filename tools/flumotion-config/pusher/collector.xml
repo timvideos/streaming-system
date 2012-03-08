@@ -5,7 +5,7 @@
     <host>0.0.0.0</host>
     <component name="manager-bouncer" type="htpasswdcrypt-bouncer">
       <property name="data">
-%(user)s:%(crypt)s
+%(flumotion-user)s:%(flumotion-password-crypt)s
 </property>
     </component>
   </manager>
@@ -129,9 +129,9 @@
       <eater name="default">
         <feed alias="default">muxer-audio-video:default</feed>
       </eater>
-      <property name="username">%(user)s</property>
-      <property name="host">%(group)s.streamti.me</property>
-      <property name="password">%(password)s</property>
+      <property name="username">%(flumotion-user)s</property>
+      <property name="host">%(flumotion-encoder)s</property>
+      <property name="password">%(flumotion-password)s</property>
       <property name="port">15000</property>
       <clock-master>false</clock-master>
     </component>

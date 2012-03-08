@@ -5,7 +5,7 @@
     <host>0.0.0.0</host>
     <component name="manager-bouncer" type="htpasswdcrypt-bouncer">
       <property name="data">
-lca:Nk5neMA3Yq1Lo
+%(flumotion-user)s:%(flumotion-password-crypt)s
 </property>
     </component>
   </manager>
@@ -42,8 +42,8 @@ lca:Nk5neMA3Yq1Lo
                project="flumotion"
                type="fgdp-producer"
                worker="localhost">
-      <property name="username">%(user)s</property>
-      <property name="password">%(password)s</property>
+      <property name="username">%(flumotion-user)s</property>
+      <property name="password">%(flumotion-password)s</property>
       <property name="host">0.0.0.0</property>
       <property name="port">15000</property>
     </component>
