@@ -27,12 +27,11 @@
   <flow name="default">
 
     <component name="producer-audio-video"
-               type="dvsource-producer"
+               type="dvswitch-producer"
                label="producer-audio-video"
                worker="localhost"
                project="flumotion"
                version="0.9.0.1">
-               
       <property name="deinterlace-mode">auto</property>
       <property name="is-square">True</property>
       <property name="deinterlace-method">ffmpeg</property>
@@ -40,7 +39,7 @@
       <property name="height">576</property>
       <property name="width">792</property>
       <property name="decoder">ffdec_dvvideo</property>
-      <property name="filename">/tmp/dvsource</property>
+      <property name="uri">dvswitch://%(flumotion-mixer)s:2000</property>
       <clock-master>true</clock-master>
     </component>
 
@@ -53,7 +52,7 @@
       <eater name="default">
         <feed alias="default">producer-audio-video:video</feed>
       </eater>
-      <property name="pipeline">ffmpegcolorspace ! ffenc_flv bitrate=2000000</property>
+      <property name="pipeline">ffmpegcolorspace ! ffenc_flv bitrate=1000000</property>
     </component>
     
     <component name="encoder-audio"

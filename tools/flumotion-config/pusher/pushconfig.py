@@ -45,7 +45,6 @@ def main(args):
 
     for group in CONFIG.groups():
         config = CONFIG.config(group)
-        print config
         config['flumotion-password-crypt'] = crypt.crypt(
             config['flumotion-password'],
             config['flumotion-salt'])
@@ -63,27 +62,27 @@ def main(args):
         if options.encoders:
             host = config['flumotion-encoder']
 
-            encoder_file = '/tmp/encoder-lca-%s.xml' % group
+            encoder_file = '/tmp/encoder-%s.xml' % group
             f = file(encoder_file, 'w')
             f.write(file('encoder.xml').read() % config)
             f.close()
 
             print "Encoder - %s" % host
-            subprocess.call("echo scp %s %s:/usr/local/etc/flumotion/managers/default/planet.xml" % (encoder_file, host), shell=True)
-            subprocess.call("echo scp %s %s:/usr/local/etc/flumotion/workers/default.xml" % (worker_file, host), shell=True)
+            subprocess.call("echo scp %s root@%s:/usr/local/etc/flumotion/managers/default/planet.xml" % (encoder_file, host), shell=True)
+            subprocess.call("echo scp %s root@%s:/usr/local/etc/flumotion/workers/default.xml" % (worker_file, host), shell=True)
 
         # Upload the collector config
         if options.collectors:
             host = config['flumotion-collector']
 
-            collector_file = '/tmp/collector-lca-%s.xml' % group
+            collector_file = '/tmp/collector-%s.xml' % group
             f = file(collector_file, 'w')
             f.write(file('collector.xml').read() % config)
             f.close()
 
             print "Collector - %s" % host
-            subprocess.call("echo scp %s %s:/usr/local/etc/flumotion/managers/default/planet.xml" % (collector_file, host), shell=True)
-            subprocess.call("echo scp %s %s:/usr/local/etc/flumotion/workers/default.xml" % (worker_file, host), shell=True)
+            subprocess.call("echo scp %s root@%s:/usr/local/etc/flumotion/managers/default/planet.xml" % (collector_file, host), shell=True)
+            subprocess.call("echo scp %s root@%s:/usr/local/etc/flumotion/workers/default.xml" % (worker_file, host), shell=True)
 
         print "-"*80
         print
