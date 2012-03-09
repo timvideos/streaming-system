@@ -12,4 +12,5 @@ urlpatterns = patterns('',
     url(r'^encoder/logs$', views.encoder_logs),
     url(r'^(.*)/stats$', views.client_stats),
     url(r'^(.*)/streams.js$', views.streams),
+    url(r'^stats$', views.stats),
    )

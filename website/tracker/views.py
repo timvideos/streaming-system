@@ -24,6 +24,7 @@ from django.db import transaction
 from django.shortcuts import render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
+from django.db import models as django_models
 
 # Our App imports
 from common.views.simple import never_cache_redirect_to
@@ -52,8 +53,8 @@ def streams(request, group):
 
     # Get all the active streaming severs for this channel
     ten_mins_ago = datetime.datetime.now() - datetime.timedelta(minutes=10)
-    q = models.Encoder.objects.all()
-    q.filter(group__exact=group)
+    q = models.Encoder.objects.order_by('group', 'ip', '-lastseen').distinct('group', 'ip')
+    q = q.filter(group__exact=group)
 
     active_servers = []
     for server in q:
@@ -79,21 +80,22 @@ def streams(request, group):
 @never_cache
 def stats(request):
     """Print out some stats about registered encoders."""
-    logging.info('stats!')
     response = http.HttpResponse()
 
     inactive_servers = []
     active_servers = []
 
     ten_mins_ago = datetime.datetime.now() - datetime.timedelta(minutes=10)
-    for server in models.Encoder.objects.all():
+
+    encoders = models.Encoder.objects.order_by('group', 'ip', '-lastseen').distinct('group', 'ip')
+    for server in encoders:
         if server.lastseen < ten_mins_ago:
             inactive_servers.append(server)
         else:
             active_servers.append(server)
 
-    active_servers = sorted(active_servers, cmp=lambda a, b: cmp((a.group, a.bitrate), (b.group, b.bitrate)))
-    inactive_servers = sorted(inactive_servers, cmp=lambda a, b: cmp((a.group, a.bitrate), (b.group, b.bitrate)))
+    active_servers = sorted(active_servers, cmp=lambda a, b: cmp((a.group, a.overall_bitrate), (b.group, b.overall_bitrate)))
+    inactive_servers = sorted(inactive_servers, cmp=lambda a, b: cmp((a.group, a.overall_bitrate), (b.group, b.overall_bitrate)))
 
     response['Content-Type'] = 'text/html'
 
@@ -111,9 +113,9 @@ def stats(request):
             response.write('           <tr>')
             response.write('               <td>%s</td>' % server.ip)
             response.write('               <td>%s</td>' % server.group)
-            response.write('               <td>%i</td>' % server.clients)
-            response.write('               <td>%i b/s</td>' % server.bitrate)
-            response.write('               <td>%.2f MB/s</td>' % (server.bitrate/1e6))
+            response.write('               <td>%i</td>' % server.overall_clients)
+            response.write('               <td>%i b/s</td>' % server.overall_bitrate)
+            response.write('               <td>%.2f MB/s</td>' % (server.overall_bitrate/1e6))
             response.write('               <td>%s</td>' % server.lastseen)
             response.write('           </tr>')
         response.write('       </table>')
