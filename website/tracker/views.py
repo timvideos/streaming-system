@@ -227,7 +227,7 @@ def client_stats(request, group, _now=None):
         return response
 
     try:
-        data = simplejson.loads(request.POST['data'])
+        data = simplejson.loads(request.POST.get('data', "{}"))
     except simplejson.JSONDecodeError, e:
         response = http.HttpResponse(content_type='application/javascript')
         response.write(simplejson.dumps({
@@ -271,12 +271,16 @@ def encoder_common(request):
 
     response = http.HttpResponse(content_type='text/plain')
 
-    secret = request.POST['secret']
-    if secret != CONFIG.get('config')['secret']:
+    if not CONFIG['config'].get('secret', None):
+        response.write('ERROR CONFIG (No secret)\n')
+        return response, None, None
+
+    secret = request.POST.get('secret', '')
+    if secret != CONFIG['config']['secret']:
         response.write('ERROR SECRET\n')
         return response, None, None
 
-    group = request.POST['group']
+    group = request.POST.get('group', '')
     if not CONFIG.valid(group):
         response.write('ERROR GROUP\n')
         return response, None, None
@@ -296,7 +300,7 @@ def encoder_register(request):
         return response
 
     try:
-        data = simplejson.loads(request.POST['data'])
+        data = simplejson.loads(request.POST.get('data', '{}'))
         # Check that the data doesn't override these two important values
         assert 'ip' not in data
         assert 'group' not in data
