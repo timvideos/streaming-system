@@ -112,9 +112,10 @@ class Register(common.AdminCommand):
 
     def send_update(self, totals):
         data = {"overall_clients": 0, "overall_bitrate": 0}
-        for name, clients, bits in totals:
-            data[name+"_clients"] = int(clients)
-            data[name+"_bitrate"] = float(bitrate)
+        for name, clients, bitrate in totals:
+            fixed_name = name.replace('http-', '').replace('-', '_')
+            data[fixed_name+"_clients"] = int(clients)
+            data[fixed_name+"_bitrate"] = float(bitrate)
             data["overall_clients"] += clients
             data["overall_bitrate"] += bitrate
 
@@ -133,7 +134,7 @@ class Register(common.AdminCommand):
             raise
         print "Registered at", datetime.datetime.now(), "result", r.read().strip(),
         print 'clients:', data['overall_clients'],
-        print 'bitrate:', data['overall_bitrate'], bitrate/1e6, 'megabits/second'
+        print 'bitrate:', data['overall_bitrate'], data['overall_bitrate']/1e6, 'megabits/second'
 
         # Schedule another register in 30 seconds
         d = defer.Deferred()
@@ -152,6 +153,7 @@ class Command(main.Command):
 MYIP = ""
 
 def main(args):
+    args = list(args)
     args_a = [args.pop(0)]
     args_b = []
 
