@@ -56,3 +56,10 @@ hr {
 .sponsor-cell {
   width: 130px;
 }
+
+#exp {
+ position: absolute;
+ top: 0;
+ left: 0;
+ z-index: 1000;
+}
