@@ -31,16 +31,16 @@ rm -r /tmp/timsvideo-static || true
 if [ ! -d $BASEDIR/timsvideo ]; then
 	as_website "cd $BASEDIR; git clone git://github.com/timsvideo/timsvideo.git timsvideo"
 else
+	chown website:website -R .
 	as_website "cd $BASEDIR/timsvideo; git pull" || exit
 fi
 cd $BASEDIR
 
 # Update the repository
 cd timsvideo
-chown website:website -R .
 as_website git submodule init
 as_website git submodule update
-as_website chmod -R g+w .
+as_website chmod -R g+r .
 (cd website && as_website make prepare-serve)
 export VERSION=$(git describe --tags --long)-$(date +%Y%m%d-%H%M%S)
 cd ..
