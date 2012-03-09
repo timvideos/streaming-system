@@ -209,7 +209,6 @@ function schedule_callback() {
   update_schedule($('#talk_title'), $('#talk_desc'), '{{config.title|escapejs}}');
   setTimeout(schedule_callback, 60e3);
   fit_player();
-  setTimeout(sponsor_swap_a, 2000);
 }
 
 get_schedule(schedule_callback);
