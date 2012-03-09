@@ -56,7 +56,7 @@ class WatchDog(common.AdminCommand):
             print "%30s %10.2f" % ("total", total)
             print
 
-        if sum(self.dead.values()) > 30:
+        if sum(self.dead.values()) > 100:
             subprocess.call('/etc/init.d/flumotion restart', shell=True)
             self.eb('Restarting!')
             return
