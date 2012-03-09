@@ -96,7 +96,7 @@ $('#video-preload-{{group|escapejs}}').load(function() {
 function update_video() {
 {% for group, details in groups.items %}
  $('#video-preload-{{group|escapejs}}').attr(
-  'src', "http://extra.streamti.me/~irc/%23lca2012-{{group|urlencode}}/latest.png?time="+current_time()
+  'src', "{{details.preview}}?time="+current_time()
   );
 {% endfor %}
 }
