@@ -6,6 +6,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
 
 {% block head %}
     <script type="text/javascript" src="/static/third_party/jquery-extra/jquery.juitter-1.0.0.js"></script>
+    <script type="text/javascript" src="/static/js/whats_on.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <link rel="stylesheet" type="text/css" href="/static/css/tweet.css">
     <link rel="stylesheet" type="text/css" href="/static/third_party/jquery-extra/jquery.juitter-1.0.0.css">
@@ -13,6 +14,14 @@ vim: set ts=2 sw=2 et sts=2 ai:
 {% endblock %}
 
 {% block content %}
+      <td id="abstract_cell abstract_cell_group" colspan=2 style="height: 1px;">
+        <div id="showing" class='abstract_div abstract_div_group'>
+          <div id='abstract_info' class='abstract_info abstract_info_group' onclick='$(".abstract_desc").fadeToggle();'>(More info)</div>
+          <div id='abstract_title' class='abstract_title abstract_title_group'></div>
+          <div id='abstract_desc' class='abstract_desc abstract_desc_group'></div>
+        </div>
+      </td>
+    </tr><tr>
       <th id="options" colspan=2>
         <div class="options-group container_1">
           Tweet&nbsp;with&nbsp;hashtag:&nbsp;{{ config.twitter }}
@@ -66,5 +75,13 @@ $(document).ready(function() {
     searchObject: "{{ config.twitter|urlencode }}",
     });
 });
-</script>  
+
+function schedule_callback() {
+  update_schedule($('#abstract_title'), $('#abstract_desc'), '{{config.title|escapejs}}');
+  setTimeout(schedule_callback, 60e3);
+  resize();
+}
+
+get_schedule(schedule_callback);
+</script>
 {% endblock %}
