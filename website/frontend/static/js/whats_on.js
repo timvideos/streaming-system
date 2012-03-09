@@ -26,13 +26,12 @@ function current_session(group) {
   for (var i = 0; i < schedule.length; i++) {
     var talk = schedule[i];
     if (group)
-      if (!talk['Room Name'] || talk['Room Name'].toLowerCase() != group) {
+      if (!talk['room'] || talk['room'].toLowerCase() != group) {
         continue;
       }
 
-    var start = Date.parse(talk['Start'] += " GMT") - 39600000;
-    var duration_bits = talk['Duration'].split(':');
-    var duration = parseInt(duration_bits[0])*60*60 + parseInt(duration_bits[1])*60 + parseInt(duration_bits[2]);
+    var start = Date.parse(talk['start_iso'] += " GMT") - 39600000;
+    var duration = parseInt(talk['duration'])*60;
     var end = start + duration*1e3;
 
     if (time >= start && time < end) {
@@ -50,19 +49,19 @@ function update_schedule(widget_title, widget_desc, group) {
 
   if (!talk) {
     talk = new Array();
-    talk['Title'] = "Unknown Talk";
-    talk['Description'] = 'Cannot get talk title and description.';
+    talk['title'] = "Unknown Talk";
+    talk['description'] = 'Cannot get talk title and description.';
   }
 
   var title = "";
-  if (talk['URL']) {
-    title += "<a href='" + talk['URL'] + "' onClick=\"return confirm('Leave the video?');\">";
+  if (talk['url']) {
+    title += "<a href='" + talk['url'] + "' onClick=\"return confirm('Leave the video?');\">";
   }
-  title += talk['Title'];
-  if (talk['URL']) {
+  title += talk['title'];
+  if (talk['url']) {
     title += "</a>";
   }
   widget_title.html(title);
 
-  widget_desc.html("<br>" + talk['Description'].replace("\n", '<br><br>'));
+  widget_desc.html("<br>" + talk['description'].replace("\n", '<br><br>'));
 }

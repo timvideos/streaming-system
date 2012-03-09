@@ -76,7 +76,7 @@ def schedule(request):
 
     schedule = cache.get('schedule')
     if not schedule:
-        schedule = urllib.fetch('https://us.pycon.org/2012/schedule/json').content
+        schedule = urllib2.urlopen('https://us.pycon.org/2012/schedule/json').read()
         cache.set('schedule', schedule, 120)
     response.write(schedule)
     return response
