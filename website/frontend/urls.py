@@ -8,6 +8,7 @@ from django.conf.urls.defaults import patterns, include, url
 from frontend import views
 
 urlpatterns = patterns('',
+    url(r'^schedule.js$', views.schedule),
     url(r'^(monitor)$', views.index),
     url(r'^(.+)/logs?$', views.logs),
     url(r'^(.+)$', views.group),

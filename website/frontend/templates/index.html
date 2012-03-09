@@ -26,10 +26,10 @@ vim: set ts=2 sw=2 et sts=2 ai:
     </tr><tr>
     {% for group, details in groups.items %}
       <td>
-        <div id="{{group}}_abstract" class="talk_abstract">
-          <div id='{{group}}_info' class='talk_info' onclick='$(".talk_desc").fadeToggle();'>(More info)</div>
-          <div id='{{group}}_title' class='talk_title'></div>
-          <div id='{{group}}_desc' class='talk_desc'></div>
+        <div id="{{group}}_abstract_div" class="abstract_div">
+          <div id='{{group}}_abstract_info' class='abstract_info' onclick='$(".abstract_desc").fadeToggle();'>(More info)</div>
+          <div id='{{group}}_abstract_title' class='abstract_title'></div>
+          <div id='{{group}}_abstract_desc' class='abstract_desc'></div>
         </div>
       </td>
     {% endfor %}
@@ -110,15 +110,6 @@ function update_chat() {
   setTimeout(update_chat, 20000);
 }
 
-
-$('#sponsor-1').hover(
-  function() {
-   $('#sponsor-1-info').stop(true, true).slideDown();
-  }, 
-  function() {
-   $('#sponsor-1-info').stop(true, true).slideUp();
-  });
-
 function resize_twitter() {
  $("#twitter-juitter").height(5);
  $("#twitter-juitter").height($("#twitter-cell").innerHeight()-5);
@@ -139,8 +130,8 @@ $(document).ready(function() {
 });
 
 function schedule_callback() {
-{% for group.details in groups.items %}
-  update_schedule($('#{{group|escapejs}}_title'), $('#{{group|escapejs}}_desc'), '{{group|escapejs}}');
+{% for group, details in groups.items %}
+  update_schedule($('#{{group|escapejs}}_abstract_title'), $('#{{group|escapejs}}_abstract_desc'), '{{details.title|escapejs}}');
 {% endfor %}
   resize_twitter();
   setTimeout(schedule_callback, 60e3);

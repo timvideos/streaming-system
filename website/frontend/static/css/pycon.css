@@ -11,6 +11,9 @@
 
 body {
   background-image: url('/static/img/bg.png');
+  color: #222;
+  font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-shadow: 0 1px 0 #F9F2E6;
 }
 
 div {

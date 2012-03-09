@@ -124,7 +124,7 @@
         <feed alias="default">muxer-loop:default</feed>
       </eater>
       <clock-master>false</clock-master>
-      <property name="pipeline">tee name=t ! queue ! rtmpsink location=rtmp://live.justin.tv/app/%(justintv)s  t. ! queue</property>
+      <property name="pipeline">tee name=t ! queue ! rtmpsink location=rtmp://live.justin.tv/app/%(justintv_key)s  t. ! queue</property>
     </component>
 
     <component name="http-loop"
