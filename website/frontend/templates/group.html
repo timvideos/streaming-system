@@ -18,13 +18,12 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
 {% endblock %}
 
 {% block content %}
-      <td id="title" colspan=2>
-        <div id="showing" class='abstract_div'>
-          <div id='abstract_info' class='abstract_info' onclick='$(".abstract_desc").fadeToggle();'>(More info)</div>
-          <div id='abstract_title' class='abstract_title'></div>
-          <div id='abstract_desc' class='abstract_desc'></div>
+      <td id="abstract_cell abstract_cell_group" colspan=2 style="height: 1px;">
+        <div id="showing" class='abstract_div abstract_div_group'>
+          <div id='abstract_info' class='abstract_info abstract_info_group' onclick='$(".abstract_desc").fadeToggle();'>(More info)</div>
+          <div id='abstract_title' class='abstract_title abstract_title_group'></div>
+          <div id='abstract_desc' class='abstract_desc abstract_desc_group'></div>
         </div>
-      </td><td>
       </td>
     </tr><tr>
       <td id="options" colspan=2>
