@@ -22,8 +22,8 @@ hostname:(xmlfilename)
       This specifies what authentication to use to log in.
       Compare with command-line options.
 -->
-      <username>%(user)s</username>
-      <password>%(password)s</password>
+      <username>%(flumotion-user)s</username>
+      <password>%(flumotion-password)s</password>
     </authentication>
 
     <feederports>8650-8669</feederports>

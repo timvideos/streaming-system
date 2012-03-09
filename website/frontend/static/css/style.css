@@ -18,7 +18,6 @@ body {
 	height: 100%;
 	margin: 0;
 	background-color: black;
-        background-image: url('http://linux.conf.au/images/ballarat.jpg');
 	font-family: "Century Gothic",Arial, Helvetica, Sans-Serif;
 	text-align:center;
 	padding: 1px;
@@ -115,20 +114,20 @@ img {
   font-size: 12px;
 }
 
-.talk_title {
+.abstract_title {
   text-align: center;
 }
-.talk_title a {
+.abstract_title a {
   text-decoration: none;
   font-size: 16pt;
   color: #ddecf8;
 }
-.talk_info {
+.abstract_info {
   font-size: 8px;
   font-style: italic;
   float: right;
 }
-.talk_desc {
+.abstract_desc {
   width: 100%;
   display: none;
 }

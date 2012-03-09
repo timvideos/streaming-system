@@ -9,6 +9,7 @@
 import ConfigParser
 import datetime
 import logging
+import ordereddict
 import os
 import sys
 import time
@@ -35,10 +36,12 @@ CONFIG = common_config.config_load()
 
 
 def group(request, group):
-    if not common_config.group_valid(CONFIG, group):
+    if not CONFIG.valid(group):
         return never_cache_redirect_to(request, url="/")
 
-    config = common_config.config_all(CONFIG, group)
+    fixed_group = group.replace('-', '_')
+
+    config = CONFIG.config(group)
 
     template = request.GET.get('template', 'group')
     if not re.match('[a-z]+', template):
@@ -60,17 +63,11 @@ def group(request, group):
 
 
 def index(request, template="index"):
-    # Get the currently active groups
-    ten_mins_ago = datetime.datetime.now() - datetime.timedelta(seconds=30)
-    groups = set()
-    for server in models.Encoder.objects.all():
-        if server.lastseen < ten_mins_ago:
-            continue
-        groups.add(server.group)
+    groups = ordereddict.OrderedDict()
+    for group in sorted(CONFIG.groups()):
+        groups[group] = CONFIG.config(group)
 
-    groups = common_config.groups(CONFIG)
-
-    config = common_config.config_all(CONFIG, 'default')
+    default = CONFIG['default']
     return render_to_response('%s.html' % template, locals())
 
 
@@ -81,7 +78,7 @@ def schedule(request):
 
     schedule = cache.get('schedule')
     if not schedule:
-        schedule = urllib.fetch('http://lca2012.linux.org.au/programme/schedule/json').content
+        schedule = urllib2.urlopen('https://us.pycon.org/2012/schedule/json').read()
         cache.set('schedule', schedule, 120)
     response.write(schedule)
     return response
@@ -89,13 +86,16 @@ def schedule(request):
 
 @cache_control(must_revalidate=True, max_age=600)
 def logs(request, group):
-    if not common_config.group_valid(CONFIG, group):
+    if not CONFIG.valid(group):
         return never_cache_redirect_to(request, url="/")
 
-    config = common_config.config_all(CONFIG, group)
+    config = CONFIG.config(group)
 
     log = config['irclog']
     soup = BeautifulSoup(urllib2.urlopen(log).read())
+
+    body = soup.find("body")
+    body['style'] = "background: transparent;"
 
     # Fix up the css link
     l = soup.find("link")

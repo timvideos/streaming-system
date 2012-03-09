@@ -10,41 +10,41 @@ vim: set ts=2 sw=2 et sts=2 ai:
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <link rel="stylesheet" type="text/css" href="/static/css/tweet.css">
     <link rel="stylesheet" type="text/css" href="/static/third_party/jquery-extra/jquery.juitter-1.0.0.css">
-    <title>Stream Time ---INDEX PAGE---</title>
+    <title>{{title}}</title>
 {% endblock %}
 
 {% block content %}
-    {% for group in groups %}
-      <td class="title">
-        <div class="container_3">
+    {% for group, details in groups.items %}
+      <td>
+        <div id="{{group}}_title" class="title">
           <h1>
-            <a href="/{{group}}">{{group}}<span class="title_click">- Click to view live stream!</span></a>
+            <a href="/{{group}}">{{details.title}}<br><span class="title_click">Click to view live stream!</span></a>
           </h1>
         </div>
       </td>
     {% endfor %}
     </tr><tr>
-    {% for group in groups %}
+    {% for group, details in groups.items %}
       <td>
-        <div id="showing" class="container_4">
-          <div id='{{group}}_info' class='talk_info' onclick='$(".talk_desc").fadeToggle();'>(More info)</div>
-          <div id='{{group}}_title' class='talk_title'></div>
-          <div id='{{group}}_desc' class='talk_desc'></div>
+        <div id="{{group}}_abstract_div" class="abstract_div">
+          <div id='{{group}}_abstract_info' class='abstract_info' onclick='$(".abstract_desc").fadeToggle();'>(More info)</div>
+          <div id='{{group}}_abstract_title' class='abstract_title'></div>
+          <div id='{{group}}_abstract_desc' class='abstract_desc'></div>
         </div>
       </td>
     {% endfor %}
     </tr><tr>
-    {% for group in groups %}
-      <td class="preview">
+    {% for group, details in groups.items %}
+      <td id="{{group}}_preview" class="preview">
         <div class="container_2" onClick="window.location='/{{group}}'">
           <img id="video-preview-{{group}}" class="video_preview">
         </div>
       </td>
     {% endfor %}
     </tr><tr>
-    {% for group in groups %}
+    {% for group, details in groups.items %}
       <td>
-        <div class="container_3" onClick="window.location='/{{group}}'">
+        <div id="{{group}}_chat" class="chat" onClick="window.location='/{{group}}'">
           <iframe id="chat-preview-{{group}}" class="chat_preview"></iframe>
         </div>
       </td>
@@ -53,25 +53,15 @@ vim: set ts=2 sw=2 et sts=2 ai:
       <td colspan={{groups|length}}>
         <table style="height: 100%; width: 100%;">
           <tr>
-            <td style="width: 240px; vertical-align: top;">
-              <div id="sponsor-front" class="container_3">
-               <div class='talk_info'>Streaming Sponsors</div>        
+            <td class="sponsor-cell">
+              <div id="sponsor-front" class="sponsor">
                <div id="sponsor-1">
-                <a href="http://www.orionvm.com.au/"><img src="/static/logos/orionvm.png"></a>
-                <div id="sponsor-1-info">
-                  <p>
-                    OrionVM provides the world’s fastest cloud platform, specializing in
-                    Linux.
-                  </p><p>
-                    To see the platform in action <a href="https://panel.orionvm.com.au/signup/">sign up</a>
-                    and mention linux.conf.au for $50 free credit.
-                  </p>
-                </div>
+                <a href="http://us.pycon.org/"><img src="/static/logos/pycon.png"></a>
                </div>
               </div>
             </td>
             <td id="twitter-cell" style="height: auto;">
-              <div id="twitter-container" class="container_3" style="">
+              <div id="twitter-container">
                 <div id="twitter-sizer" class="sizer">
                   <div id="twitter-juitter">
                     <div id="juitterContainer"></div>
@@ -87,7 +77,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
 
 {% block footer %}
   <div id=preload>
-{% for group in groups %}
+{% for group, details in groups.items %}
   <img id="video-preload-{{group}}" class="video_preload">
 {% endfor %}
   </div>
@@ -97,37 +87,28 @@ vim: set ts=2 sw=2 et sts=2 ai:
 {% block script %}
 <script type="text/javascript">
 // Swap the preloaded video image into the main image
-{% for group in groups %}
+{% for group, details in groups.items %}
 $('#video-preload-{{group|escapejs}}').load(function() {
   $('#video-preview-{{group|escapejs}}').attr('src', $(this).attr('src'));
   setTimeout(update_video, 5000);
 });
 {% endfor %}
 function update_video() {
-{% for group in groups %}
+{% for group, details in groups.items %}
  $('#video-preload-{{group|escapejs}}').attr(
-  'src', "http://extra.streamti.me/~irc/%23lca2012-{{group|urlencode}}/latest.png?time="+current_time()
+  'src', "{{details.preview}}?time="+current_time()
   );
 {% endfor %}
 }
 
 function update_chat() {
-{% for group in groups %}
+{% for group, details in groups.items %}
  $('#chat-preview-{{group|escapejs}}').attr(
   'src', "/{{group|urlencode}}/logs"
   );
 {% endfor %}
   setTimeout(update_chat, 20000);
 }
-
-
-$('#sponsor-1').hover(
-  function() {
-   $('#sponsor-1-info').stop(true, true).slideDown();
-  }, 
-  function() {
-   $('#sponsor-1-info').stop(true, true).slideUp();
-  });
 
 function resize_twitter() {
  $("#twitter-juitter").height(5);
@@ -142,15 +123,15 @@ $(document).ready(function() {
     live:"live-5",
     total: 20,
     searchType: "searchWord",
-    searchObject: "{{ hashtag|urlencode }}",
+    searchObject: "{{ default.twitter|urlencode }}",
     });
   update_video();
   update_chat();
 });
 
 function schedule_callback() {
-{% for group in groups %}
-  update_schedule($('#{{group|escapejs}}_title'), $('#{{group|escapejs}}_desc'), '{{group|escapejs}}');
+{% for group, details in groups.items %}
+  update_schedule($('#{{group|escapejs}}_abstract_title'), $('#{{group|escapejs}}_abstract_desc'), '{{details.title|escapejs}}');
 {% endfor %}
   resize_twitter();
   setTimeout(schedule_callback, 60e3);
