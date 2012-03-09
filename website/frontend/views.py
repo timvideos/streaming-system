@@ -39,6 +39,8 @@ def group(request, group):
     if not CONFIG.valid(group):
         return never_cache_redirect_to(request, url="/")
 
+    fixed_group = group.replace('-', '_')
+
     config = CONFIG.config(group)
 
     template = request.GET.get('template', 'group')
