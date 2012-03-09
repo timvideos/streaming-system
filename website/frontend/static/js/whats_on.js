@@ -3,7 +3,7 @@
 
 var time_local = Date.now();
 function current_time() {
-  return Date.now();
+  return Date.now() - 18000*1e3;
 }
 
 var schedule = [];
@@ -26,11 +26,11 @@ function current_session(group) {
   for (var i = 0; i < schedule.length; i++) {
     var talk = schedule[i];
     if (group)
-      if (!talk['room'] || talk['room'].toLowerCase() != group) {
+      if (!talk['room'] || talk['room'] != group) {
         continue;
       }
 
-    var start = Date.parse(talk['start_iso'] += " GMT") - 39600000;
+    var start = Date.parse(talk['start_iso'] + "Z");
     var duration = parseInt(talk['duration'])*60;
     var end = start + duration*1e3;
 

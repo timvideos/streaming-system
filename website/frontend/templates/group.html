@@ -19,7 +19,7 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
 
 {% block content %}
       <td id="title" colspan=2>
-        <div id="showing" class="container_4">
+        <div id="showing" class='abstract_div'>
           <div id='abstract_info' class='abstract_info' onclick='$(".abstract_desc").fadeToggle();'>(More info)</div>
           <div id='abstract_title' class='abstract_title'></div>
           <div id='abstract_desc' class='abstract_desc'></div>
@@ -206,7 +206,7 @@ format_change();
 quality_change();
 
 function schedule_callback() {
-  update_schedule($('#talk_title'), $('#talk_desc'), '{{config.title|escapejs}}');
+  update_schedule($('#abstract_title'), $('#abstract_desc'), '{{config.title|escapejs}}');
   setTimeout(schedule_callback, 60e3);
   fit_player();
 }
