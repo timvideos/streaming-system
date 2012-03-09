@@ -21,7 +21,7 @@ import traceback
 
 from django import http
 from django.db import transaction
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 
@@ -48,10 +48,12 @@ def streams(request, group):
         response.write("window.src = '/';\n");
         return response
 
+    fixed_group = group.replace('-', '_')
+
     # Get all the active streaming severs for this channel
     ten_mins_ago = datetime.datetime.now() - datetime.timedelta(minutes=10)
     q = models.Encoder.objects.all()
-    q.filter('group =', group)
+    q.filter(group__exact=group)
 
     active_servers = []
     for server in q:
@@ -66,10 +68,12 @@ def streams(request, group):
         return response
     else:
         # Choose the least loaded server
-        server = sorted(active_servers, cmp=lambda a, b: cmp(a.bitrate, b.bitrate))[0].ip
+        server = sorted(active_servers, cmp=lambda a, b: cmp(a.overall_bitrate, b.overall_bitrate))[0].ip
+
+    yourip = request.META['HTTP_X_REAL_IP']
 
     # Make sure this page isn't cached, otherwise the server load balancing won't work.
-    return render_to_response('streams.js', locals(), content_type='text/javascript')
+    return render(request, 'streams.js', locals(), content_type='text/javascript')
 
 
 @never_cache
@@ -143,7 +147,7 @@ def user_key(request, salt=None):
 
     in_data = [salt]
     in_data.append(request.META['HTTP_USER_AGENT'])
-    in_data.append(request.META['REMOTE_ADDR'])
+    in_data.append(request.META['HTTP_X_REAL_IP'])
     return '%s:%s' % (salt, hashlib.sha224("".join(in_data)).hexdigest())
 
 
@@ -223,7 +227,7 @@ def client_stats(request, group, _now=None):
         return response
 
     try:
-        data = simplejson.loads(request.POST['data'])
+        data = simplejson.loads(request.POST.get('data', "{}"))
     except simplejson.JSONDecodeError, e:
         response = http.HttpResponse(content_type='application/javascript')
         response.write(simplejson.dumps({
@@ -234,7 +238,7 @@ def client_stats(request, group, _now=None):
         return response
 
     data['user-agent'] = request.META['HTTP_USER_AGENT']
-    data['ip'] = request.META['REMOTE_ADDR']
+    data['ip'] = request.META['HTTP_X_REAL_IP']
     if 'HTTP_REFERER' in request.META:
         data['referrer'] = request.META['HTTP_REFERER']
 
@@ -267,17 +271,21 @@ def encoder_common(request):
 
     response = http.HttpResponse(content_type='text/plain')
 
-    secret = request.POST['secret']
-    if secret != CONFIG.get('config')['secret']:
+    if not CONFIG['config'].get('secret', None):
+        response.write('ERROR CONFIG (No secret)\n')
+        return response, None, None
+
+    secret = request.POST.get('secret', '')
+    if secret != CONFIG['config']['secret']:
         response.write('ERROR SECRET\n')
         return response, None, None
 
-    group = request.POST['group']
+    group = request.POST.get('group', '')
     if not CONFIG.valid(group):
         response.write('ERROR GROUP\n')
         return response, None, None
 
-    ip = request.META['REMOTE_ADDR']
+    ip = request.META['HTTP_X_REAL_IP']
 
     return None, group, ip
 
@@ -292,7 +300,7 @@ def encoder_register(request):
         return response
 
     try:
-        data = simplejson.loads(request.POST['data'])
+        data = simplejson.loads(request.POST.get('data', '{}'))
         # Check that the data doesn't override these two important values
         assert 'ip' not in data
         assert 'group' not in data

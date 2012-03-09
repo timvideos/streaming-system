@@ -28,9 +28,9 @@
 	"track-1": {
 		"channel":	"#pycon-track-1",
 		"irclog":	"http://primary.streamti.me/~irc/%23pycon-track-1/latest.log.html",
-		"preview":	"http://primary.streamti.me/~irc/%23pycon-track-1/latest.png",
-		"justintv_user":	"pycon_track_1",
+		"preview":	"http://d5-encoder-pycon.streamti.me/preview.png",
 		"title":	"Track I (D5)",
+		"justintv_user": "pycon_track_1",
                 "flumotion-mixer": "192.168.0.141",
                 "flumotion-encoder": "d5-encoder-pycon.streamti.me",
                 "flumotion-collector": "d5-collect-pycon.streamti.me",
@@ -40,7 +40,7 @@
 	"track-2": {
 		"channel":	"#pycon-track-2",
 		"irclog":	"http://primary.streamti.me/~irc/%23pycon-track-2/latest.log.html",
-		"preview":	"http://primary.streamti.me/~irc/%23pycon-track-2/latest.png",
+		"preview":	"http://e1-encoder-pycon.streamti.me/preview.png",
 		"title":	"Track II (E1)",
 		"justintv_user": "pycon_track_2",
                 "flumotion-mixer": "192.168.0.151",
@@ -52,7 +52,7 @@
 	"track-3": {
 		"channel":	"#pycon-track-3",
 		"irclog":	"http://primary.streamti.me/~irc/%23pycon-track-3/latest.log.html",
-		"preview":	"http://primary.streamti.me/~irc/%23pycon-track-3/latest.png",
+		"preview":	"http://e2-encoder-pycon.streamti.me/preview.png",
 		"title":	"Track III (E2)",
 		"justintv_user": "pycon_track_3",
                 "flumotion-mixer": "192.168.0.161",
@@ -64,7 +64,7 @@
 	"track-4": {
 		"channel":	"#pycon-track-4",
 		"irclog":	"http://primary.streamti.me/~irc/%23pycon-track-4/latest.log.html",
-		"preview":	"http://primary.streamti.me/~irc/%23pycon-track-4/latest.png",
+		"preview":	"http://e3-encoder-pycon.streamti.me/preview.png",
 		"title":	"Track IV (E3)",
 		"justintv_user": "pycon_track_4",
                 "flumotion-mixer": "192.168.0.171",
@@ -76,7 +76,7 @@
 	"track-5": {
 		"channel":	"#pycon-track-5",
 		"irclog":	"http://primary.streamti.me/~irc/%23pycon-track-5/latest.log.html",
-		"preview":	"http://primary.streamti.me/~irc/%23pycon-track-5/latest.png",
+		"preview":	"http://e4-encoder-pycon.streamti.me/preview.png",
 		"title":	"Track V (E4)",
 		"justintv_user": "pycon_track_5",
                 "flumotion-mixer": "192.168.0.111",
