@@ -40,7 +40,6 @@ CONFIG = common_config.config_load()
 # IP Address which are considered "In Room"
 LOCALIPS = CONFIG['config']['localips']
 
-
 @never_cache
 def streams(request, group):
     """Renders the streams.js file."""
@@ -94,44 +93,12 @@ def stats(request):
         else:
             active_servers.append(server)
 
+    types = list(sorted([x for x in dir(models.Encoder()) if x.endswith('_clients')]))
+
     active_servers = sorted(active_servers, cmp=lambda a, b: cmp((a.group, a.overall_bitrate), (b.group, b.overall_bitrate)))
     inactive_servers = sorted(inactive_servers, cmp=lambda a, b: cmp((a.group, a.overall_bitrate), (b.group, b.overall_bitrate)))
 
-    response['Content-Type'] = 'text/html'
-
-    def table(servers):
-        response.write('       <table>')
-        response.write('           <tr>')
-        response.write('               <th>ip</th>')
-        response.write('               <th>group</th>')
-        response.write('               <th>clients</th>')
-        response.write('               <th>bitrate (bits/s)</th>')
-        response.write('               <th>bitrate (megabits/s)</th>')
-        response.write('               <th>lastseen</th>')
-        response.write('           </tr>')
-        for server in servers:
-            response.write('           <tr>')
-            response.write('               <td>%s</td>' % server.ip)
-            response.write('               <td>%s</td>' % server.group)
-            response.write('               <td>%i</td>' % server.overall_clients)
-            response.write('               <td>%i b/s</td>' % server.overall_bitrate)
-            response.write('               <td>%.2f MB/s</td>' % (server.overall_bitrate/1e6))
-            response.write('               <td>%s</td>' % server.lastseen)
-            response.write('           </tr>')
-        response.write('       </table>')
-
-    response.write('<html>')
-    response.write('   <head>')
-    response.write('       <link rel="stylesheet" type="text/css" href="/static/css/stats.css">')
-    response.write('   </head>')
-    response.write('   <body>')
-    response.write('      <h1>Active Servers</h1>')
-    table(active_servers)
-    response.write('      <h1>Non-Active Servers</h1>')
-    table(inactive_servers)
-    response.write('   </body>')
-    response.write('</html>')
-    return response
+    return render(request, 'stats.html', locals(), content_type='text/html')
 
 ###########################################################################################
 # Code which collects the client side system reporting.
