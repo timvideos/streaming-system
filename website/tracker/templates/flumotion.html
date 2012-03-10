@@ -1,0 +1,30 @@
+{% comment %}
+-*- coding: utf-8 -*-
+vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
+{% endcomment %}
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="/static/css/stats.css">
+    <meta http-equiv="refresh" content="10">
+  </head>
+  <body>
+    <style>
+    .tiny {
+      font-size: 6pt;
+      }
+    </style>
+    <h1>Flumotion Systems</h1>
+    <table>
+    {% for server in active_servers %}
+      <tr>
+        {% for key, value in server.full_data.current %}
+        <td>
+          {{key}}, {{value}}  
+        </td>
+        {% endfor %}
+      </tr>
+    </table>
+    {% endwith %}
+    <hr>
+  </body>
+</html>
