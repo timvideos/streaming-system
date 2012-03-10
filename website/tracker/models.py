@@ -152,6 +152,7 @@ class Encoder(models.Model):
     lastseen = models.DateTimeField(auto_now=True, blank=False)
 
     overall_bitrate = models.IntegerField(default=0)
+    overall_cbitrate = models.IntegerField(default=0)
     overall_clients = models.IntegerField(default=0)
 
     # Loop back is not included in the overall values
@@ -162,20 +163,27 @@ class Encoder(models.Model):
     # -- HTML5's webm
     webm_high_clients = models.IntegerField(blank=True, null=True)
     webm_high_bitrate = models.IntegerField(blank=True, null=True)
+    webm_high_cbitrate = models.IntegerField(blank=True, null=True)
     webm_low_clients = models.IntegerField(blank=True, null=True)
     webm_low_bitrate = models.IntegerField(blank=True, null=True)
+    webm_low_cbitrate = models.IntegerField(blank=True, null=True)
     # -- H.264 flash
     flv_high_clients = models.IntegerField(blank=True, null=True)
     flv_high_bitrate = models.IntegerField(blank=True, null=True)
+    flv_high_cbitrate = models.IntegerField(blank=True, null=True)
     flv_low_clients = models.IntegerField(blank=True, null=True)
     flv_low_bitrate = models.IntegerField(blank=True, null=True)
+    flv_low_cbitrate = models.IntegerField(blank=True, null=True)
     # -- Audio only versions
     ogg_high_clients = models.IntegerField(blank=True, null=True)
     ogg_high_bitrate = models.IntegerField(blank=True, null=True)
+    ogg_high_cbitrate = models.IntegerField(blank=True, null=True)
     aac_high_clients = models.IntegerField(blank=True, null=True)
     aac_high_bitrate = models.IntegerField(blank=True, null=True)
+    aac_high_cbitrate = models.IntegerField(blank=True, null=True)
     mp3_high_clients = models.IntegerField(blank=True, null=True)
     mp3_high_bitrate = models.IntegerField(blank=True, null=True)
+    mp3_high_cbitrate = models.IntegerField(blank=True, null=True)
 
     class Meta:
         unique_together = (("group", "ip", "lastseen"),)
