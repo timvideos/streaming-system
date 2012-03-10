@@ -10,6 +10,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <link rel="stylesheet" type="text/css" href="/static/css/tweet.css">
     <link rel="stylesheet" type="text/css" href="/static/third_party/jquery-extra/jquery.juitter-1.0.0.css">
+    <meta http-equiv="refresh" content="{{ config.reload }}">
     <title>{{title}}</title>
 {% endblock %}
 
@@ -90,7 +91,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
 {% for group, details in groups.items %}
 $('#video-preload-{{group|escapejs}}').load(function() {
   $('#video-preview-{{group|escapejs}}').attr('src', $(this).attr('src'));
-  setTimeout(update_video, 5000);
+  setTimeout(update_video, 15e3);
 });
 {% endfor %}
 function update_video() {
@@ -107,7 +108,7 @@ function update_chat() {
   'src', "/{{group|urlencode}}/logs"
   );
 {% endfor %}
-  setTimeout(update_chat, 20000);
+  setTimeout(update_chat, 30e3);
 }
 
 function resize_twitter() {
@@ -135,6 +136,7 @@ function schedule_callback() {
 {% endfor %}
   resize_twitter();
   setTimeout(schedule_callback, 60e3);
+  setTimeout(function() { location.reload(true); }, {{ config.reload }}e3);
 }
 
 get_schedule(schedule_callback);
