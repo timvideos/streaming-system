@@ -187,6 +187,7 @@ class Flumotion(models.Model):
     ip = models.IPAddressField(blank=False)
     lastseen = models.DateTimeField(auto_now=True, blank=False)
 
+    recorded_time = models.FloatField(blank=False)
     data = models.TextField(blank=False)
 
     class Meta:

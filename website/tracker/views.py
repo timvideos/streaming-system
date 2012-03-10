@@ -346,6 +346,7 @@ def flumotion_logging(request):
 
     s = models.Flumotion(
             identifier=request.POST['identifier'],
+            recorded_time=request.POST['recorded_time'],
             ip=request.META['HTTP_X_REAL_IP'],
             data=simplejson.dumps(data),
             )
@@ -355,3 +356,22 @@ def flumotion_logging(request):
     response = http.HttpResponse(content_type='text/plain')
     response.write('OK\n')
     return response
+
+
+@never_cache
+def flumotion_stats(request):
+    flumotion = models.Flumotion.objects.order_by(
+        'identifier', 'ip', '-lastseen').distinct(
+        'identifier', 'ip')
+
+    inactive_servers = []
+    active_servers = []
+    for server in flumotion:
+        server.full_data = simplejson.loads(server.data)
+
+        if server.lastseen < ten_mins_ago:
+            inactive_servers.append(server)
+        else:
+            active_servers.append(server)
+
+    return render(request, 'flumotion.html', locals(), content_type='text/html')

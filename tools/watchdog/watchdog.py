@@ -218,7 +218,7 @@ class WatchDog(common.AdminCommand):
         common.AdminCommand.__init__(self, *args, **kw)
 
     def addOptions(self):
-        default = "http://streamti.me/tracker/watchdog",
+        default = "http://streamti.me/tracker/flumotion/log",
         self.parser.add_option('-r', '--register',
             action="store", dest="register_url",
             help="Server to register on. (defaults to %s)" % default,
@@ -355,6 +355,7 @@ class WatchDog(common.AdminCommand):
             def send_state(self=self):
                 try:
                     urllib2.urlopen(self.register, urllib.urlencode({
+                        'recorded_time': time.time(),
                         'secret': self.secret,
                         'identifier': self.identifier,
                         'data': simplejson.dumps(self.flumotion_state.state()),
