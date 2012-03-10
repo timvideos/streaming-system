@@ -19,21 +19,22 @@ vim: set ts=2 sw=2 et sts=2 ai:
 {% endblock %}
 
 {% block content %}
+    <td style="height: 220px;">
+      <div>
   {% for group in groups %}
-      <td class="container_1" style="height: 1em;">
-        <h1>{{group}}</h1>
-      </td>
+      <div style="float: left; height: 220px; width: auto;">
+        {{group}}
+        <div id="{{group}}"></div>
+      </div>
   {% endfor %}
-    </tr><tr>
-  {% for group in groups %}
-      <td class="container_2" style="height: 300px;">
-        <div id="{{group}}">
-        </div>
-      </td>
-  {% endfor %}
-    </tr><tr>
-      <td id="twitter-cell" style="height: auto;" colspan={{groups|length}}>
-        <div id="twitter-container" class="container_3" style="">
+    </td>
+  </tr><tr>
+    <td style="height: 300px;">
+      <iframe src="/tracker/stats"></iframe>
+    </td>
+  </tr><tr>
+      <td id="twitter-cell" style="height: auto;">
+        <div id="twitter-container" class="container_3">
           <div id="twitter-sizer" class="sizer">
             <div id="twitter-juitter">
               <div id="juitterContainer"></div>
@@ -57,12 +58,13 @@ function jwplayers() {
       modes: {{group|safe_js}}_streamer.modes('flash', 'sd'),
       plugins: {
         'spectrumvisualizer-1': {}
-      }
+      },
+      'width': '250', 'height': '200'
     };
     {{group|safe_js}}_player_jwobject = jwplayer('{{group}}').setup(jwsettings);
     {{group|safe_js}}_player_jwobject.onReady(function() {
       var player_sizer = $("#{{group}}");
-      {{group|safe_js}}_player_jwobject.resize(player_sizer.width()-20, player_sizer.height()-20);
+      {{group|safe_js}}_player_jwobject.resize(player_sizer.width(), player_sizer.height());
     });
 {% endfor %}
 }
