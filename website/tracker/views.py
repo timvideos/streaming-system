@@ -48,8 +48,6 @@ def streams(request, group):
         response.write("window.src = '/';\n");
         return response
 
-    fixed_group = group.replace('-', '_')
-
     # Get all the active streaming severs for this channel
     ten_mins_ago = datetime.datetime.now() - datetime.timedelta(minutes=10)
     q = models.Encoder.objects.order_by('group', 'ip', '-lastseen').distinct('group', 'ip')
