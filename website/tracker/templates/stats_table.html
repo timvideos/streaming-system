@@ -1,0 +1,32 @@
+{% comment %}
+-*- coding: utf-8 -*-
+vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
+{% endcomment %}
+{% load getattr %}
+{% load rateformat %}
+    <table>
+      <tr>
+        <th>ip</th>
+        <th>group</th>
+        <th>clients</th>
+        <th>bitrate <b>bytes</b></th>
+        <th>bitrate <b>bits</b></th>
+        <th>lastseen</th>
+  {% for type in types %}
+        <th class="tiny">{{type}}</th>
+  {% endfor %}
+      </tr>
+{% for server in servers %}
+      <tr>
+        <td>{{ server.ip }}</td>
+        <td>{{ server.group }}</td>
+        <td>{{ server.overall_clients }}</td>
+        <td>{{ server.overall_bitrate|byterate }}/s</td>
+        <td>{{ server.overall_bitrate|bitrate }}/s</td>
+        <td>{{ server.lastseen|date:"r" }}</td>
+  {% for type in types %}
+        <td class="tiny">{{ server|getattr:type }}</td>
+  {% endfor %}
+      </tr>
+{% endfor %}
+    </table>

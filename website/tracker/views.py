@@ -24,6 +24,7 @@ from django.db import transaction
 from django.shortcuts import render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
+from django.db import models as django_models
 
 # Our App imports
 from common.views.simple import never_cache_redirect_to
@@ -39,7 +40,6 @@ CONFIG = common_config.config_load()
 # IP Address which are considered "In Room"
 LOCALIPS = CONFIG['config']['localips']
 
-
 @never_cache
 def streams(request, group):
     """Renders the streams.js file."""
@@ -48,12 +48,10 @@ def streams(request, group):
         response.write("window.src = '/';\n");
         return response
 
-    fixed_group = group.replace('-', '_')
-
     # Get all the active streaming severs for this channel
     ten_mins_ago = datetime.datetime.now() - datetime.timedelta(minutes=10)
-    q = models.Encoder.objects.all()
-    q.filter(group__exact=group)
+    q = models.Encoder.objects.order_by('group', 'ip', '-lastseen').distinct('group', 'ip')
+    q = q.filter(group__exact=group)
 
     active_servers = []
     for server in q:
@@ -79,57 +77,26 @@ def streams(request, group):
 @never_cache
 def stats(request):
     """Print out some stats about registered encoders."""
-    logging.info('stats!')
     response = http.HttpResponse()
 
     inactive_servers = []
     active_servers = []
 
     ten_mins_ago = datetime.datetime.now() - datetime.timedelta(minutes=10)
-    for server in models.Encoder.objects.all():
+
+    encoders = models.Encoder.objects.order_by('group', 'ip', '-lastseen').distinct('group', 'ip')
+    for server in encoders:
         if server.lastseen < ten_mins_ago:
             inactive_servers.append(server)
         else:
             active_servers.append(server)
 
-    active_servers = sorted(active_servers, cmp=lambda a, b: cmp((a.group, a.bitrate), (b.group, b.bitrate)))
-    inactive_servers = sorted(inactive_servers, cmp=lambda a, b: cmp((a.group, a.bitrate), (b.group, b.bitrate)))
+    types = list(sorted([x for x in dir(models.Encoder()) if x.endswith('_clients')]))
 
-    response['Content-Type'] = 'text/html'
+    active_servers = sorted(active_servers, cmp=lambda a, b: cmp((a.group, a.overall_bitrate), (b.group, b.overall_bitrate)))
+    inactive_servers = sorted(inactive_servers, cmp=lambda a, b: cmp((a.group, a.overall_bitrate), (b.group, b.overall_bitrate)))
 
-    def table(servers):
-        response.write('       <table>')
-        response.write('           <tr>')
-        response.write('               <th>ip</th>')
-        response.write('               <th>group</th>')
-        response.write('               <th>clients</th>')
-        response.write('               <th>bitrate (bits/s)</th>')
-        response.write('               <th>bitrate (megabits/s)</th>')
-        response.write('               <th>lastseen</th>')
-        response.write('           </tr>')
-        for server in servers:
-            response.write('           <tr>')
-            response.write('               <td>%s</td>' % server.ip)
-            response.write('               <td>%s</td>' % server.group)
-            response.write('               <td>%i</td>' % server.clients)
-            response.write('               <td>%i b/s</td>' % server.bitrate)
-            response.write('               <td>%.2f MB/s</td>' % (server.bitrate/1e6))
-            response.write('               <td>%s</td>' % server.lastseen)
-            response.write('           </tr>')
-        response.write('       </table>')
-
-    response.write('<html>')
-    response.write('   <head>')
-    response.write('       <link rel="stylesheet" type="text/css" href="/static/css/stats.css">')
-    response.write('   </head>')
-    response.write('   <body>')
-    response.write('      <h1>Active Servers</h1>')
-    table(active_servers)
-    response.write('      <h1>Non-Active Servers</h1>')
-    table(inactive_servers)
-    response.write('   </body>')
-    response.write('</html>')
-    return response
+    return render(request, 'stats.html', locals(), content_type='text/html')
 
 ###########################################################################################
 # Code which collects the client side system reporting.

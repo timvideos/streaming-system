@@ -33,25 +33,24 @@ if config_path not in sys.path:
     sys.path.append(config_path)
 import config as common_config
 CONFIG = common_config.config_load()
-
+LOCALIPS = [re.compile(x) for x in CONFIG['config']['localips'] if x]
 
 def group(request, group):
     if not CONFIG.valid(group):
         return never_cache_redirect_to(request, url="/")
 
-    fixed_group = group.replace('-', '_')
-
     config = CONFIG.config(group)
 
-    template = request.GET.get('template', 'group')
+    template = request.GET.get('template', 'default')
     if not re.match('[a-z]+', template):
+        return never_cache_redirect_to(request, url="/")
+    elif template == 'default':
+        template = "group"
         # Is the request coming from the room?
         for ipregex in LOCALIPS:
-            if re.match(ipregex, request.remote_addr):
+            if ipregex.match(request.META['HTTP_X_REAL_IP']):
                 template = 'inroom'
                 break
-        else:
-            return never_cache_redirect_to(request, url="/")
 
     screenstr = request.GET.get('screen', 'False')
     if screenstr.lower()[0] in ('y', 't'):

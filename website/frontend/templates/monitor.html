@@ -3,35 +3,38 @@
 -*- coding: utf-8 -*-
 vim: set ts=2 sw=2 et sts=2 ai:
 {% endcomment %}
+{% load safe_js %}
 
 {% block head %}
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
     <script type="text/javascript" src="/static/third_party/jquery-extra/jquery.juitter-1.0.0.js"></script>
-  {% for group in groups %}
-    <script type="text/javascript" src="/{{group}}/streams.js"></script>
-  {% endfor %}
     <script type="text/javascript" src="/static/third_party/jwplayer/jwplayer.js"></script>
+    <script type="text/javascript" src="/static/js/streams.js"></script>
+  {% for group in groups %}
+    <script type="text/javascript" src="/tracker/{{group}}/streams.js"></script>
+  {% endfor %}
     <link rel="stylesheet" type="text/css" href="/static/css/tweet.css">
     <link rel="stylesheet" type="text/css" href="/static/third_party/jquery-extra/jquery.juitter-1.0.0.css">
     <title>Stream Time for Linux.conf.au!</title>
 {% endblock %}
 
-{% block body %}
+{% block content %}
+    <td style="height: 220px;">
+      <div>
   {% for group in groups %}
-      <td class="container_1" style="height: 1em;">
-        <h1>{{group}}</h1>
-      </td>
+      <div style="float: left; height: 220px; width: auto;">
+        {{group}}
+        <div id="{{group}}"></div>
+      </div>
   {% endfor %}
-    </tr><tr>
-  {% for group in groups %}
-      <td class="container_2" style="height: 300px;">
-        <div id="{{group}}">
-        </div>
-      </td>
-  {% endfor %}
-    </tr><tr>
-      <td id="twitter-cell" style="height: auto;" colspan={{groups|length}}>
-        <div id="twitter-container" class="container_3" style="">
+    </td>
+  </tr><tr>
+    <td style="height: 300px;">
+      <iframe src="/tracker/stats"></iframe>
+    </td>
+  </tr><tr>
+      <td id="twitter-cell" style="height: auto;">
+        <div id="twitter-container" class="container_3">
           <div id="twitter-sizer" class="sizer">
             <div id="twitter-juitter">
               <div id="juitterContainer"></div>
@@ -45,8 +48,6 @@ vim: set ts=2 sw=2 et sts=2 ai:
 <script type="text/javascript">
 
 function fit_player (group) {
-  if (player_jwobject) {
-  }
 }
 
 function jwplayers() {
@@ -54,15 +55,16 @@ function jwplayers() {
     var jwsettings = {
       autostart: true,
       skin: '/static/third_party/jwplayer/skin/glow.zip',
-      modes: {{group}}_jwplayer_modes('html5', 'sd'),
+      modes: {{group|safe_js}}_streamer.modes('flash', 'sd'),
       plugins: {
-        'qualitymonitor-2': {},
-      }
+        'spectrumvisualizer-1': {}
+      },
+      'width': '250', 'height': '200'
     };
-    {{group}}_player_jwobject = jwplayer('{{group}}').setup(jwsettings);
-    {{group}}_player_jwobject.onReady(function() {
+    {{group|safe_js}}_player_jwobject = jwplayer('{{group}}').setup(jwsettings);
+    {{group|safe_js}}_player_jwobject.onReady(function() {
       var player_sizer = $("#{{group}}");
-      {{group}}_player_jwobject.resize(player_sizer.width()-20, player_sizer.height()-20);
+      {{group|safe_js}}_player_jwobject.resize(player_sizer.width(), player_sizer.height());
     });
 {% endfor %}
 }
@@ -78,7 +80,7 @@ function ready() {
     live:"live-5",
     total: 20,
     searchType: "searchWord",
-    searchObject: encodeURIComponent("#lca2012 AND (stream OR streaming)"),
+    searchObject: encodeURIComponent("{{default.twitter}}"),
     });
   jwplayers();
 }

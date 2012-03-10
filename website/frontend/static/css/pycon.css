@@ -56,3 +56,28 @@ hr {
 .sponsor-cell {
   width: 130px;
 }
+
+#exp {
+ position: absolute;
+ top: 0;
+ left: 0;
+ z-index: 1000;
+}
+
+.abstract_cell {
+  height: 1px;
+}
+
+.abstract_div {
+  color: #F9F2E6;
+  text-shadow: 0 1px 0 #222;
+  background: #006e91;
+  min-height: 1em;
+  height: 100%;
+}
+
+.abstract_desc_group {
+  padding-left: 100px;
+  padding-right: 100px;
+  padding-bottom: 25px;
+}

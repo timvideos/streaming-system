@@ -1,0 +1,1 @@
+../../frontend/templatetags/safe_js.py

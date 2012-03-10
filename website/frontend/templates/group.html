@@ -3,6 +3,7 @@
 -*- coding: utf-8 -*-
 vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
 {% endcomment %}
+{% load safe_js %}
 
 {% block head %}
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
@@ -18,13 +19,12 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
 {% endblock %}
 
 {% block content %}
-      <td id="title" colspan=2>
-        <div id="showing" class="container_4">
-          <div id='abstract_info' class='abstract_info' onclick='$(".abstract_desc").fadeToggle();'>(More info)</div>
-          <div id='abstract_title' class='abstract_title'></div>
-          <div id='abstract_desc' class='abstract_desc'></div>
+      <td id="abstract_cell abstract_cell_group" colspan=2 style="height: 1px;">
+        <div id="showing" class='abstract_div abstract_div_group'>
+          <div id='abstract_info' class='abstract_info abstract_info_group' onclick='$(".abstract_desc").fadeToggle();'>(More info)</div>
+          <div id='abstract_title' class='abstract_title abstract_title_group'></div>
+          <div id='abstract_desc' class='abstract_desc abstract_desc_group'></div>
         </div>
-      </td><td>
       </td>
     </tr><tr>
       <td id="options" colspan=2>
@@ -113,7 +113,7 @@ function quality_set(value) {
       format = player_jwobject.renderingMode;
     }
     if (format)
-      player_jwobject.load({{fixed_group}}_streamer.levels(format, value));
+      player_jwobject.load({{group|safe_js}}_streamer.levels(format, value));
   }
   var option = $('input[name=quality][type=radio][value='+value+']');
   option.attr('checked', true);
@@ -178,7 +178,7 @@ function format_set(value) {
         }
       },
       skin: '/static/third_party/jwplayer/skin/glow.zip',
-      modes: {{fixed_group}}_streamer.modes(value, 'auto')
+      modes: {{group|safe_js}}_streamer.modes(value, 'auto')
     };
     player_jwobject = jwplayer("player").setup(jwsettings);
     fit_player();
@@ -206,10 +206,9 @@ format_change();
 quality_change();
 
 function schedule_callback() {
-  update_schedule($('#talk_title'), $('#talk_desc'), '{{config.title|escapejs}}');
+  update_schedule($('#abstract_title'), $('#abstract_desc'), '{{config.title|escapejs}}');
   setTimeout(schedule_callback, 60e3);
   fit_player();
-  setTimeout(sponsor_swap_a, 2000);
 }
 
 get_schedule(schedule_callback);

@@ -1,0 +1,26 @@
+{% comment %}
+-*- coding: utf-8 -*-
+vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
+{% endcomment %}
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="/static/css/stats.css">
+    <meta http-equiv="refresh" content="10">
+  </head>
+  <body>
+    <style>
+    .tiny {
+      font-size: 6pt;
+      }
+    </style>
+    <h1>Active Servers</h1>
+    {% with active_servers as servers %}
+    {% include "stats_table.html" %}
+    {% endwith %}
+    <hr>
+    <h1>In-Active Servers</h1>
+    {% with inactive_servers as servers %}
+    {% include "stats_table.html" %}
+    {% endwith %}
+  </body>
+</html>
