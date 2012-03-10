@@ -68,8 +68,8 @@ def main(args):
             f.close()
 
             print "Encoder - %s" % host
-            subprocess.call("echo scp %s root@%s:/usr/local/etc/flumotion/managers/default/planet.xml" % (encoder_file, host), shell=True)
-            subprocess.call("echo scp %s root@%s:/usr/local/etc/flumotion/workers/default.xml" % (worker_file, host), shell=True)
+            subprocess.call("scp %s root@%s:/usr/local/etc/flumotion/managers/default/planet.xml" % (encoder_file, host), shell=True)
+            subprocess.call("scp %s root@%s:/usr/local/etc/flumotion/workers/default.xml" % (worker_file, host), shell=True)
 
         # Upload the collector config
         if options.collectors:
@@ -81,8 +81,8 @@ def main(args):
             f.close()
 
             print "Collector - %s" % host
-            subprocess.call("echo scp %s root@%s:/usr/local/etc/flumotion/managers/default/planet.xml" % (collector_file, host), shell=True)
-            subprocess.call("echo scp %s root@%s:/usr/local/etc/flumotion/workers/default.xml" % (worker_file, host), shell=True)
+            subprocess.call("scp %s root@%s:/usr/local/etc/flumotion/managers/default/planet.xml" % (collector_file, host), shell=True)
+            subprocess.call("scp %s root@%s:/usr/local/etc/flumotion/workers/default.xml" % (worker_file, host), shell=True)
 
         print "-"*80
         print

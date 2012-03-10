@@ -114,6 +114,7 @@
       <clock-master>false</clock-master>
     </component>
 
+<!--
     <component name="justintv"
                type="pipeline-converter"
                label="justintv"
@@ -126,6 +127,7 @@
       <clock-master>false</clock-master>
       <property name="pipeline">tee name=t ! queue ! rtmpsink location=rtmp://live.justin.tv/app/%(justintv_key)s  t. ! queue</property>
     </component>
+-->
 
     <component name="http-loop"
                type="http-streamer"
