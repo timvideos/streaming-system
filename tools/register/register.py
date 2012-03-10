@@ -70,7 +70,6 @@ class Register(common.AdminCommand):
         self.secret = options.secret
 
         self.register_url = options.register_url
-
         self.interval = options.interval
 
         # call our callback after connecting

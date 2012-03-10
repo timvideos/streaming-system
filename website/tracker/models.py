@@ -181,11 +181,13 @@ class Encoder(models.Model):
         unique_together = (("group", "ip", "lastseen"),)
 
 
-class Collector(models.Model):
+class Flumotion(models.Model):
     """Amazon EC2 instance which sends data."""
-    group = models.CharField(blank=False, max_length=10)
+    identifier = models.CharField(blank=False, max_length=255)
     ip = models.IPAddressField(blank=False)
     lastseen = models.DateTimeField(auto_now=True, blank=False)
 
+    data = models.TextField(blank=False)
+
     class Meta:
-        unique_together = (("group", "ip"),)
+        unique_together = (("identifier", "lastseen"),)

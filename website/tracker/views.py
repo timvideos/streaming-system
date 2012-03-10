@@ -231,7 +231,7 @@ def client_stats(request, group, _now=None):
 ###########################################################################################
 
 
-def encoder_common(request):
+def encoder_common(request, check_group=True):
     """Check the common information for an encoder request."""
     if request.method != 'POST':
         return never_cache_redirect_to(request, url="/")
@@ -247,10 +247,13 @@ def encoder_common(request):
         response.write('ERROR SECRET\n')
         return response, None, None
 
-    group = request.POST.get('group', '')
-    if not CONFIG.valid(group):
-        response.write('ERROR GROUP\n')
-        return response, None, None
+    if check_group:
+        group = request.POST.get('group', '')
+        if not CONFIG.valid(group):
+            response.write('ERROR GROUP\n')
+            return response, None, None
+    else:
+        group = None
 
     ip = request.META['HTTP_X_REAL_IP']
 
@@ -318,6 +321,35 @@ def encoder_logs(request):
 
     # Close the file
     logfile.close()
+
+    # Write out that everything went okay
+    response = http.HttpResponse(content_type='text/plain')
+    response.write('OK\n')
+    return response
+
+
+# Save some data about flumotion
+@csrf_exempt
+@never_cache
+def flumotion_logging(request):
+    """Saves the client's log files."""
+    response, group, ip = encoder_common(request, check_group=False)
+    if response is not None:
+        return response
+
+    try:
+        data = simplejson.loads(request.POST.get('data', "{}"))
+    except simplejson.JSONDecodeError, e:
+        response = http.HttpResponse(content_type='text/plain')
+        response.write('ERROR %s' % e)
+        return response
+
+    s = models.Flumotion(
+            identifier=request.POST['identifier'],
+            ip=request.META['HTTP_X_REAL_IP'],
+            data=simplejson.dumps(data),
+            )
+    s.save()
 
     # Write out that everything went okay
     response = http.HttpResponse(content_type='text/plain')

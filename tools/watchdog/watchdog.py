@@ -11,11 +11,14 @@ import cStringIO as StringIO
 import datetime
 import logging
 import pprint
+import simplejson
 import subprocess
 import sys
 import time
 import threading
 import traceback
+import urllib
+import urllib2
 
 try:
     from termcolor import colored
@@ -23,6 +26,7 @@ except:
     colored = lambda t, c: t
 
 from twisted.internet import defer, reactor, error
+import twisted.spread.pb
 
 from flumotion.admin.command import common
 from flumotion.admin.command import main
@@ -31,6 +35,14 @@ from flumotion.common import errors, planet, log
 from flumotion.common.planet import moods
 
 from flumotion.monitor.nagios import util
+
+
+def color_percent(p):
+    if p > 90.0:
+        return 'red'
+    if p > 75.0:
+        return 'yellow'
+    return 'green'
 
 
 class Counter(object):
@@ -68,6 +80,12 @@ class StateTracker(object):
         self.__counts = {}
 
         self.__lock = threading.Lock()
+
+    def state(self):
+        return {
+            'current': dict(self.__current),
+            'history': dict(self.__history),
+            }
 
     def update(self, obj):
         cname = obj.get('name')
@@ -151,8 +169,8 @@ class StateTracker(object):
                 self.age(cname),
                 ))
             for m, t, a in self.history(cname):
-                s.write(colored('%30s (at %s) in %s for %4.2f\n', 'grey') % (
-                    '', totime(t), colored('%8s' % m, 'grey'), a))
+                s.write(colored('%30s (at %s) in %s for %4.2fs\n', 'white') % (
+                    '', totime(t), '%8s' % m, a))
         return s.getvalue()
 
     def history(self, cname, number=5):
@@ -191,7 +209,7 @@ class WatchDog(common.AdminCommand):
 
     def __init__(self, *args, **kw):
         self.error_sum = 0
-
+        self.sending = None
         self.flumotion_state = StateTracker()
 
         self.check_thread = threading.Thread(target=self.loop)
@@ -199,47 +217,89 @@ class WatchDog(common.AdminCommand):
 
         common.AdminCommand.__init__(self, *args, **kw)
 
+    def addOptions(self):
+        default = "http://streamti.me/tracker/watchdog",
+        self.parser.add_option('-r', '--register',
+            action="store", dest="register_url",
+            help="Server to register on. (defaults to %s)" % default,
+            default=default)
+        self.parser.add_option('-s', '--secret',
+            action="store", dest="secret",
+            help="Secret that the is shared with the server")
+
+        default = "$(hostname -f) $(hostname -I)"
+        self.parser.add_option('-i', '--identifier',
+            action="store", dest="identifier",
+            help="Identifer sent to the server (defaults to %s)" % default,
+            default=default)
+
+
+    def handleOptions(self, options):
+        self.register = options.register_url
+        self.secret = options.secret
+
+        self.identifier = options.identifier
+        if '$(' in self.identifier:
+            self.identifier = subprocess.Popen(
+                'echo '+self.identifier, shell=True, stdout=subprocess.PIPE
+                ).stdout.read().strip()
+        logging.info('Identifer is %r', self.identifier)
+
+        self.getRootCommand().loginDeferred.addCallback(self._callback)
+
     def eb(self, e):
         logging.error(e)
         self.exit()
 
     def restart_full(self):
         """Restart the whole of flumotion."""
+        logging.error('Starting the whole of flumotion')
         return subprocess.call('/etc/init.d/flumotion restart', shell=True)
 
     def restart_component(self, component, count=Counter()):
         """Restart an individual flumotion component."""
-        count.acquire()
+        try:
+            count.acquire()
 
-        logging.info("%s - trying to stop", component.get('name'))
+            logging.info("%s - trying to stop", component.get('name'))
 
-        def stopped_cb(error=None, self=self, component=component):
-            logging.info('%s - stopped%s',
-                component.get('name'),
-                (" (Error r"+repr(error)+")", "")[error == None])
-            self.start_component(component, count)
+            def stopped_cb(error=None, self=self, component=component):
+                logging.info('%s - stopped%s',
+                    component.get('name'),
+                    (" (Error r"+repr(error)+")", "")[error == None])
+                self.start_component(component, count)
 
-        d = self.getRootCommand().medium.callRemote(
-            'componentStop', component)
-        d.addCallback(stopped_cb)
-        d.addErrback(stopped_cb)
+            d = self.getRootCommand().medium.callRemote(
+                'componentStop', component)
+            d.addCallback(stopped_cb)
+            d.addErrback(stopped_cb)
+        except twisted.spread.pb.DeadReferenceError, e:
+            logging.error(e)
+            return
 
     def start_component(self, component, count=Counter()):
         """Start an individual flumotion component."""
-        logging.info("%s - trying to start", component.get('name'))
-        def started_cb(error=None, component=component):
-            logging.info('%s - started%s',
-                component.get('name'),
-                (" (Error r"+repr(error)+")", "")[error == None])
-            count.release()
+        try:
+            logging.info("%s - trying to start", component.get('name'))
+            def started_cb(error=None, component=component):
+                logging.info('%s - started%s',
+                    component.get('name'),
+                    (" (Error r"+repr(error)+")", "")[error == None])
 
-        d = self.getRootCommand().medium.callRemote(
-            'componentStart', component)
-        d.addCallback(started_cb)
-        d.addErrback(started_cb)
+                def cooldown(count=count):
+                    time.sleep(5)
+                    count.release()
+                t = threading.Thread(target=cooldown)
+                t.daemon = True
+                t.start()
 
-    def handleOptions(self, options):
-        self.getRootCommand().loginDeferred.addCallback(self._callback)
+            d = self.getRootCommand().medium.callRemote(
+                'componentStart', component)
+            d.addCallback(started_cb)
+            d.addErrback(started_cb)
+        except twisted.spread.pb.DeadReferenceError, e:
+            logging.error(e)
+            return
 
     def exit(self):
         # Unpause the edit
@@ -291,6 +351,29 @@ class WatchDog(common.AdminCommand):
     def checkstate(self):
         logging.info(self.flumotion_state.dump())
 
+        if self.register and not self.sending:
+            def send_state(self=self):
+                try:
+                    urllib2.urlopen(self.register, urllib.urlencode({
+                        'secret': self.secret,
+                        'identifier': self.identifier,
+                        'data': simplejson.dumps(self.flumotion_state.state()),
+                        }))
+                except urllib2.HTTPError, e:
+                    logging.error("%s: %s", e, e.read())
+
+                logging.info('Sent flumotion state up.')
+
+                self.sending = None
+
+            self.sending = threading.Thread(target=send_state)
+            self.sending.daemon = True
+            self.sending.start()
+
+        # Output the current error count state
+        p = self.error_sum*1.0/StateTracker.THRESHOLD*100.0
+        logging.info('Before %s so far.', colored('%2.2f' % p, color_percent(p)))
+
         for component in self.flumotion_state.components():
             flucomponent = self.flumotion_state.component(component)
             mood = self.flumotion_state.mood(component)
@@ -313,24 +396,25 @@ class WatchDog(common.AdminCommand):
             # should only be in the state for a short time.
             elif mood in StateTracker.WAITING_SHORT:
                 age = self.flumotion_state.age(component)
+
+                self.error_sum += 1.0
                 # How long has it been in a waiting state?
                 if age >= 10:
-                    self.error_sum += 1*age
-
                     self.restart_component(flucomponent, count)
 
             # Waiting components which have been waiting for a *really* long time.
             elif mood in StateTracker.WAITING_LONG:
                 age = self.flumotion_state.age(component)
+
+                self.error_sum += 0.01
+
                 # How long has it been in a waiting state?
                 if age >= 120:
-                    self.error_sum += 1*age
-
                     self.restart_component(flucomponent, count)
 
             # Restart components which are currently borked.
             elif mood in StateTracker.BORKED:
-                self.error_sum += 1
+                self.error_sum += 15
                 self.restart_component(flucomponent, count)
 
             # Fatal components need flumotion to be restarted.
@@ -341,6 +425,9 @@ class WatchDog(common.AdminCommand):
                 logging.error('Component %s in unknown state %s', mood, state)
 
             count.release()
+
+        p = self.error_sum*1.0/StateTracker.THRESHOLD*100.0
+        logging.info('After %s so far.', colored('%2.2f' % p, color_percent(p)))
 
         if self.error_sum > StateTracker.THRESHOLD:
             self.restart_full()
@@ -356,9 +443,20 @@ class Command(main.Command):
 
 
 def main(args):
-    logging.basicConfig(stream=sys.stdout,level=logging.DEBUG)
+    args = list(args)
+    args_a = [args.pop(0)]
+    args_b = []
 
-    args.append('watchdog')
+    while len(args) > 0:
+        arg = args.pop(0)
+        if arg == '-m':
+            args_a.append(arg)
+            args_a.append(args.pop(0))
+        else:
+            args_b.append(arg)
+    args = args_a + ["watchdog"] + args_b
+
+    logging.basicConfig(stream=sys.stdout,level=logging.DEBUG)
 
     c = Command()
     try:

@@ -8,6 +8,7 @@ from django.conf.urls.defaults import patterns, include, url
 from tracker import views
 
 urlpatterns = patterns('',
+    url(r'^flumotion$', views.flumotion_logging),
     url(r'^encoder/register$', views.encoder_register),
     url(r'^encoder/logs$', views.encoder_logs),
     url(r'^(.*)/stats$', views.client_stats),
