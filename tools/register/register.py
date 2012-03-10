@@ -93,8 +93,7 @@ class Register(common.AdminCommand):
                         continue
 
                     def getUIStateCb(uiState, name=name):
-                        return (name, int(uiState.get('clients-current')), int(uiState.get('consumption-bitrate-raw')))
-
+                        return (name, int(uiState.get('clients-current')), int(uiState.get('consumption-bitrate-raw')), int(uiState.get('stream-bitrate-raw')))
                     d = self.getRootCommand().medium.componentCallRemote(
                         component, 'getUIState')
                     d.addCallback(getUIStateCb)
@@ -111,13 +110,19 @@ class Register(common.AdminCommand):
         return d
 
     def send_update(self, totals):
-        data = {"overall_clients": 0, "overall_bitrate": 0}
-        for name, clients, bitrate in totals:
+        data = {
+            "overall_clients": 0,
+            "overall_bitrate": 0,
+            "overall_cbitrate": 0,
+            }
+        for name, clients, bitrate, streambitrate in totals:
             fixed_name = name.replace('http-', '').replace('-', '_')
             data[fixed_name+"_clients"] = int(clients)
             data[fixed_name+"_bitrate"] = float(bitrate)
+            data[fixed_name+"_cbitrate"] = float(bitrate)
             data["overall_clients"] += clients
             data["overall_bitrate"] += bitrate
+            data["overall_cbitrate"] += clients*streambitrate
 
         try:
             r = urllib2.urlopen(
@@ -134,7 +139,9 @@ class Register(common.AdminCommand):
             raise
         print "Registered at", datetime.datetime.now(), "result", r.read().strip(),
         print 'clients:', data['overall_clients'],
-        print 'bitrate:', data['overall_bitrate'], data['overall_bitrate']/1e6, 'megabits/second'
+        print 'bitrate:', data['overall_bitrate'],
+        print "(%s %s)" % (data['overall_bitrate']/1e6, 'megabits/second'),
+        print 'theory:', data['overall_bitrate']/1e6, 'megabits/second'
 
         # Schedule another register in 30 seconds
         d = defer.Deferred()
