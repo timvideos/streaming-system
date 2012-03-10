@@ -218,7 +218,7 @@ class WatchDog(common.AdminCommand):
         common.AdminCommand.__init__(self, *args, **kw)
 
     def addOptions(self):
-        default = "http://streamti.me/tracker/flumotion/log",
+        default = "http://streamti.me/tracker/flumotion/log"
         self.parser.add_option('-r', '--register',
             action="store", dest="register_url",
             help="Server to register on. (defaults to %s)" % default,
@@ -233,8 +233,19 @@ class WatchDog(common.AdminCommand):
             help="Identifer sent to the server (defaults to %s)" % default,
             default=default)
 
+        default = "INFO"
+        self.parser.add_option('-l', '--logging',
+            action="store", dest="logging_level",
+            help="Logging level to output (defaults to %s)." % default,
+            default=default)
+
 
     def handleOptions(self, options):
+        logging.basicConfig(
+            stream=sys.stdout,
+            level=getattr(logging, options.logging_level),
+            )
+
         self.register = options.register_url
         self.secret = options.secret
 
@@ -339,11 +350,11 @@ class WatchDog(common.AdminCommand):
     def loop(self, *args):
         try:
             while True:
-                logging.info('Checking state.')
+                logging.debug('Checking state.')
                 if not self.checkstate():
                     logging.info('Restarting.')
                     return
-                logging.info('Sleeping.')
+                logging.debug('Sleeping.')
                 time.sleep(1)
         finally:
             self.exit()
@@ -353,17 +364,19 @@ class WatchDog(common.AdminCommand):
 
         if self.register and not self.sending:
             def send_state(self=self):
+                data = {
+                    'recorded_time': time.time(),
+                    'secret': self.secret,
+                    'identifier': self.identifier,
+                    'data': simplejson.dumps(self.flumotion_state.state()),
+                    }
+                logging.debug("%s %s", self.register, data)
                 try:
-                    urllib2.urlopen(self.register, urllib.urlencode({
-                        'recorded_time': time.time(),
-                        'secret': self.secret,
-                        'identifier': self.identifier,
-                        'data': simplejson.dumps(self.flumotion_state.state()),
-                        }))
+                    urllib2.urlopen(self.register, data=urllib.urlencode(data))
                 except urllib2.HTTPError, e:
                     logging.error("%s: %s", e, e.read())
 
-                logging.info('Sent flumotion state up.')
+                logging.debug('Sent flumotion state up.')
 
                 self.sending = None
 
@@ -456,8 +469,6 @@ def main(args):
         else:
             args_b.append(arg)
     args = args_a + ["watchdog"] + args_b
-
-    logging.basicConfig(stream=sys.stdout,level=logging.DEBUG)
 
     c = Command()
     try:
