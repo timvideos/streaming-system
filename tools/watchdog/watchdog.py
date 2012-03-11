@@ -71,7 +71,7 @@ class StateTracker(object):
     # States which are considered fatal
     FATAL = [moods.lost.name]
 
-    THRESHOLD = 100
+    THRESHOLD = 60
 
     def __init__(self):
         self.__history = {}
@@ -208,7 +208,7 @@ class WatchDog(common.AdminCommand):
     usage = ""
 
     def __init__(self, *args, **kw):
-        self.error_sum = 0
+        self.error_sum = {}
         self.sending = None
         self.flumotion_state = StateTracker()
 
@@ -359,10 +359,23 @@ class WatchDog(common.AdminCommand):
         finally:
             self.exit()
 
-    def checkstate(self):
-        logging.info(self.flumotion_state.dump())
+    def error_info(self):
+        pd = {}
+        for k in self.error_sum:
+            p = self.error_sum[k]*1.0/StateTracker.THRESHOLD*100.0
+            pd[k] = colored('%2.2f' % p, color_percent(p))
+        return pd
 
-        if self.register and not self.sending:
+    def error_msg(self, msg):
+        info = self.error_info()
+        for k in info:
+            logging.info(msg, k, info[k])
+
+    def checkstate(self):
+        dump = self.flumotion_state.dump()
+        logging.info(dump)
+
+        if self.register and not self.sending and dump.strip():
             def send_state(self=self):
                 data = {
                     'recorded_time': time.time(),
@@ -378,6 +391,8 @@ class WatchDog(common.AdminCommand):
 
                 logging.debug('Sent flumotion state up.')
 
+                time.sleep(30)
+
                 self.sending = None
 
             self.sending = threading.Thread(target=send_state)
@@ -385,17 +400,20 @@ class WatchDog(common.AdminCommand):
             self.sending.start()
 
         # Output the current error count state
-        p = self.error_sum*1.0/StateTracker.THRESHOLD*100.0
-        logging.info('Before %s so far.', colored('%2.2f' % p, color_percent(p)))
+        self.error_msg('Before %30s:%s so far.')
 
+        num = len(self.flumotion_state.components())
         for component in self.flumotion_state.components():
+            if component not in self.error_sum:
+                self.error_sum[component] = 0
+
             flucomponent = self.flumotion_state.component(component)
             mood = self.flumotion_state.mood(component)
 
             count = self.flumotion_state.count(component)
             if not count.acquire(True):
                 logging.info('%s was locked for changing', component)
-                self.error_sum += 1
+                self.error_sum[component] += 1
                 continue
 
             # States which are considered happy
@@ -411,7 +429,7 @@ class WatchDog(common.AdminCommand):
             elif mood in StateTracker.WAITING_SHORT:
                 age = self.flumotion_state.age(component)
 
-                self.error_sum += 1.0
+                self.error_sum[component] += 10
                 # How long has it been in a waiting state?
                 if age >= 10:
                     self.restart_component(flucomponent, count)
@@ -420,7 +438,7 @@ class WatchDog(common.AdminCommand):
             elif mood in StateTracker.WAITING_LONG:
                 age = self.flumotion_state.age(component)
 
-                self.error_sum += 0.01
+                self.error_sum[component] += 1
 
                 # How long has it been in a waiting state?
                 if age >= 120:
@@ -428,24 +446,24 @@ class WatchDog(common.AdminCommand):
 
             # Restart components which are currently borked.
             elif mood in StateTracker.BORKED:
-                self.error_sum += 15
+                self.error_sum[component] += 15
                 self.restart_component(flucomponent, count)
 
             # Fatal components need flumotion to be restarted.
             elif mood in StateTracker.FATAL:
-                self.error_sum += 1e6
+                self.error_sum[component] += 1e6
 
             else:
                 logging.error('Component %s in unknown state %s', mood, state)
 
             count.release()
 
-        p = self.error_sum*1.0/StateTracker.THRESHOLD*100.0
-        logging.info('After %s so far.', colored('%2.2f' % p, color_percent(p)))
+        self.error_msg(' After %30s:%s so far.')
 
-        if self.error_sum > StateTracker.THRESHOLD:
-            self.restart_full()
-            return False
+        for k in self.error_sum:
+            if self.error_sum[k] > StateTracker.THRESHOLD:
+                self.restart_full()
+                return False
         else:
             return True
 
