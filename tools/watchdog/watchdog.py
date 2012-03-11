@@ -23,6 +23,7 @@ import urllib2
 try:
     from termcolor import colored
 except:
+    logging.warn("termcolor package not installed, you won't get any colors!")
     colored = lambda t, c: t
 
 from twisted.internet import defer, reactor, error
@@ -71,13 +72,14 @@ class StateTracker(object):
     # States which are considered fatal
     FATAL = [moods.lost.name]
 
-    THRESHOLD = 100
+    THRESHOLD = 60
 
     def __init__(self):
         self.__history = {}
         self.__current = {}
         self.__cobjs = {}
         self.__counts = {}
+        self.__errors = {}
 
         self.__lock = threading.Lock()
 
@@ -108,6 +110,22 @@ class StateTracker(object):
 
                     # Update the mood
                     self.__current[cname] = (new_mood, time.time())
+
+    def error(self, cname, add=None):
+        """Get the current mood of an component."""
+        try:
+            if not isinstance(cname, (str, unicode)):
+                cname = cname.get('name')
+
+            if add:
+                if cname not in self.__errors:
+                    self.__errors[cname] = 0.0
+
+                self.__errors[cname] += add
+
+            return self.__errors[cname] / self.THRESHOLD * 100.0
+        except KeyError:
+            return 0.0
 
     def mood(self, cname):
         """Get the current mood of an component."""
@@ -162,14 +180,17 @@ class StateTracker(object):
             else:
                 color = 'white'
 
-            s.write('%30s (at %s) in %s for %4.2fs\n' % (
+            error = self.error(cname)
+
+            s.write('%28s (at %s) in %s for %4.0fs (e %s%%)\n' % (
                 cname,
                 totime(self.entered(cname)),
                 colored('%8s' % mood, color),
                 self.age(cname),
+                colored('%5.2f' % error, color_percent(error)),
                 ))
             for m, t, a in self.history(cname):
-                s.write(colored('%30s (at %s) in %s for %4.2fs\n', 'white') % (
+                s.write(colored('%28s (at %s) in %s for %4.0fs\n', 'white') % (
                     '', totime(t), '%8s' % m, a))
         return s.getvalue()
 
@@ -208,7 +229,6 @@ class WatchDog(common.AdminCommand):
     usage = ""
 
     def __init__(self, *args, **kw):
-        self.error_sum = 0
         self.sending = None
         self.flumotion_state = StateTracker()
 
@@ -218,7 +238,7 @@ class WatchDog(common.AdminCommand):
         common.AdminCommand.__init__(self, *args, **kw)
 
     def addOptions(self):
-        default = "http://streamti.me/tracker/flumotion/log",
+        default = "http://streamti.me/tracker/flumotion/log"
         self.parser.add_option('-r', '--register',
             action="store", dest="register_url",
             help="Server to register on. (defaults to %s)" % default,
@@ -233,10 +253,28 @@ class WatchDog(common.AdminCommand):
             help="Identifer sent to the server (defaults to %s)" % default,
             default=default)
 
+        default = "INFO"
+        self.parser.add_option('-l', '--logging',
+            action="store", dest="logging_level",
+            help="Logging level to output (defaults to %s)." % default,
+            default=default)
+
+        default = "encoder"
+        self.parser.add_option('-t', '--type',
+            action="store", dest="type",
+            help="Flumotion server type (defaults to %s)." % default,
+            default=default)
+
 
     def handleOptions(self, options):
+        logging.basicConfig(
+            stream=sys.stdout,
+            level=getattr(logging, options.logging_level),
+            )
+
         self.register = options.register_url
         self.secret = options.secret
+        self.type = options.type
 
         self.identifier = options.identifier
         if '$(' in self.identifier:
@@ -339,31 +377,37 @@ class WatchDog(common.AdminCommand):
     def loop(self, *args):
         try:
             while True:
-                logging.info('Checking state.')
+                logging.debug('Checking state.')
                 if not self.checkstate():
                     logging.info('Restarting.')
                     return
-                logging.info('Sleeping.')
+                logging.debug('Sleeping.')
                 time.sleep(1)
         finally:
             self.exit()
 
     def checkstate(self):
-        logging.info(self.flumotion_state.dump())
+        dump = self.flumotion_state.dump()
+        logging.info(dump)
 
-        if self.register and not self.sending:
+        if self.register and not self.sending and dump.strip():
             def send_state(self=self):
+                data = {
+                    'recorded_time': time.time(),
+                    'identifier': self.identifier,
+                    'type': self.type,
+                    'secret': self.secret,
+                    'data': simplejson.dumps(self.flumotion_state.state()),
+                    }
+                logging.debug("%s %s", self.register, data)
                 try:
-                    urllib2.urlopen(self.register, urllib.urlencode({
-                        'recorded_time': time.time(),
-                        'secret': self.secret,
-                        'identifier': self.identifier,
-                        'data': simplejson.dumps(self.flumotion_state.state()),
-                        }))
+                    urllib2.urlopen(self.register, data=urllib.urlencode(data))
                 except urllib2.HTTPError, e:
                     logging.error("%s: %s", e, e.read())
 
-                logging.info('Sent flumotion state up.')
+                logging.debug('Sent flumotion state up.')
+
+                time.sleep(30)
 
                 self.sending = None
 
@@ -371,10 +415,7 @@ class WatchDog(common.AdminCommand):
             self.sending.daemon = True
             self.sending.start()
 
-        # Output the current error count state
-        p = self.error_sum*1.0/StateTracker.THRESHOLD*100.0
-        logging.info('Before %s so far.', colored('%2.2f' % p, color_percent(p)))
-
+        num = len(self.flumotion_state.components())
         for component in self.flumotion_state.components():
             flucomponent = self.flumotion_state.component(component)
             mood = self.flumotion_state.mood(component)
@@ -382,7 +423,7 @@ class WatchDog(common.AdminCommand):
             count = self.flumotion_state.count(component)
             if not count.acquire(True):
                 logging.info('%s was locked for changing', component)
-                self.error_sum += 1
+                self.flumotion_state.error(component, 1)
                 continue
 
             # States which are considered happy
@@ -398,41 +439,38 @@ class WatchDog(common.AdminCommand):
             elif mood in StateTracker.WAITING_SHORT:
                 age = self.flumotion_state.age(component)
 
-                self.error_sum += 1.0
                 # How long has it been in a waiting state?
                 if age >= 10:
+                    self.flumotion_state.error(component, 10)
                     self.restart_component(flucomponent, count)
 
             # Waiting components which have been waiting for a *really* long time.
             elif mood in StateTracker.WAITING_LONG:
                 age = self.flumotion_state.age(component)
 
-                self.error_sum += 0.01
-
                 # How long has it been in a waiting state?
-                if age >= 120:
+                if age >= 30:
+                    self.flumotion_state.error(component, 1)
                     self.restart_component(flucomponent, count)
 
             # Restart components which are currently borked.
             elif mood in StateTracker.BORKED:
-                self.error_sum += 15
+                self.flumotion_state.error(component, 15)
                 self.restart_component(flucomponent, count)
 
             # Fatal components need flumotion to be restarted.
             elif mood in StateTracker.FATAL:
-                self.error_sum += 1e6
+                self.flumotion_state.error(component, 1e6)
 
             else:
                 logging.error('Component %s in unknown state %s', mood, state)
 
             count.release()
 
-        p = self.error_sum*1.0/StateTracker.THRESHOLD*100.0
-        logging.info('After %s so far.', colored('%2.2f' % p, color_percent(p)))
-
-        if self.error_sum > StateTracker.THRESHOLD:
-            self.restart_full()
-            return False
+        for component in self.flumotion_state.components():
+            if self.flumotion_state.error(component) > 100.0:
+                self.restart_full()
+                return False
         else:
             return True
 
@@ -456,8 +494,6 @@ def main(args):
         else:
             args_b.append(arg)
     args = args_a + ["watchdog"] + args_b
-
-    logging.basicConfig(stream=sys.stdout,level=logging.DEBUG)
 
     c = Command()
     try:
