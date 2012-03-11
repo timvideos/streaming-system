@@ -23,6 +23,7 @@ import urllib2
 try:
     from termcolor import colored
 except:
+    logging.warn("termcolor package not installed, you won't get any colors!")
     colored = lambda t, c: t
 
 from twisted.internet import defer, reactor, error
