@@ -181,7 +181,7 @@ class StateTracker(object):
 
             error = self.error(cname)
 
-            s.write('%30s (at %s) in %s for %8.2fs (e %s%%)\n' % (
+            s.write('%28s (at %s) in %s for %4.0fs (e %s%%)\n' % (
                 cname,
                 totime(self.entered(cname)),
                 colored('%8s' % mood, color),
@@ -189,7 +189,7 @@ class StateTracker(object):
                 colored('%5.2f' % error, color_percent(error)),
                 ))
             for m, t, a in self.history(cname):
-                s.write(colored('%30s (at %s) in %s for %8.2fs\n', 'white') % (
+                s.write(colored('%28s (at %s) in %s for %4.0fs\n', 'white') % (
                     '', totime(t), '%8s' % m, a))
         return s.getvalue()
 
