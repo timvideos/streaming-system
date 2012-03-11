@@ -1,0 +1,6 @@
+
+Tool which helps out with flumotion, currently the following modules exist;
+
+ * watchdog - Restarts dead components or the whole of flumotion.
+ * register - Register the server onto the streamti.me interface.
+
