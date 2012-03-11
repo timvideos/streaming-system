@@ -17,3 +17,13 @@ def udate(s, date):
         return defaultfilters.date(d, date)
     except:
         return None
+
+@register.filter(name="timedelta")
+def timedelta(a, b):
+    if not isinstance(a, datetime.datetime):
+        a = datetime.datetime.fromtimestamp(a)
+    if not isinstance(b, datetime.datetime):
+        b = datetime.datetime.fromtimestamp(b)
+
+    delta = b-a
+    return "%im%2is" % (delta.seconds/60, delta.seconds%60)

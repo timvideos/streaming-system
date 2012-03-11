@@ -38,6 +38,10 @@ div.history {
   overflow-y: scroll;
 }
 
+span.for {
+  font-size: 8pt;
+}
+
 /* Table borders */
 table.stats {
   border-width: 1px;
@@ -171,7 +175,7 @@ td.row0col0 {
               {{mood}}
             </td>
             <td class="{{mood|mood_style}} at {{row_id}}{{col_id}}">
-              {{server.recorded_time|udate:'h:i:s'}}
+              {{t|udate:'h:i:s'}} <span class="for">(for {{t|timedelta:server.recorded_time}})</a>
             </td>
             {% endwith %}
             <td class="history {{row_id}}{{col_id}}">
