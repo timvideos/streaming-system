@@ -10,6 +10,7 @@ import ConfigParser
 import datetime
 import hashlib
 import logging
+import ordereddict
 import os
 import random
 import re
@@ -347,6 +348,7 @@ def flumotion_logging(request):
     s = models.Flumotion(
             identifier=request.POST['identifier'],
             recorded_time=request.POST['recorded_time'],
+            type=request.POST.get('type', ''),
             ip=request.META['HTTP_X_REAL_IP'],
             data=simplejson.dumps(data),
             )
@@ -360,18 +362,56 @@ def flumotion_logging(request):
 
 @never_cache
 def flumotion_stats(request):
-    flumotion = models.Flumotion.objects.order_by(
-        'identifier', 'ip', '-lastseen').distinct(
-        'identifier', 'ip')
+    ten_mins_ago = datetime.datetime.now() - datetime.timedelta(minutes=10)
 
-    inactive_servers = []
-    active_servers = []
+    flumotion = models.Flumotion.objects.order_by(
+        'type', 'identifier', 'ip', '-lastseen'
+        ).filter(lastseen__gte = ten_mins_ago)
+
+    [(x.identifier, x.lastseen, x.type) for x in flumotion]
+
+    types = set()
+    keys = {}
+
+    active_servers = ordereddict.OrderedDict()
     for server in flumotion:
+        types.add(server.type)
+        if server.type not in keys:
+            keys[server.type] = set()
+
+        key = '%s-%s' % (server.identifier, server.ip)
+
+        # Format the data a bit nicer
         server.full_data = simplejson.loads(server.data)
 
-        if server.lastseen < ten_mins_ago:
-            inactive_servers.append(server)
+        # Append to the list of components
+        for k in server.full_data['current'].keys():
+            keys[server.type].add(k)
+
+        if not key in active_servers:
+            active_servers[key] = server
         else:
-            active_servers.append(server)
+            # Append history
+            newest = active_servers[key]
+            for k in newest.full_data['current'].keys():
+                if k not in server.full_data['history']:
+                    continue
+                active_servers[key].full_data['history'][k].append((
+                    server.full_data['current'][k][0],
+                    -1,
+                    server.full_data['current'][k][-1],
+                    ))
+                newest.full_data['history'][k] += server.full_data['history'][k]
+
+                # Filter the history
+                filtered_history = [('', 0, '')]
+                for history in reversed(newest.full_data['history'][k]):
+                    if filtered_history[-1][0] != history[0]:
+                        filtered_history.append(history)
+
+                newest.full_data['history'][k] = list(reversed(filtered_history[1:]))
+
+    for k in keys:
+        keys[k] = list(sorted(keys[k]))
 
     return render(request, 'flumotion.html', locals(), content_type='text/html')

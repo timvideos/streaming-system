@@ -11,7 +11,6 @@ import time
 from django.db import models
 
 
-
 # These models make up the stats recording system.
 class Name(models.Model):
     """Name of a field on stat dictionary."""
@@ -193,6 +192,7 @@ class Flumotion(models.Model):
     """Amazon EC2 instance which sends data."""
     identifier = models.CharField(blank=False, max_length=255)
     ip = models.IPAddressField(blank=False)
+    type = models.CharField(blank=True, max_length=255)
     lastseen = models.DateTimeField(auto_now=True, blank=False)
 
     recorded_time = models.FloatField(blank=False)
