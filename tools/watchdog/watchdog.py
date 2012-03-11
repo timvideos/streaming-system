@@ -369,7 +369,7 @@ class WatchDog(common.AdminCommand):
     def error_msg(self, msg):
         info = self.error_info()
         for k in info:
-            logging.info(msg, k, info[k])
+            logging.debug(msg, k, info[k])
 
     def checkstate(self):
         dump = self.flumotion_state.dump()
