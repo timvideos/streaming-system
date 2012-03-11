@@ -78,6 +78,7 @@ class StateTracker(object):
         self.__current = {}
         self.__cobjs = {}
         self.__counts = {}
+        self.__errors = {}
 
         self.__lock = threading.Lock()
 
@@ -108,6 +109,22 @@ class StateTracker(object):
 
                     # Update the mood
                     self.__current[cname] = (new_mood, time.time())
+
+    def error(self, cname, add=None):
+        """Get the current mood of an component."""
+        try:
+            if not isinstance(cname, (str, unicode)):
+                cname = cname.get('name')
+
+            if add:
+                if cname not in self.__errors:
+                    self.__errors[cname] = 0.0
+
+                self.__errors[cname] += add
+
+            return self.__errors[cname] / self.THRESHOLD * 100.0
+        except KeyError:
+            return 0.0
 
     def mood(self, cname):
         """Get the current mood of an component."""
@@ -162,14 +179,17 @@ class StateTracker(object):
             else:
                 color = 'white'
 
-            s.write('%30s (at %s) in %s for %4.2fs\n' % (
+            error = self.error(cname)
+
+            s.write('%30s (at %s) in %s for %8.2fs (e %s%%)\n' % (
                 cname,
                 totime(self.entered(cname)),
                 colored('%8s' % mood, color),
                 self.age(cname),
+                colored('%5.2f' % error, color_percent(error)),
                 ))
             for m, t, a in self.history(cname):
-                s.write(colored('%30s (at %s) in %s for %4.2fs\n', 'white') % (
+                s.write(colored('%30s (at %s) in %s for %8.2fs\n', 'white') % (
                     '', totime(t), '%8s' % m, a))
         return s.getvalue()
 
@@ -208,7 +228,6 @@ class WatchDog(common.AdminCommand):
     usage = ""
 
     def __init__(self, *args, **kw):
-        self.error_sum = {}
         self.sending = None
         self.flumotion_state = StateTracker()
 
@@ -366,18 +385,6 @@ class WatchDog(common.AdminCommand):
         finally:
             self.exit()
 
-    def error_info(self):
-        pd = {}
-        for k in self.error_sum:
-            p = self.error_sum[k]*1.0/StateTracker.THRESHOLD*100.0
-            pd[k] = colored('%2.2f' % p, color_percent(p))
-        return pd
-
-    def error_msg(self, msg):
-        info = self.error_info()
-        for k in info:
-            logging.debug(msg, k, info[k])
-
     def checkstate(self):
         dump = self.flumotion_state.dump()
         logging.info(dump)
@@ -407,21 +414,15 @@ class WatchDog(common.AdminCommand):
             self.sending.daemon = True
             self.sending.start()
 
-        # Output the current error count state
-        self.error_msg('Before %30s:%s so far.')
-
         num = len(self.flumotion_state.components())
         for component in self.flumotion_state.components():
-            if component not in self.error_sum:
-                self.error_sum[component] = 0
-
             flucomponent = self.flumotion_state.component(component)
             mood = self.flumotion_state.mood(component)
 
             count = self.flumotion_state.count(component)
             if not count.acquire(True):
                 logging.info('%s was locked for changing', component)
-                self.error_sum[component] += 1
+                self.flumotion_state.error(component, 1)
                 continue
 
             # States which are considered happy
@@ -437,39 +438,36 @@ class WatchDog(common.AdminCommand):
             elif mood in StateTracker.WAITING_SHORT:
                 age = self.flumotion_state.age(component)
 
-                self.error_sum[component] += 10
                 # How long has it been in a waiting state?
                 if age >= 10:
+                    self.flumotion_state.error(component, 10)
                     self.restart_component(flucomponent, count)
 
             # Waiting components which have been waiting for a *really* long time.
             elif mood in StateTracker.WAITING_LONG:
                 age = self.flumotion_state.age(component)
 
-                self.error_sum[component] += 1
-
                 # How long has it been in a waiting state?
-                if age >= 120:
+                if age >= 30:
+                    self.flumotion_state.error(component, 1)
                     self.restart_component(flucomponent, count)
 
             # Restart components which are currently borked.
             elif mood in StateTracker.BORKED:
-                self.error_sum[component] += 15
+                self.flumotion_state.error(component, 15)
                 self.restart_component(flucomponent, count)
 
             # Fatal components need flumotion to be restarted.
             elif mood in StateTracker.FATAL:
-                self.error_sum[component] += 1e6
+                self.flumotion_state.error(component, 1e6)
 
             else:
                 logging.error('Component %s in unknown state %s', mood, state)
 
             count.release()
 
-        self.error_msg(' After %30s:%s so far.')
-
-        for k in self.error_sum:
-            if self.error_sum[k] > StateTracker.THRESHOLD:
+        for component in self.flumotion_state.components():
+            if self.flumotion_state.error(component) > 100.0:
                 self.restart_full()
                 return False
         else:
