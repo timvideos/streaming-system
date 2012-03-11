@@ -239,6 +239,12 @@ class WatchDog(common.AdminCommand):
             help="Logging level to output (defaults to %s)." % default,
             default=default)
 
+        default = "encoder"
+        self.parser.add_option('-t', '--type',
+            action="store", dest="type",
+            help="Flumotion server type (defaults to %s)." % default,
+            default=default)
+
 
     def handleOptions(self, options):
         logging.basicConfig(
@@ -248,6 +254,7 @@ class WatchDog(common.AdminCommand):
 
         self.register = options.register_url
         self.secret = options.secret
+        self.type = options.type
 
         self.identifier = options.identifier
         if '$(' in self.identifier:
@@ -379,8 +386,9 @@ class WatchDog(common.AdminCommand):
             def send_state(self=self):
                 data = {
                     'recorded_time': time.time(),
-                    'secret': self.secret,
                     'identifier': self.identifier,
+                    'type': self.type,
+                    'secret': self.secret,
                     'data': simplejson.dumps(self.flumotion_state.state()),
                     }
                 logging.debug("%s %s", self.register, data)
