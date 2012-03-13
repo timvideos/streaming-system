@@ -21,8 +21,8 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
         <td>{{ server.ip }}</td>
         <td>{{ server.group }}</td>
         <td>{{ server.overall_clients }}</td>
-        <td>{{ server.overall_bitrate|byterate }}/s</td>
-        <td>{{ server.overall_bitrate|bitrate }}/s</td>
+        <td>{{ server.overall_bitrate|byterate }}/s ({{ server.overall_cbitrate|byterate }}/s)</td>
+        <td>{{ server.overall_bitrate|bitrate }}/s ({{ server.overall_cbitrate|bitrate }}/s)</td>
         <td>{{ server.lastseen|date:"r" }}</td>
   {% for type in types %}
         <td class="tiny">{{ server|getattr:type }}</td>

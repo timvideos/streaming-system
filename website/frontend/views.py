@@ -66,6 +66,7 @@ def index(request, template="index"):
     for group in sorted(CONFIG.groups()):
         groups[group] = CONFIG.config(group)
 
+    config = CONFIG['config']
     default = CONFIG['default']
     return render_to_response('%s.html' % template, locals())
 

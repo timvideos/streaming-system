@@ -2,29 +2,200 @@
 -*- coding: utf-8 -*-
 vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
 {% endcomment %}
+{% load lookup %}
+{% load time %}
+{% load moods %}
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="/static/css/stats.css">
     <meta http-equiv="refresh" content="10">
   </head>
   <body>
     <style>
-    .tiny {
-      font-size: 6pt;
-      }
+body {
+  overflow: scroll;
+}
+
+table {
+  height: auto;
+  table-border: 1px solid black;
+}
+
+th {
+  width: 12em;
+}
+td {
+  width: 4em;
+}
+
+td.history {
+  width: 16em;
+}
+div.history {
+  padding: 2px;
+  height: 40px;
+  width: 100%;
+  font-size: 8pt;
+  overflow-y: scroll;
+}
+
+/* Table borders */
+table.stats {
+  border-width: 1px;
+  border-spacing: 0px;
+  border-style: outset;
+  border-color: gray;
+  background-color: white;
+}
+table.stats th {
+  border-width: 1px;
+  padding: 1px;
+  border-style: dotted;
+  border-color: gray;
+  -moz-border-radius: ;
+}
+table.stats td {
+  border-width: 1px;
+  padding: 1px;
+  border-style: dotted;
+  border-color: gray;
+  -moz-border-radius: ;
+}
+
+/* Flumotion mood coloring */
+.na {
+  text-align: center;
+  color: #eee;
+}
+
+.mood_happy {
+  color: green;
+}
+.mood_wait {
+  color: #CD950C;
+}
+.mood_bork {
+  color: fuchsia;
+}
+.mood_fatal {
+  color: red;
+}
+.mood_unknown {
+  color: black;
+}
+
+/* Fancy tiny scroll bars */
+::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: rgba(255,0,0,0.8); 
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+}
+::-webkit-scrollbar-thumb:window-inactive {
+  background: rgba(255,0,0,0.4); 
+}
+
+/* Zebra striping */
+colgroup {
+  background-color: #fefefe;
+}
+tr.row0 {
+  background-color: #eef;
+}
+colgroup.col0 {
+  background-color: #ffe;
+}
+td.row0col0 {
+  background-color: #f4f4ee;
+}
     </style>
+
     <h1>Flumotion Systems</h1>
-    <table>
-    {% for server in active_servers %}
+    {% for type in types %}
+    <h2>{{ type }}</h2>
+    <table class=stats>
+      <colgroup style="background-color:#fff;"></colgroup>
+      {% for server in active_servers.values %}
+        <colgroup span="3" class="{% cycle 'col0' '' %}"></colgroup>
+      {% endfor %}
       <tr>
-        {% for key, value in server.full_data.current %}
-        <td>
-          {{key}}, {{value}}  
-        </td>
+        <th>
+        </th>
+        {% for server in active_servers.values %}
+        {% if server.type == type %}
+          <td colspan="3">
+            <h4>{{ server.identifier }} - {{ server.ip }}</h4>
+          </td>
+        {% endif %}
         {% endfor %}
       </tr>
+      <tr>
+        <th>
+        </th>
+        {% for server in active_servers.values %}
+        {% if server.type == type %}
+          <td class="mood">
+            Mood:
+          </td>
+          <td class="at">
+            Into at:
+          </td>
+          <td class="history">
+            History:
+          </td>
+        {% endif %}
+        {% endfor %}
+      </tr>
+      {% for key in keys|lookup:type %}
+      <!-- {% cycle 'row0' '' as row_id %} -->
+      <tr class="{{row_id}}">
+        <th>
+          {{ key }}
+        </th>
+        {% for server in active_servers.values %}
+        <!-- {% cycle 'col0' '' as col_id %} -->
+
+        {% if server.type == type %}
+          {% with x=server.full_data.current|lookup:key %}
+          {% if x %}
+            {% with mood=x.0 t=x.1 %}
+            <td class="{{mood|mood_style}} mood {{row_id}}{{col_id}}">
+              {{mood}}
+            </td>
+            <td class="{{mood|mood_style}} at {{row_id}}{{col_id}}">
+              {{server.recorded_time|udate:'h:i:s'}}
+            </td>
+            {% endwith %}
+            <td class="history {{row_id}}{{col_id}}">
+              <div class="history">
+                {% for x in server.full_data.history|lookup:key %}
+                {% with mood=x.0 t=x.1 l=x.2%}
+                <div class={{mood|mood_style}}>
+                  {{l|udate:'h:i:s'}}&nbsp;&#8209;&nbsp;{{mood}}
+                </div>
+                {% endwith %}
+                {% endfor %}
+              </div>
+            </td>
+          {% else %}
+            <td colspan=3 class="na {{row_id}}{{col_id}}">
+              N/A
+            </td>
+          {% endif %}
+          {% endwith %}
+        {% endif %}
+        {% endfor %}
+      </tr>
+      {% endfor %}
     </table>
-    {% endwith %}
-    <hr>
+    {% endfor %}
   </body>
 </html>
