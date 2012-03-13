@@ -88,6 +88,8 @@ vim: set ts=2 sw=2 et sts=2 ai:
 
 {% block script %}
 <script type="text/javascript">
+// Code which the video previews by doing image swapping.
+//----------------------------------------------------------------------------/
 // Swap the preloaded video image into the main image
 {% for group, details in groups.items %}
 $('#video-preload-{{group|escapejs}}').load(function() {
@@ -95,23 +97,81 @@ $('#video-preload-{{group|escapejs}}').load(function() {
   setTimeout(update_video, 15e3);
 });
 {% endfor %}
-function update_video() {
+
+var update_video_for = new Array();
 {% for group, details in groups.items %}
+update_video_for['{{group}}'] = function() {
  $('#video-preload-{{group|escapejs}}').attr(
   'src', "{{details.preview}}?time="+current_time()
   );
-{% endfor %}
 }
+{% endfor %}
+function update_video() {
+  for (var i = 0; i < streamers_active.length; i++) {
+    update_video_for[streamers_active[i]]();
+  } 
+}
+//----------------------------------------------------------------------------/
 
-function update_chat() {
+// Code which updates the chat windows
+//----------------------------------------------------------------------------/
+var update_chat_for = new Array();
 {% for group, details in groups.items %}
+update_chat_for['{{group}}'] = function() {
  $('#chat-preview-{{group|escapejs}}').attr(
   'src', "/{{group|urlencode}}/logs"
   );
+};
 {% endfor %}
+function update_chat() {
+  for (var i = 0; i < streamers_active.length; i++) {
+    var group = streamers_active[i];
+    update_chat_for[streamers_active[i]]();
+  }
   setTimeout(update_chat, 30e3);
 }
+//----------------------------------------------------------------------------/
 
+// Code which updates which streams are being displayed.
+function update_active_streams() {
+  var streamers_inactive = new Array();
+  {% for group, details in groups.items %}
+  streamers_inactive.push('{{group|escapejs}}');
+  {% endfor %}
+
+  for (var i = 0; i < streamers_active.length; i++) {
+    var group = streamers_active[i];
+
+    var idx = streamers_inactive.indexOf(group);
+    if (idx != -1) {
+      streamers_inactive.splice(idx, 1);
+      $('.'+group+'_td').show();
+    } else {
+      // Reload the page as new streamers exist...
+      window.src = "/";
+    }
+  }
+
+  for (var i = 0; i < streamers_inactive.length; i++) {
+    var group = streamers_inactive[i];
+    $('.'+group+'_td').hide();
+  }
+}
+
+// Code which updates the currently displayed schedule.
+// FIXME: This is all a big hack
+function schedule_callback() {
+{% for group, details in groups.items %}
+  update_schedule($('#{{group|escapejs}}_abstract_title'), $('#{{group|escapejs}}_abstract_desc'), '{{details.title|escapejs}}');
+{% endfor %}
+  resize_twitter();
+  setTimeout(schedule_callback, 60e3);
+  setTimeout(function() { location.reload(true); }, {{ config.reload }}e3);
+}
+
+get_schedule(schedule_callback);
+
+// Functions which keep twitter in the right place.
 function resize_twitter() {
  $("#twitter-juitter").height(5);
  $("#twitter-juitter").height($("#twitter-cell").innerHeight()-5);
@@ -119,6 +179,7 @@ function resize_twitter() {
 $.Juitter.onUpdate = resize_twitter;
 $(window).resize(resize_twitter);
 
+//----------------------------------------------------------------------------/
 $(document).ready(function() {
   resize_twitter();
   $.Juitter.start({
@@ -133,43 +194,5 @@ $(document).ready(function() {
   update_chat();
 });
 
-
-function update_active_streams() {
-  var streamers_inactive = new Array();
-  {% for group, details in groups.items %}
-  streamers_inactive.push('{{group|escapejs}}');
-  {% endfor %}
-
-  for (var i = 0; i < streamers_active.length; i++) {
-    var group = streamers_active[i];
-
-    var idx = streamers_inactive.indexOf(group);
-    if (idx != -1) {
-      streamers_inactive.splice(idx, 1);
-      console.log('show', group, $('.'+group+'_td'));
-      $('.'+group+'_td').show();
-    } else {
-      // Reload the page as new streamers exist...
-      window.src = "/";
-    }
-  }
-
-  for (var i = 0; i < streamers_inactive.length; i++) {
-    var group = streamers_inactive[i];
-    console.log('hide', group, $('.'+group+'_td'));
-    $('.'+group+'_td').hide();
-  }
-}
-
-function schedule_callback() {
-{% for group, details in groups.items %}
-  update_schedule($('#{{group|escapejs}}_abstract_title'), $('#{{group|escapejs}}_abstract_desc'), '{{details.title|escapejs}}');
-{% endfor %}
-  resize_twitter();
-  setTimeout(schedule_callback, 60e3);
-  setTimeout(function() { location.reload(true); }, {{ config.reload }}e3);
-}
-
-get_schedule(schedule_callback);
 </script>
 {% endblock %}
