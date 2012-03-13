@@ -10,13 +10,14 @@ vim: set ts=2 sw=2 et sts=2 ai:
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <link rel="stylesheet" type="text/css" href="/static/css/tweet.css">
     <link rel="stylesheet" type="text/css" href="/static/third_party/jquery-extra/jquery.juitter-1.0.0.css">
+    <script type="text/javascript" src="/tracker/streams.js"></script>
     <meta http-equiv="refresh" content="{{ config.reload }}">
     <title>{{title}}</title>
 {% endblock %}
 
 {% block content %}
     {% for group, details in groups.items %}
-      <td>
+      <td class="{{group}}_td" style="display: none;">
         <div id="{{group}}_title" class="title">
           <h1>
             <a href="/{{group}}">{{details.title}}<br><span class="title_click">Click to view live stream!</span></a>
@@ -26,7 +27,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
     {% endfor %}
     </tr><tr>
     {% for group, details in groups.items %}
-      <td>
+      <td class="{{group}}_td" style="display: none;">
         <div id="{{group}}_abstract_div" class="abstract_div">
           <div id='{{group}}_abstract_info' class='abstract_info' onclick='$(".abstract_desc").fadeToggle();'>(More info)</div>
           <div id='{{group}}_abstract_title' class='abstract_title'></div>
@@ -36,7 +37,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
     {% endfor %}
     </tr><tr>
     {% for group, details in groups.items %}
-      <td id="{{group}}_preview" class="preview">
+      <td id="{{group}}_preview" class="preview {{group}}_td" style="display: none;">
         <div class="container_2" onClick="window.location='/{{group}}'">
           <img id="video-preview-{{group}}" class="video_preview">
         </div>
@@ -44,7 +45,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
     {% endfor %}
     </tr><tr>
     {% for group, details in groups.items %}
-      <td>
+      <td class="{{group}}_td" style="display: none;">
         <div id="{{group}}_chat" class="chat" onClick="window.location='/{{group}}'">
           <iframe id="chat-preview-{{group}}" class="chat_preview"></iframe>
         </div>
@@ -126,9 +127,39 @@ $(document).ready(function() {
     searchType: "searchWord",
     searchObject: "{{ default.twitter|urlencode }}",
     });
+
+  update_active_streams();
   update_video();
   update_chat();
 });
+
+
+function update_active_streams() {
+  var streamers_inactive = new Array();
+  {% for group, details in groups.items %}
+  streamers_inactive.push('{{group|escapejs}}');
+  {% endfor %}
+
+  for (var i = 0; i < streamers_active.length; i++) {
+    var group = streamers_active[i];
+
+    var idx = streamers_inactive.indexOf(group);
+    if (idx != -1) {
+      streamers_inactive.splice(idx, 1);
+      console.log('show', group, $('.'+group+'_td'));
+      $('.'+group+'_td').show();
+    } else {
+      // Reload the page as new streamers exist...
+      window.src = "/";
+    }
+  }
+
+  for (var i = 0; i < streamers_inactive.length; i++) {
+    var group = streamers_inactive[i];
+    console.log('hide', group, $('.'+group+'_td'));
+    $('.'+group+'_td').hide();
+  }
+}
 
 function schedule_callback() {
 {% for group, details in groups.items %}

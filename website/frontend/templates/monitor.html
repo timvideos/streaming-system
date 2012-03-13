@@ -9,10 +9,13 @@ vim: set ts=2 sw=2 et sts=2 ai:
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
     <script type="text/javascript" src="/static/third_party/jquery-extra/jquery.juitter-1.0.0.js"></script>
     <script type="text/javascript" src="/static/third_party/jwplayer/jwplayer.js"></script>
+
     <script type="text/javascript" src="/static/js/streams.js"></script>
+    <script type="text/javascript" src="/tracker/streams.js"></script>
   {% for group in groups %}
-    <script type="text/javascript" src="/tracker/{{group}}/streams.js"></script>
+    <script type="text/javascript" src="/tracker/{{group}}/stream.js"></script>
   {% endfor %}
+
     <link rel="stylesheet" type="text/css" href="/static/css/tweet.css">
     <link rel="stylesheet" type="text/css" href="/static/third_party/jquery-extra/jquery.juitter-1.0.0.css">
     <title>Stream Time for Linux.conf.au!</title>
@@ -55,7 +58,7 @@ function jwplayers() {
     var jwsettings = {
       autostart: true,
       skin: '/static/third_party/jwplayer/skin/glow.zip',
-      modes: {{group|safe_js}}_streamer.modes('flash', 'sd'),
+      modes: streamer_{{group|safe_js}}.modes('flash', 'sd'),
       plugins: {
         'spectrumvisualizer-1': {}
       },

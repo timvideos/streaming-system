@@ -22,10 +22,11 @@ import traceback
 
 from django import http
 from django.db import transaction
+from django.db import models as django_models
 from django.shortcuts import render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
-from django.db import models as django_models
+from django import template
 
 # Our App imports
 from common.views.simple import never_cache_redirect_to
@@ -42,42 +43,44 @@ CONFIG = common_config.config_load()
 LOCALIPS = CONFIG['config']['localips']
 
 @never_cache
-def streams(request, group):
-    """Renders the streams.js file."""
+def stream(request, group):
+    """Gives an end user a streaming server for a group.
+
+    Picks the least loaded by bitrate.
+    """
     if not CONFIG.valid(group):
         response = http.HttpResponse()
         response.write("window.src = '/';\n");
         return response
 
     # Get all the active streaming severs for this channel
-    ten_mins_ago = datetime.datetime.now() - datetime.timedelta(minutes=10)
-    q = models.Encoder.objects.order_by('group', 'ip', '-lastseen').distinct('group', 'ip')
-    q = q.filter(group__exact=group)
+    active_servers = models.Endpoint.active(group=group)
 
-    active_servers = []
-    for server in q:
-        if server.lastseen < ten_mins_ago:
-            continue
-        active_servers.append(server)
-
-    if not active_servers:
-        # FIXME: Technical difficulties server....
-        response = http.HttpResponse()
-        response.write("window.src = '/';\n");
-        return response
+    # Pick a server
+    if active_servers:
+        your_server = sorted(active_servers, cmp=lambda a, b: cmp(a.overall_bitrate, b.overall_bitrate))[0]
     else:
-        # Choose the least loaded server
-        server = sorted(active_servers, cmp=lambda a, b: cmp(a.overall_bitrate, b.overall_bitrate))[0].ip
-
-    yourip = request.META['HTTP_X_REAL_IP']
+        your_server = None
 
     # Make sure this page isn't cached, otherwise the server load balancing won't work.
-    return render(request, 'streams.js', locals(), content_type='text/javascript')
+    return render(request, 'stream.js', locals(), content_type='text/javascript',
+                  context_instance=template.RequestContext(request))
 
 
 @never_cache
-def stats(request):
-    """Print out some stats about registered encoders."""
+def streams(request):
+    """Renders the streams.js file which contains a list of active streams."""
+    # Get all the active streaming severs for this channel
+    active_servers = models.Endpoint.active()
+
+    # Make sure this page isn't cached, otherwise the server load balancing won't work.
+    return render(request, 'streams.js', locals(), content_type='text/javascript',
+                  context_instance=template.RequestContext(request))
+
+
+@never_cache
+def endpoint_stats(request):
+    """Print out some stats about registered endpoints."""
     response = http.HttpResponse()
 
     inactive_servers = []
@@ -85,19 +88,20 @@ def stats(request):
 
     ten_mins_ago = datetime.datetime.now() - datetime.timedelta(minutes=10)
 
-    encoders = models.Encoder.objects.order_by('group', 'ip', '-lastseen').distinct('group', 'ip')
-    for server in encoders:
+    endpoints = models.Endpoint.active(delta=datetime.timedelta(days=7))
+    for server in endpoints:
         if server.lastseen < ten_mins_ago:
             inactive_servers.append(server)
         else:
             active_servers.append(server)
 
-    types = list(sorted([x for x in dir(models.Encoder()) if x.endswith('_clients')]))
+    types = list(sorted([x for x in dir(models.Endpoint()) if x.endswith('_clients')]))
 
     active_servers = sorted(active_servers, cmp=lambda a, b: cmp((a.group, a.overall_bitrate), (b.group, b.overall_bitrate)))
     inactive_servers = sorted(inactive_servers, cmp=lambda a, b: cmp((a.group, a.overall_bitrate), (b.group, b.overall_bitrate)))
 
-    return render(request, 'stats.html', locals(), content_type='text/html')
+    return render(request, 'stats.html', locals(), content_type='text/html',
+                  context_instance=template.RequestContext(request))
 
 ###########################################################################################
 # Code which collects the client side system reporting.
@@ -228,12 +232,12 @@ def client_stats(request, group, _now=None):
     return response
 
 ###########################################################################################
-# Code which collects the encoder system reporting.
+# Code which collects the endpoint system reporting.
 ###########################################################################################
 
 
-def encoder_common(request, check_group=True):
-    """Check the common information for an encoder request."""
+def endpoint_common(request, check_group=True):
+    """Check the common information for an endpoint request."""
     if request.method != 'POST':
         return never_cache_redirect_to(request, url="/")
 
@@ -264,9 +268,13 @@ def encoder_common(request, check_group=True):
 @csrf_exempt
 @never_cache
 @transaction.commit_on_success
-def encoder_register(request):
-    """Registers an encoding server, plus a bunch of stats."""
-    response, group, ip = encoder_common(request)
+def endpoint_register(request):
+    """Registers an endpoint server.
+
+    An endpoint server is one which is sending data to end users. It might be
+    an endpoint in smaller setups, or in more advanced systems an amplifier.
+    """
+    response, group, ip = endpoint_common(request)
     if response is not None:
         return response
 
@@ -276,7 +284,7 @@ def encoder_register(request):
         assert 'ip' not in data
         assert 'group' not in data
 
-        s = models.Encoder(
+        s = models.Endpoint(
                 group=group,
                 ip=ip,
                 **data)
@@ -297,9 +305,9 @@ def encoder_register(request):
 # <ip> - <user> [<date>] "<request>" <status code> <bytes> "<referer>" "<user-agent>"
 @csrf_exempt
 @never_cache
-def encoder_logs(request):
-    """Saves the client's log files."""
-    response, group, ip = encoder_common(request)
+def endpoint_logs(request):
+    """Saves an endpoint server Apache logs."""
+    response, group, ip = endpoint_common(request)
     if response is not None:
         return response
 
@@ -334,7 +342,7 @@ def encoder_logs(request):
 @never_cache
 def flumotion_logging(request):
     """Saves the client's log files."""
-    response, group, ip = encoder_common(request, check_group=False)
+    response, group, ip = endpoint_common(request, check_group=False)
     if response is not None:
         return response
 
@@ -414,4 +422,5 @@ def flumotion_stats(request):
     for k in keys:
         keys[k] = list(sorted(keys[k]))
 
-    return render(request, 'flumotion.html', locals(), content_type='text/html')
+    return render(request, 'flumotion.html', locals(), content_type='text/html',
+                  context_instance=template.RequestContext(request))
