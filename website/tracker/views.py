@@ -166,8 +166,8 @@ def overall_stats_json(request):
             for attr in group_by_lastseen[point['lastseen']]:
                 vals = group_by_lastseen[point['lastseen']][attr]
                 vals.append(point[attr])
-                vals = sum(vals) / float(len(vals))
                 group_by_lastseen[point['lastseen']][attr] = [vals]
+                vals = sum(vals) / len(vals)
 
         output_data[data_group] = []
         for lastseen, lastseen_data in group_by_lastseen.items():
