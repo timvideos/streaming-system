@@ -9,6 +9,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
     <script type="text/javascript" src="/static/third_party/jquery.flot-0.7-min.js"></script>
     <script type="text/javascript" src="/static/third_party/jquery.flot.stack.js"></script>
     <script type="text/javascript" src="/static/js/whats_on.js"></script>
+    <script type="text/javascript" src="/static/js/overall_graphs.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <link rel="stylesheet" type="text/css" href="/static/css/tweet.css">
     <link rel="stylesheet" type="text/css" href="/static/third_party/jquery-extra/jquery.juitter-1.0.0.css">
@@ -76,6 +77,17 @@ vim: set ts=2 sw=2 et sts=2 ai:
           </tr>
         </table>
       </td>
+    </tr>
+    <tr>
+      <td colspan={{groups|length}}>
+        <div id="stats-graph-wrapper">
+          <h2>Overall Bitrate for the last 12 hours</h2>
+          <div id="bitrate-stats-graph" class="graph"></div>
+          <h2>Overall Clients for the last 12 hours</h2>
+          <div id="client-stats-graph" class="graph"></div>
+        </div>
+      </td>
+    </tr>
 {% endblock %}
 
 
@@ -194,6 +206,10 @@ $(document).ready(function() {
   update_active_streams();
   update_video();
   update_chat();
+
+  // Draw the graph of historical bitrate and client stats.
+  // (Defined in overall_graphs.js)
+  plot_stats();
 });
 
 </script>

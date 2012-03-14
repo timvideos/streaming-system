@@ -340,6 +340,23 @@ div.options-group li {
   overflow: hidden;
 }
 
+#stats-graph-wrapper {
+  background: whiteSmoke;
+  padding: 10px 25px 25px;
+  border: 3px solid #E3DFD4;
+}
+#stats-graph-wrapper > div.graph {
+  height: 200px;
+  width: 100%;
+}
+#stats-graph-wrapper h2 {
+  margin-top: 0;
+  font-family: LeagueGothicRegular, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1.2em;
+  color: #006E91;
+  font-variant: small-caps;
+  letter-spacing: 0.04em;
+}
 #player {
   float: left;
 }
