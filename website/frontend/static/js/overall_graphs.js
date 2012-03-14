@@ -82,11 +82,25 @@ var drawPlot = function(raw_data) {
     $.plot($("#client-stats-graph"), client_graph_data, graph_options);
 }
 
-window.plot_stats = function() {
+var doing_refresh = false;
+
+var startGraphRefresh = function() {
     // Get the data for the graph from the server.
+    doing_refresh = true;
     $.getJSON('/tracker/overall-stats.json', {}, function(response){
         drawPlot(response);
+        doing_refresh = false;
     })
 };
+
+window.plot_stats = function() {
+    startGraphRefresh();
+    setInterval(function(){
+        if(!doing_refresh){
+            startGraphRefresh();
+        }
+    }, 10*1000)
+    
+}
 
 }).call(this)
