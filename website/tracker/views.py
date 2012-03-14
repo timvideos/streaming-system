@@ -122,8 +122,8 @@ def overall_stats(request):
 
     """
 
-    # Retrieve endpoints from within the past twelve hours.
-    recent_date_cutoff = datetime.datetime.now() - datetime.timedelta(hours=12)
+    # Retrieve endpoints from within the past one hours.
+    recent_date_cutoff = datetime.datetime.now() - datetime.timedelta(hours=1)
     recent_endpoints = models.Endpoint.objects.filter(lastseen__gte=recent_date_cutoff,)
 
     # Assemble the data for each endpoint by group.
@@ -146,6 +146,7 @@ def overall_stats(request):
     
     # Aggregate the data by lastseen.
     # TODO: Do the aggregation in a more efficient and sensible way.
+    # TODO: Aggregate in 5-minute intervals?
     for data_group in raw_data:
 
         group_by_lastseen = {}

@@ -53,9 +53,9 @@ var drawPlot = function(raw_data) {
         },
         xaxis: {
             mode: "time",
-            timeformat: "%y/%m/%d %h:%M"
-            // Set the time range to be within the past 12 hours.
-            min: (new Date()).getTime() - (12 * 60 * 60 * 1000),
+            timeformat: "%y/%m/%d %h:%M",
+            // Set the time range to be within the past 1 hour.
+            min: (new Date()).getTime() - (1 * 60 * 60 * 1000),
             max: (new Date()).getTime()
         }
     };
