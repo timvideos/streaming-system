@@ -103,6 +103,79 @@ def endpoint_stats(request):
     return render(request, 'stats.html', locals(), content_type='text/html',
                   context_instance=template.RequestContext(request))
 
+
+def overall_stats(request):
+    """Generate JSON containing overall data for use by graphs. The data is
+    Endpoint overall_bitrate and overall_clients, aggregated as an average for 
+    each unique lastseen.
+
+    The resulting JSON output looks something like:
+
+        [
+            {
+                'lastseen'          : 1234567890, # unix timestamp
+                'overall_bitrate'   : 100000000,  # overall_bitrate average (bps)
+                'overall_clients'   : 42          # overall_clients average
+            },
+            ...
+        ]
+
+    """
+
+    # Retrieve endpoints from within the past twelve hours.
+    recent_date_cutoff = datetime.datetime.now() - datetime.timedelta(hours=12)
+    recent_endpoints = models.Endpoint.objects.filter(lastseen__gte=recent_date_cutoff,)
+
+    # Assemble the data for each endpoint by group.
+    raw_data = {}
+    output_data = {}
+
+    # Attributes that can be copied directly.
+    raw_attrs = ('overall_bitrate', 'overall_clients',)
+    for endpoint in recent_endpoints:
+        if endpoint.group not in raw_data:
+            raw_data[endpoint.group] = []
+
+        # Send time as a unix timestamp.
+        endpoint_data = {
+            'lastseen' : int(endpoint.lastseen.strftime('%s')),
+        }
+        for attr in raw_attrs:
+            endpoint_data[attr] = getattr(endpoint, attr)
+        raw_data[endpoint.group].append(endpoint_data)
+    
+    # Aggregate the data by lastseen.
+    # TODO: Do the aggregation in a more efficient and sensible way.
+    for data_group in raw_data:
+
+        group_by_lastseen = {}
+        for point in raw_data[data_group]:
+            if point['lastseen'] not in group_by_lastseen:
+                group_by_lastseen[point['lastseen']] = {
+                    'overall_bitrate': [],
+                    'overall_clients': []
+                }
+            for attr in group_by_lastseen[point['lastseen']]:
+                vals = group_by_lastseen[point['lastseen']][attr]
+                vals.append(point[attr])
+                vals = sum(vals) / float(len(vals))
+                group_by_lastseen[point['lastseen']][attr] = [vals]
+
+        output_data[data_group] = []
+        for lastseen, lastseen_data in group_by_lastseen.items():
+            output_data[data_group].append({
+                'lastseen': lastseen,
+                'overall_bitrate': lastseen_data['overall_bitrate'][0],
+                'overall_clients': lastseen_data['overall_clients'][0],
+            })
+
+    # Send the data back as JSON data.
+    response = http.HttpResponse(content_type='application/json')
+    response.write(simplejson.dumps(output_data))
+    return response
+
+
+
 ###########################################################################################
 # Code which collects the client side system reporting.
 ###########################################################################################

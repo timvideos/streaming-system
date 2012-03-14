@@ -25,6 +25,9 @@ urlpatterns = patterns('',
     url(r'^endpoint/logs$', views.endpoint_logs),
     url(r'^endpoint/stats$', views.endpoint_stats),
 
+    # Endpoint for providing overall stats to frontend graphing.
+    url(r'^overall-stats.json$', views.overall_stats),
+
     # FIXME: This endpoint should probably be a different app?
     # Endpoint for logging client stats about a given stream
     url(r'^(.*)/log$', views.client_stats),
