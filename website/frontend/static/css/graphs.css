@@ -1,0 +1,7 @@
+#stats-graph-wrapper {
+  padding: 10px 25px 25px;
+}
+#stats-graph-wrapper > div.graph {
+  height: 200px;
+  width: 100%;
+}

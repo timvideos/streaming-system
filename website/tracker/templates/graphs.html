@@ -1,0 +1,31 @@
+{% comment %}
+-*- coding: utf-8 -*-
+vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
+{% endcomment %}
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="/static/css/graphs.css">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/third_party/jquery.flot.js"></script>
+    <script type="text/javascript" src="/static/third_party/jquery.flot.stack.js"></script>
+    <script type="text/javascript" src="/static/js/overall_graphs.js"></script>
+  </head>
+  <body>
+
+    <div id="stats-graph-wrapper">
+      <h2>Overall Bitrate for the last hour</h2>
+      <div id="bitrate-stats-graph" class="graph"></div>
+      <h2>Overall Clients for the last hour</h2>
+      <div id="client-stats-graph" class="graph"></div>
+    </div>
+
+    <script type="text/javascript">
+      $(document).ready(function(){
+        // Draw the graph of historical bitrate and client stats.
+        // (Defined in overall_graphs.js)
+        plot_stats();
+      })
+    </script>
+
+  </body>
+</html>

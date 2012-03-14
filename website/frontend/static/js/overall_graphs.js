@@ -14,7 +14,7 @@ var sortLabel = function(a,b){
 }
 
 
-// Prepare the data as an Array of [X,Y] points.
+// Prepare the data as an Array of [X,Y] points for the bitrate and client graphs.
 var prepareData = function(track_data) {
     var bitrate_data = [];
     var client_data = [];
@@ -43,6 +43,7 @@ var drawPlot = function(raw_data) {
     // Graph options for filled line time series graphs.
     var graph_options = {
         series: {
+            stack: true,
             lines: {
                 show: true,
                 fill: true

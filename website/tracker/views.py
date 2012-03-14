@@ -104,7 +104,14 @@ def endpoint_stats(request):
                   context_instance=template.RequestContext(request))
 
 
-def overall_stats(request):
+@never_cache
+def overall_stats_graphs(request):
+    """Display graphs of historical bitrate and ."""
+    return render(request, 'graphs.html', locals(), content_type='text/html',
+                  context_instance=template.RequestContext(request))
+
+
+def overall_stats_json(request):
     """Generate JSON containing overall data for use by graphs. The data is
     Endpoint overall_bitrate and overall_clients, aggregated as an average for 
     each unique lastseen.
