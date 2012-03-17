@@ -10,8 +10,7 @@ var Graph = (function() {
         this.title = graph_dict.title
         this.raw_series = graph_dict.series;
         this.raw_series.sort(sortLabel)
-
-    }
+    };
 
     Graph.prototype.render = function() {
         return "<h2>" + this.title + "</h2>" + "<div id='" + this.id + "' class='graph'></div>";
@@ -19,19 +18,56 @@ var Graph = (function() {
 
     Graph.prototype.getEl = function() {
         return $('#' + this.id);
-    }
-
-    // Graph.prototype.getSeries = function() {
-    //     series
-    //     for(var i in this.raw_series){
-
-    //     }
-    // };
+    };
 
     return Graph;
 })();
- 
 
+var Spinner = (function() {
+
+    var spin_interval, el, container, rotation;
+
+    function Spinner(graph_dict) {
+        el = $('#spinner');
+        container = $('#graph-loader');
+        rotation = 0;
+    };
+
+    function rotate() { 
+        var prefixes = ['-webkit-','-moz-','-ms-',''];
+        rotation += 180;
+        for(var i in prefixes) {
+            var prefix = prefixes[i];
+            el.css(prefix + 'transform','rotate('+ rotation.toString() + 'deg)')
+        }
+    };
+
+    Spinner.prototype.start = function() {
+        this.show();
+        clearInterval(spin_interval);
+        spin_interval = setInterval(rotate,500)
+    };
+
+    Spinner.prototype.stop = function() {
+        this.hide();
+        clearInterval(spin_interval);
+        rotation = -180;
+        rotate();
+    };
+
+    Spinner.prototype.hide = function() {
+        container.css('visibility','hidden');
+    }
+
+    Spinner.prototype.show = function() {
+        container.css('visibility','visible');
+    }
+
+    return Spinner;
+})();
+
+
+var spinner;
 var plots = [];
 var doing_refresh = false;
 var view_range = 10 // minutes;
@@ -46,28 +82,6 @@ var sortLabel = function(a,b){
         return 0;
     }
 }
-
-
-// // Prepare the data as an Array of [X,Y] points for the bitrate and client graphs.
-// var prepareData = function(track_data) {
-//     var bitrate_data = [];
-//     var client_data = [];
-//     for(var i in track_data){
-//         var point_data = track_data[i];
-//         bitrate_data.push([
-//             point_data.lastseen * 1000,                 // JS needs timestamps in ms
-//             point_data.overall_bitrate / (1024 * 1024)  // convert to mbps
-//         ])
-//         client_data.push([
-//             point_data.lastseen * 1000,                 // JS needs timestamps in ms
-//             point_data.overall_clients
-//         ])
-//     }
-//     return {
-//         'bitrate_data': bitrate_data,
-//         'client_data': client_data
-//     };
-// }
 
 var drawPlots = function(response) {
     var source_graphs = response.graphs;
@@ -88,8 +102,8 @@ var drawPlots = function(response) {
             color: '#000',
             lineWidth: 1,
             xaxis: {
-                from: annotation.date * 1000,
-                to: annotation.date * 1000
+                from: annotation.x,
+                to: annotation.x
             }
         })
     }
@@ -123,58 +137,46 @@ var drawPlots = function(response) {
     };
 
     plots = [];
-    var graph_wrapper = $('#stats-graph-wrapper')
+    var graph_wrapper = $('#stats-graph-wrapper');
+    graph_wrapper.empty();
     for(var i = 0; i < source_graphs.length; i++){
         var graph = new Graph(source_graphs[i]);
         graph_wrapper.append(graph.render());
         var plot = $.plot(graph.getEl(), graph.raw_series, graph_options);
-    }
-
-    // // Ensure the groups are sorted alphabetically.
-    // bitrate_graph_data;
-    // client_graph_data.sort(sortLabel);
-
-    // // Call jQuery.flot with the data and options.
-    // var bitrate_plot = $.plot($("#bitrate-stats-graph"), bitrate_graph_data, graph_options);
-    // var client_plot = $.plot($("#client-stats-graph"), client_graph_data, graph_options);
-    // plots = [bitrate_plot, client_plot];
-    // drawAnnotations(response.annotations);
-}
-
-var drawAnnotations = function(annotations){
-    console.log(annotations[0].date)
-    for(var i in plots){
-        var plot = plots[i];
         var graph_el = plot.getPlaceholder();
         for(var j in annotations){
             var annotation = annotations[j];
-            var o = plot.pointOffset({ x: annotation.date * 1000, y: 50});
+            console.log(annotation);
+            var o = plot.pointOffset({ x: annotation.x, y: 50});
             graph_el.append('<div style="position:absolute;left:' + (o.left + 4) + 'px;top:' + o.top + 'px;color:#666;">'+ annotation.label + '</div>')
-
         }
     }
+
+    // drawAnnotations(annotations);
 }
+
 
 var startGraphRefresh = function() {
     // Get the data for the graph from the server.
+    spinner.start();
     doing_refresh = true;
-    $.getJSON('/tracker/overall-stats.json', {}, function(response){
+    $.getJSON('/tracker/overall-stats.json', {
+        range: view_range
+    }, function(response){
         drawPlots(response);
         doing_refresh = false;
+        spinner.stop();
     })
 };
 
 var startInterval = function() {
+    startGraphRefresh();
+    clearInterval(refresh_interval);
     refresh_interval = setInterval(function(){
         if(!doing_refresh){
             startGraphRefresh();
         }
     }, 10*1000)
-}
-
-window.plot_stats = function() {
-    startGraphRefresh();
-    startInterval();
 }
 
 $('select').live('change', function(){
@@ -186,13 +188,17 @@ $('input[type="checkbox"]').live('click', function(e){
     var checkbox = $(this);
     setTimeout(function(){
         if(checkbox.is(':checked')){
-            console.log('checked')
             startInterval();
         } else {
-            console.log('unchecked')
             clearInterval(refresh_interval);
         }
     },1)
+});
+
+
+$(document).ready(function(){
+    spinner = new Spinner();
+    startInterval();
 });
 
 }).call(this)
