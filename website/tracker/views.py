@@ -106,7 +106,11 @@ def endpoint_stats(request):
 
 @never_cache
 def overall_stats_graphs(request):
-    """Display graphs of historical bitrate and ."""
+    """Display graphs of historical bitrate and clients. This view simply
+    returns the basic template with the graph placeholders and necessary JS. The
+    actual data is sent by overall_stats_json, so that the graphs can refresh
+    themselves without a page reload."""
+
     return render(request, 'graphs.html', locals(), content_type='text/html',
                   context_instance=template.RequestContext(request))
 
@@ -116,71 +120,92 @@ def overall_stats_json(request):
     Endpoint overall_bitrate and overall_clients, aggregated as an average for 
     each unique lastseen.
 
-    The resulting JSON output looks something like:
+    The response is a list of graph definitions as dictionaries, and looks
+    something like:
 
         [
             {
-                'lastseen'          : 1234567890, # unix timestamp
-                'overall_bitrate'   : 100000000,  # overall_bitrate average (bps)
-                'overall_clients'   : 42          # overall_clients average
+                'title' : 'Graph Title',
+                'type'  : 'time',
+                'data'  : [
+                    {
+                        'label': 'series-1',
+                        'points': [ [x1,y1], [x2,y2], ... ]
+                    },
+                    ...
+                ]
             },
             ...
         ]
 
     """
 
-    # Retrieve endpoints from within the past one hours.
-    recent_date_cutoff = datetime.datetime.now() - datetime.timedelta(hours=1)
-    recent_endpoints = models.Endpoint.objects.filter(lastseen__gte=recent_date_cutoff,)
+    graphs = []
 
+    bitrate_graph = {
+        'title': 'Overall Bitrate',
+        'series': [],
+    }
+
+    client_graph = {
+        'title': 'Overall Clients',
+        'series': [],
+    }
+
+    # Retrieve endpoints from within the past two hours.
+    recent_date_cutoff = datetime.datetime.now() - datetime.timedelta(hours=2)
+    recent_endpoints = models.Endpoint.objects.filter(lastseen__gte=recent_date_cutoff,lastseen__lte=datetime.datetime.now()).order_by('-lastseen')
     # Assemble the data for each endpoint by group.
-    raw_data = {}
-    output_data = {}
+    endpoints_by_group = {}
+    # output_data = {}
 
     # Attributes that can be copied directly.
     raw_attrs = ('overall_bitrate', 'overall_clients',)
     for endpoint in recent_endpoints:
-        if endpoint.group not in raw_data:
-            raw_data[endpoint.group] = []
+        if endpoint.group not in endpoints_by_group:
+            endpoints_by_group[endpoint.group] = []
 
         # Send time as a unix timestamp.
         endpoint_data = {
-            'lastseen' : int(endpoint.lastseen.strftime('%s')),
+            'lastseen' : int(endpoint.lastseen.strftime('%s')) * 1000,
         }
         for attr in raw_attrs:
             endpoint_data[attr] = getattr(endpoint, attr)
-        raw_data[endpoint.group].append(endpoint_data)
-    
-    # Aggregate the data by lastseen.
-    # TODO: Do the aggregation in a more efficient and sensible way.
-    # TODO: Aggregate in 5-minute intervals?
-    for data_group in raw_data:
+        endpoints_by_group[endpoint.group].append(endpoint_data)
 
-        group_by_lastseen = {}
-        for point in raw_data[data_group]:
-            if point['lastseen'] not in group_by_lastseen:
-                group_by_lastseen[point['lastseen']] = {
-                    'overall_bitrate': [],
-                    'overall_clients': []
-                }
-            for attr in group_by_lastseen[point['lastseen']]:
-                vals = group_by_lastseen[point['lastseen']][attr]
-                vals.append(point[attr])
-                group_by_lastseen[point['lastseen']][attr] = [vals]
-                vals = sum(vals) / len(vals)
+    for group, endpoints in endpoints_by_group.items():
+        bitrate_data = []
+        client_data = []
+        for point in endpoints:
+            bitrate_data.append([point['lastseen'], point['overall_bitrate'] / (1000000)])
+            client_data.append([point['lastseen'], point['overall_clients']])
+        bitrate_graph['series'].append({
+            'label': group,
+            'data': bitrate_data,
+        })
+        client_graph['series'].append({
+            'label': group,
+            'data': client_data,
+        })
 
-        output_data[data_group] = []
-        for lastseen, lastseen_data in group_by_lastseen.items():
-            output_data[data_group].append({
-                'lastseen': lastseen,
-                'overall_bitrate': lastseen_data['overall_bitrate'][0],
-                'overall_clients': lastseen_data['overall_clients'][0],
-            })
+    graphs = [bitrate_graph, client_graph]
+
+    annotations = [
+        {
+            'date': int((datetime.datetime.now() - datetime.timedelta(minutes=12)).strftime('%s')),
+            'label': 'Chow!'
+        },
+    ]
 
     # Send the data back as JSON data.
     response = http.HttpResponse(content_type='application/json')
-    response.write(simplejson.dumps(output_data))
+    response.write(simplejson.dumps({
+        'graphs': graphs,
+        'annotations': annotations,
+    }))
     return response
+
+
 
 
 
