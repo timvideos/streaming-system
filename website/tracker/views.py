@@ -116,31 +116,66 @@ def overall_stats_graphs(request):
 
 
 def overall_stats_json(request):
-    """Generate JSON containing overall data for use by graphs. The data is
-    Endpoint overall_bitrate and overall_clients, aggregated as an average for 
-    each unique lastseen.
+    """Generate JSON containing overall data for use by graphs. The data can
+    be generated however, and just needs to be a series of x,y points. Any
+    number of graphs can be generated. The time range is specified as a GET
+    parameter indicating the number of minutes before now.
 
-    The response is a list of graph definitions as dictionaries, and looks
-    something like:
+    The response is a list of graph definitions as dictionaries, and a list of
+    annotations, and looks something like:
 
-        [
-            {
-                'title' : 'Graph Title',
-                'type'  : 'time',
-                'data'  : [
-                    {
-                        'label': 'series-1',
-                        'points': [ [x1,y1], [x2,y2], ... ]
-                    },
-                    ...
-                ]
-            },
+        {
+            'graphs': [
+                {
+                    'title'  : 'Graph Title',
+                    'series' : [
+                        {
+                            'label': 'series-1',
+                            'data': [ [x1,y1], [x2,y2], ... ]
+                        },
+                        ...
+                    ]
+                },
+                ...
+            ],
+            'annotations': [
+                {
+                    'x': 1332009326000,
+                    'label': 'Some event happened'
+                },
             ...
-        ]
+            ]
+        }
 
+    To add a graph, generate the needed list(s) of [x,y] points and include that
+    list in a structure with title and label information similar that described
+    above. Then append that "graph definition" to the list of graphs to be
+    displayed.
+
+    Note: dates should be sent as ms since epoch (unix time * 1000). Also,
+    annotations are applied to all of the graphs.
+
+    Currently, the data is Endpoint overall_bitrate and overall_clients,
+    aggregated as an average for each unique lastseen.
     """
 
     graphs = []
+    annotations = []
+
+    DEFAULT_RANGE = 120 # minutes
+
+    # Get the requested time range for the data, in minutes.
+    view_range = request.GET.get('range',DEFAULT_RANGE)
+
+    # Ensure the range is an int, falling back to the default if it's not.
+    try:
+        view_range = int(view_range)
+    except ValueError:
+        view_range = DEFAULT_RANGE
+
+    range_start_datetime = datetime.datetime.now() - datetime.timedelta(minutes=view_range)
+
+    # Prepare the graphs to be sent back.
 
     bitrate_graph = {
         'title': 'Overall Bitrate',
@@ -152,12 +187,14 @@ def overall_stats_json(request):
         'series': [],
     }
 
-    # Retrieve endpoints from within the past two hours.
-    recent_date_cutoff = datetime.datetime.now() - datetime.timedelta(hours=2)
-    recent_endpoints = models.Endpoint.objects.filter(lastseen__gte=recent_date_cutoff,lastseen__lte=datetime.datetime.now()).order_by('-lastseen')
+    # Retrieve endpoints from within the requested data range.
+    recent_endpoints = models.Endpoint.objects.filter(
+        lastseen__gte=range_start_datetime,
+        lastseen__lte=datetime.datetime.now()
+    ).order_by('-lastseen')
+
     # Assemble the data for each endpoint by group.
     endpoints_by_group = {}
-    # output_data = {}
 
     # Attributes that can be copied directly.
     raw_attrs = ('overall_bitrate', 'overall_clients',)
@@ -188,14 +225,30 @@ def overall_stats_json(request):
             'data': client_data,
         })
 
-    graphs = [bitrate_graph, client_graph]
+    graphs.append(bitrate_graph)
+    graphs.append(client_graph)
 
-    annotations = [
-        {
-            'date': int((datetime.datetime.now() - datetime.timedelta(minutes=12)).strftime('%s')),
-            'label': 'Chow!'
-        },
-    ]
+
+    # SAMPLE GRAPH AND ANNOTATION GENERATION
+    # Uncomment these to see sample graphs and annotations using data generated
+    # based on the current time.
+
+    # Graphs:
+    # now = datetime.datetime.now()
+    # graphs.append({
+    #     'title': 'Test graph',
+    #     'series': [{
+    #         'label': 'series-' + str(i),
+    #         'data': [[int((now - datetime.timedelta(minutes=j)).strftime('%s')) * 1000,random.randint(1,11)] for j in range(200)]
+    #     } for i in range(5)]
+    # })
+
+    # Annotations:
+    # annotations.append({
+    #     'x': int((datetime.datetime.now() - datetime.timedelta(minutes=12)).strftime('%s')) * 1000,
+    #     'label': 'Chow!'
+    # })
+
 
     # Send the data back as JSON data.
     response = http.HttpResponse(content_type='application/json')

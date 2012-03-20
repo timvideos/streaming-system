@@ -3,6 +3,8 @@
 
 (function(){
 
+// Class that holds the actual graph data. Assigns itself an ID based on the
+// current timestamp and can generate the necessary markup for the plot.
 var Graph = (function() {
 
     function Graph(graph_dict) {
@@ -23,6 +25,8 @@ var Graph = (function() {
     return Graph;
 })();
 
+
+// Simple "class" for managing the loading spinner.
 var Spinner = (function() {
 
     var spin_interval, el, container, rotation;
@@ -96,6 +100,7 @@ var drawPlots = function(response) {
             to: now
         }
     }]
+
     for(var i in annotations){
         var annotation = annotations[i];
         markings.push({
@@ -127,7 +132,7 @@ var drawPlots = function(response) {
         xaxis: {
             mode: "time",
             timeformat: "%y/%m/%d %h:%M",
-            // Set the time range to be within the past 1 hour.
+            // Set the time range to be within the specified limits.
             min: min_time,
             max: max_time
         },
@@ -137,27 +142,38 @@ var drawPlots = function(response) {
     };
 
     plots = [];
-    var graph_wrapper = $('#stats-graph-wrapper');
-    graph_wrapper.empty();
-    for(var i = 0; i < source_graphs.length; i++){
+
+    // Grab the graph wrapper from the document and empty it.
+    var $graph_wrapper_el = $('#stats-graph-wrapper');
+    $graph_wrapper_el.empty();
+
+    // Iterate over the incoming graphs, adding the elements created by the Graph
+    // class to the graph wrapper, plotting the graph, and adding any annotations.
+    for(var i in source_graphs){
         var graph = new Graph(source_graphs[i]);
-        graph_wrapper.append(graph.render());
+        $graph_wrapper_el.append(graph.render());
         var plot = $.plot(graph.getEl(), graph.raw_series, graph_options);
-        var graph_el = plot.getPlaceholder();
+        var $graph_el = plot.getPlaceholder();
+
         for(var j in annotations){
             var annotation = annotations[j];
-            console.log(annotation);
             var o = plot.pointOffset({ x: annotation.x, y: 50});
-            graph_el.append('<div style="position:absolute;left:' + (o.left + 4) + 'px;top:' + o.top + 'px;color:#666;">'+ annotation.label + '</div>')
+            $graph_el.append(
+                '<div style="'
+                + 'position:absolute;'
+                + 'left:' + (o.left + 4) + 'px;'
+                + 'top:' + o.top + 'px;'
+                + 'color:#666;'
+                + '">'
+                + annotation.label + '</div>'
+            )
         }
     }
 
-    // drawAnnotations(annotations);
 }
 
 
 var startGraphRefresh = function() {
-    // Get the data for the graph from the server.
     spinner.start();
     doing_refresh = true;
     $.getJSON('/tracker/overall-stats.json', {
@@ -179,13 +195,20 @@ var startInterval = function() {
     }, 10*1000)
 }
 
+// Whenever the view-range dropdown is changed, set the new view-range and
+// refresh the graphs.
 $('select').live('change', function(){
     view_range = $(this).val();
     startGraphRefresh();
 });
 
+// Whenever the auto-refresh checkbox is clicked, toggle the interval that
+// triggers the graph refreshing.
 $('input[type="checkbox"]').live('click', function(e){
     var checkbox = $(this);
+
+    // Use a timeout so the click event completes first and the checked state
+    // can be read correctly.
     setTimeout(function(){
         if(checkbox.is(':checked')){
             startInterval();
