@@ -10,6 +10,7 @@ var Graph = (function() {
     function Graph(graph_dict) {
         this.id = 'graph-' + ((new Date()).getTime()).toString();
         this.title = graph_dict.title
+        this.stacked = graph_dict.stacked
         this.raw_series = graph_dict.series;
         this.raw_series.sort(sortLabel)
     };
@@ -119,7 +120,7 @@ var drawPlots = function(response) {
     var min_time = max_time - (view_range * 60 * 1000);
     var graph_options = {
         series: {
-            stack: true,
+            stack: false, // this can be overridden by the data from the server
             lines: {
                 show: true,
                 fill: true,
@@ -152,7 +153,15 @@ var drawPlots = function(response) {
     for(var i in source_graphs){
         var graph = new Graph(source_graphs[i]);
         $graph_wrapper_el.append(graph.render());
-        var plot = $.plot(graph.getEl(), graph.raw_series, graph_options);
+
+        var this_graph_options = $.extend({}, graph_options);
+        if(graph.stacked){
+            this_graph_options.series.stack = true;
+        } else {
+            delete this_graph_options.series.stack;
+        }
+
+        var plot = $.plot(graph.getEl(), graph.raw_series, this_graph_options);
         var $graph_el = plot.getPlaceholder();
 
         for(var j in annotations){

@@ -127,8 +127,9 @@ def overall_stats_json(request):
         {
             'graphs': [
                 {
-                    'title'  : 'Graph Title',
-                    'series' : [
+                    'title'     : 'Graph Title',
+                    'stacked'   : True,
+                    'series'    : [
                         {
                             'label': 'series-1',
                             'data': [ [x1,y1], [x2,y2], ... ]
@@ -179,11 +180,13 @@ def overall_stats_json(request):
 
     bitrate_graph = {
         'title': 'Overall Bitrate',
+        'stacked': True,
         'series': [],
     }
 
     client_graph = {
         'title': 'Overall Clients',
+        'stacked': True,
         'series': [],
     }
 
@@ -237,6 +240,7 @@ def overall_stats_json(request):
     # now = datetime.datetime.now()
     # graphs.append({
     #     'title': 'Test graph',
+    #     'stacked': True,
     #     'series': [{
     #         'label': 'series-' + str(i),
     #         'data': [[int((now - datetime.timedelta(minutes=j)).strftime('%s')) * 1000,random.randint(1,11)] for j in range(200)]
