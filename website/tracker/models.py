@@ -143,12 +143,24 @@ class %(name)sStats(Stats):
 exec(STATS_TABLES % {'name': 'Client'})
 exec(STATS_TABLES % {'name': 'Server'})
 
-# These models make up the broadcasting reporting system.
-class Encoder(models.Model):
-    """A heavy duty instance which does encoding."""
-    group = models.CharField(blank=False, max_length=10)
-    ip = models.IPAddressField(blank=False)
-    lastseen = models.DateTimeField(auto_now=True, blank=False)
+class Endpoint(models.Model):
+    """
+    An endpoint server is one which is sending data to end users. It might be
+    an encoder in smaller setups, or in more advanced systems an amplifier.
+
+    Endpoints are registered for a given group. They should only be serving a
+    single group. They report stats and logs about the end users that are
+    connected to them.
+
+    Endpoints need to continously re-register on the sever otherwise they are
+    considered dead.
+
+    The IP address of the endpoint will be sent to end users. Make sure it's
+    public!
+    """
+    group = models.CharField(blank=False, max_length=10, db_index=True)
+    ip = models.IPAddressField(blank=False, db_index=True)
+    lastseen = models.DateTimeField(auto_now=True, blank=False, db_index=True)
 
     overall_bitrate = models.IntegerField(default=0)
     overall_cbitrate = models.IntegerField(default=0)
@@ -187,13 +199,67 @@ class Encoder(models.Model):
     class Meta:
         unique_together = (("group", "ip", "lastseen"),)
 
+    @classmethod
+    def active(cls, group=None, delta=datetime.timedelta(minutes=1)):
+        """Get the currently active encoders.
+
+        Args:
+            group: Group to get active servers for. Defaults to all groups.
+            delta: A time delta describing how long ago the encoder must have
+                   registered to be considered active. Defaults to 1 minute
+                   ago.
+
+        Returns:
+            A real list of Endpoint objects.
+        """
+        # Get all the active streaming severs for this channel
+        lastseen_after = datetime.datetime.now() - delta
+        q = cls.objects.order_by('group', 'ip', '-lastseen'
+            ).filter(lastseen__gte=lastseen_after
+            )
+        if group:
+            q = q.filter(group__exact=group)
+
+
+        distinct_support = True
+        try:
+            qd = q.distinct('group', 'ip')
+            return list(qd)
+        except NotImplementedError, e:
+            distinct_endpoints = {}
+            for endpoint in q:
+                key = (endpoint.group, endpoint.ip)
+
+                if key not in distinct_endpoints:
+                    distinct_endpoints[key] = endpoint
+
+            return list(distinct_endpoints.values())
+
 
 class Flumotion(models.Model):
-    """Amazon EC2 instance which sends data."""
-    identifier = models.CharField(blank=False, max_length=255)
-    ip = models.IPAddressField(blank=False)
-    type = models.CharField(blank=True, max_length=255)
-    lastseen = models.DateTimeField(auto_now=True, blank=False)
+    """A flumotion instance.
+
+    A flumotion instance somewhere in the video processing pipeline. The
+    instances should update their information regularly.
+
+    Most setups will have three flumotion types per group they are serving.
+    They are:
+        * collect - The flumotion instance doing the "on the ground" capture
+                    and transmitting a high quality version to the encoding
+                    server.
+        * encoder - Heavy duty server which has a flumotion instance doing the
+                    conversion from the high quality version from the collect
+                    instance to the versions needed by clients.
+        * amplifer - A light weight instance which acts as an simple TCP
+                     amplifier. Used when the number of clients is more then
+                     can be handled by the network card in the encoder.
+    """
+    identifier = models.CharField(blank=False, max_length=255, db_index=True)
+    type = models.CharField(blank=True, max_length=255, db_index=True)
+
+    group = models.CharField(blank=False, max_length=10, db_index=True)
+    ip = models.IPAddressField(blank=False, db_index=True)
+    lastseen = models.DateTimeField(auto_now=True, blank=False, db_index=True)
 
     recorded_time = models.FloatField(blank=False)
     data = models.TextField(blank=False)

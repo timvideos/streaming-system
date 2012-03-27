@@ -10,13 +10,14 @@ vim: set ts=2 sw=2 et sts=2 ai:
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <link rel="stylesheet" type="text/css" href="/static/css/tweet.css">
     <link rel="stylesheet" type="text/css" href="/static/third_party/jquery-extra/jquery.juitter-1.0.0.css">
+    <script type="text/javascript" src="/tracker/streams.js"></script>
     <meta http-equiv="refresh" content="{{ config.reload }}">
     <title>{{title}}</title>
 {% endblock %}
 
 {% block content %}
     {% for group, details in groups.items %}
-      <td>
+      <td class="{{group}}_td" style="display: none;">
         <div id="{{group}}_title" class="title">
           <h1>
             <a href="/{{group}}">{{details.title}}<br><span class="title_click">Click to view live stream!</span></a>
@@ -26,7 +27,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
     {% endfor %}
     </tr><tr>
     {% for group, details in groups.items %}
-      <td>
+      <td class="{{group}}_td" style="display: none;">
         <div id="{{group}}_abstract_div" class="abstract_div">
           <div id='{{group}}_abstract_info' class='abstract_info' onclick='$(".abstract_desc").fadeToggle();'>(More info)</div>
           <div id='{{group}}_abstract_title' class='abstract_title'></div>
@@ -36,7 +37,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
     {% endfor %}
     </tr><tr>
     {% for group, details in groups.items %}
-      <td id="{{group}}_preview" class="preview">
+      <td id="{{group}}_preview" class="preview {{group}}_td" style="display: none;">
         <div class="container_2" onClick="window.location='/{{group}}'">
           <img id="video-preview-{{group}}" class="video_preview">
         </div>
@@ -44,7 +45,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
     {% endfor %}
     </tr><tr>
     {% for group, details in groups.items %}
-      <td>
+      <td class="{{group}}_td" style="display: none;">
         <div id="{{group}}_chat" class="chat" onClick="window.location='/{{group}}'">
           <iframe id="chat-preview-{{group}}" class="chat_preview"></iframe>
         </div>
@@ -87,6 +88,8 @@ vim: set ts=2 sw=2 et sts=2 ai:
 
 {% block script %}
 <script type="text/javascript">
+// Code which the video previews by doing image swapping.
+//----------------------------------------------------------------------------/
 // Swap the preloaded video image into the main image
 {% for group, details in groups.items %}
 $('#video-preload-{{group|escapejs}}').load(function() {
@@ -94,42 +97,69 @@ $('#video-preload-{{group|escapejs}}').load(function() {
   setTimeout(update_video, 15e3);
 });
 {% endfor %}
-function update_video() {
+
+var update_video_for = new Array();
 {% for group, details in groups.items %}
+update_video_for['{{group}}'] = function() {
  $('#video-preload-{{group|escapejs}}').attr(
   'src', "{{details.preview}}?time="+current_time()
   );
-{% endfor %}
 }
+{% endfor %}
+function update_video() {
+  for (var i = 0; i < streamers_active.length; i++) {
+    update_video_for[streamers_active[i]]();
+  } 
+}
+//----------------------------------------------------------------------------/
 
-function update_chat() {
+// Code which updates the chat windows
+//----------------------------------------------------------------------------/
+var update_chat_for = new Array();
 {% for group, details in groups.items %}
+update_chat_for['{{group}}'] = function() {
  $('#chat-preview-{{group|escapejs}}').attr(
   'src', "/{{group|urlencode}}/logs"
   );
+};
 {% endfor %}
+function update_chat() {
+  for (var i = 0; i < streamers_active.length; i++) {
+    var group = streamers_active[i];
+    update_chat_for[streamers_active[i]]();
+  }
   setTimeout(update_chat, 30e3);
 }
+//----------------------------------------------------------------------------/
 
-function resize_twitter() {
- $("#twitter-juitter").height(5);
- $("#twitter-juitter").height($("#twitter-cell").innerHeight()-5);
+// Code which updates which streams are being displayed.
+function update_active_streams() {
+  var streamers_inactive = new Array();
+  {% for group, details in groups.items %}
+  streamers_inactive.push('{{group|escapejs}}');
+  {% endfor %}
+
+  for (var i = 0; i < streamers_active.length; i++) {
+    var group = streamers_active[i];
+
+    var idx = streamers_inactive.indexOf(group);
+    if (idx != -1) {
+      streamers_inactive.splice(idx, 1);
+      $('.'+group+'_td').show();
+    } else {
+      // Reload the page as new streamers exist...
+      window.src = "/";
+    }
+  }
+
+  for (var i = 0; i < streamers_inactive.length; i++) {
+    var group = streamers_inactive[i];
+    $('.'+group+'_td').hide();
+  }
 }
-$.Juitter.onUpdate = resize_twitter;
-$(window).resize(resize_twitter);
 
-$(document).ready(function() {
-  resize_twitter();
-  $.Juitter.start({
-    live:"live-5",
-    total: 20,
-    searchType: "searchWord",
-    searchObject: "{{ default.twitter|urlencode }}",
-    });
-  update_video();
-  update_chat();
-});
-
+// Code which updates the currently displayed schedule.
+// FIXME: This is all a big hack
 function schedule_callback() {
 {% for group, details in groups.items %}
   update_schedule($('#{{group|escapejs}}_abstract_title'), $('#{{group|escapejs}}_abstract_desc'), '{{details.title|escapejs}}');
@@ -140,5 +170,29 @@ function schedule_callback() {
 }
 
 get_schedule(schedule_callback);
+
+// Functions which keep twitter in the right place.
+function resize_twitter() {
+ $("#twitter-juitter").height(5);
+ $("#twitter-juitter").height($("#twitter-cell").innerHeight()-5);
+}
+$.Juitter.onUpdate = resize_twitter;
+$(window).resize(resize_twitter);
+
+//----------------------------------------------------------------------------/
+$(document).ready(function() {
+  resize_twitter();
+  $.Juitter.start({
+    live:"live-5",
+    total: 20,
+    searchType: "searchWord",
+    searchObject: "{{ default.twitter|urlencode }}",
+    });
+
+  update_active_streams();
+  update_video();
+  update_chat();
+});
+
 </script>
 {% endblock %}

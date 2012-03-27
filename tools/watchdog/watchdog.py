@@ -121,7 +121,10 @@ class StateTracker(object):
                 if cname not in self.__errors:
                     self.__errors[cname] = 0.0
 
-                self.__errors[cname] += add
+                old = self.__errors[cname]
+                new = old+add
+
+                self.__errors[cname] = max(0, new)
 
             return self.__errors[cname] / self.THRESHOLD * 100.0
         except KeyError:
@@ -431,6 +434,8 @@ class WatchDog(common.AdminCommand):
 
             # Happy components are good components.
             if mood in StateTracker.HAPPY:
+                self.flumotion_state.error(component, -1)
+
                 count.release()
                 continue
 
