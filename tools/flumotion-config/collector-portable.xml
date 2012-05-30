@@ -6,7 +6,7 @@
                label="porter-http"
                worker="localhost"
                project="flumotion"
-               version="0.9.0.1">
+               version="0.11.0.1">
       <property name="username">pMEUjzeXaBJJ</property>
       <property name="socket-path">flu-DUwiBh.socket</property>
       <property name="password">egMLHlXjuUgt</property>
@@ -21,7 +21,7 @@
                label="producer-firewire"
                worker="localhost"
                project="flumotion"
-               version="0.9.0.1">
+               version="0.11.0.1">
       <property name="deinterlace-mode">auto</property>
       <property name="is-square">True</property>
       <property name="deinterlace-method">ffmpeg</property>
@@ -38,7 +38,7 @@
                label="composite-video"
                worker="localhost"
                project="flumotion"
-               version="0.9.0.1">
+               version="0.11.0.1">
       <eater name="default">
         <feed alias="default">producer-firewire:video</feed>
       </eater>
@@ -65,7 +65,7 @@ videomixer name=mix sink_0::zorder=0 sink_1::zorder=1
                label="encoder-video"
                worker="localhost"
                project="flumotion"
-               version="0.9.0.1">
+               version="0.11.0.1">
       <eater name="default">
         <feed alias="default">composite-video:default</feed>
       </eater>
@@ -81,7 +81,7 @@ videomixer name=mix sink_0::zorder=0 sink_1::zorder=1
                label="encoder-audio"
                worker="localhost"
                project="flumotion"
-               version="0.9.0.1">
+               version="0.11.0.1">
       <eater name="default">
         <feed alias="default">producer-firewire:audio</feed>
       </eater>
@@ -94,7 +94,7 @@ videomixer name=mix sink_0::zorder=0 sink_1::zorder=1
                label="muxer-audio-video"
                worker="localhost"
                project="flumotion"
-               version="0.9.0.1">
+               version="0.11.0.1">
       <eater name="default">
         <feed alias="default">encoder-audio:default</feed>
         <feed alias="default-bis">encoder-video:default</feed>
@@ -107,7 +107,7 @@ videomixer name=mix sink_0::zorder=0 sink_1::zorder=1
                label="disk-loop"
                worker="localhost"
                project="flumotion"
-               version="0.9.0.1">
+               version="0.11.0.1">
       <eater name="default">
         <feed alias="default">muxer-audio-video:default</feed>
       </eater>
@@ -124,7 +124,7 @@ videomixer name=mix sink_0::zorder=0 sink_1::zorder=1
                label="http-audio-video"
                worker="localhost"
                project="flumotion"
-               version="0.9.0.1">
+               version="0.11.0.1">
       <eater name="default">
         <feed alias="default">muxer-audio-video:default</feed>
       </eater>
@@ -145,7 +145,7 @@ videomixer name=mix sink_0::zorder=0 sink_1::zorder=1
                label="fgdp-audio-video"
                worker="localhost"
                project="flumotion"
-               version="0.9.0.1">
+               version="0.11.0.1">
       <eater name="default">
         <feed alias="default">muxer-audio-video:default</feed>
       </eater>
