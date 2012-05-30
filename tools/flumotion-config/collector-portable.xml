@@ -18,24 +18,29 @@
   <flow name="default">
     <component name="producer-firewire"
                type="firewire-producer"
-               label="producer-firewire"
+               label="1 - twinpac"
                worker="localhost"
                project="flumotion"
                version="0.11.0.1">
       <property name="deinterlace-mode">auto</property>
       <property name="is-square">True</property>
       <property name="deinterlace-method">ffmpeg</property>
-      <property name="framerate">30000/1001</property>
+      <property name="framerate">30/1</property>
       <property name="height">0</property>
       <property name="width">655</property>
       <property name="decoder">ffdec_dvvideo</property>
       <property name="guid">%(firewire_guid)s</property>
-      <clock-master>true</clock-master>
+      <clock-master>false</clock-master>
+      <!-- 
+        NTSC version! - See http://goo.gl/qnzXg 
+        Output Resolution - 655x480
+        Output Sound - 48kHz, 2 channel
+      -->
     </component>
 
-    <component name="composite-video"
+    <component name="video-freewheel"
                type="pipeline-converter"
-               label="composite-video"
+               label="2 - video freewheel"
                worker="localhost"
                project="flumotion"
                version="0.11.0.1">
@@ -43,33 +48,80 @@
         <feed alias="default">producer-firewire:video</feed>
       </eater>
       <property name="pipeline">
+video/x-raw-yuv,framerate=(fraction)30/1;video/x-raw/rgb,framerate=(fraction)30/1 !
+intervideosink sync=true
+
+intervideosrc !
+video/x-raw-yuv,framerate=(fraction)30/1;video/x-raw/rgb,framerate=(fraction)30/1 
+      </property>
+      <clock-master>false</clock-master>
+    </component>
+
+    <component name="audio-freewheel"
+               type="pipeline-converter"
+               label="2 - audio freewheel"
+               worker="localhost"
+               project="flumotion"
+               version="0.11.0.1">
+      <eater name="default">
+        <feed alias="default">producer-firewire:audio</feed>
+      </eater>
+      <property name="pipeline">
+audio/x-raw-int,rate=48000,channels=2 !
+interaudiosink sync=true
+
+interaudiosrc ! 
+audio/x-raw-int,rate=48000,channels=2 
+      </property>
+      <clock-master>false</clock-master>
+    </component>
+
+    <component name="video-mixer"
+               type="pipeline-producer"
+               label="4 - mixer"
+               worker="localhost"
+               project="flumotion"
+               version="0.11.0.1">
+      <eater name="default">
+        <feed alias="default">video-freewheel</feed>
+      </eater>
+      <!-- 
+        NTSC version! - See http://goo.gl/qnzXg 
+        Input Resolution - 655x480
+        Output Resolution - 854x480 
+      -->
+      <property name="pipeline">
 videorate !
-video/x-raw-yuv,framerate=(fraction)24/1;video/x-raw/rgb,framerate=(fraction)24/1 !
+video/x-raw-yuv,framerate=(fraction)30/1;video/x-raw/rgb,framerate=(fraction)30/1 !
 videobox top=0 bottom=0 left=0 right=-199 border-alpha=0 !
 mix.sink_1
+
 v4l2src device=%(camera_device)s !
-image/jpeg,width=640,height=480,framerate=(fraction)24/1 !
+image/jpeg,width=640,height=480,framerate=(fraction)30/1 !
 jpegdec !
+queue !
 videocrop left=80 right=80 top=0 bottom=0 !
 videoscale !
 video/x-raw-yuv,width=199,height=199;video/x-raw/rgb,width=199,height=199 !
 videobox top=0 bottom=-281 left=-655 right=0 border-alpha=1 !
 mix.sink_0
-videomixer name=mix sink_0::zorder=0 sink_1::zorder=1
+
+videomixer name=mix sink_0::zorder=0 sink_1::zorder=1 !
+timeoverlay
       </property>
-      <clock-master>false</clock-master>
+      <clock-master>true</clock-master>
     </component>
-		   
+
     <component name="encoder-video"
                type="x264-encoder"
-               label="encoder-video"
+               label="5 - video encoder"
                worker="localhost"
                project="flumotion"
                version="0.11.0.1">
       <eater name="default">
-        <feed alias="default">composite-video:default</feed>
+        <feed alias="default">video-mixer:default</feed>
       </eater>
-      <property name="keyframe-maxdistance">24</property>
+      <property name="keyframe-maxdistance">30</property>
       <property name="bitrate">1000000</property>
       <property name="quality">4</property>
       <property name="append-string">threads=4</property>
@@ -78,12 +130,12 @@ videomixer name=mix sink_0::zorder=0 sink_1::zorder=1
     
     <component name="encoder-audio"
                type="faac-encoder"
-               label="encoder-audio"
+               label="5 - audio encoder"
                worker="localhost"
                project="flumotion"
                version="0.11.0.1">
       <eater name="default">
-        <feed alias="default">producer-firewire:audio</feed>
+        <feed alias="default">audio-freewheel</feed>
       </eater>
       <property name="bitrate">48000</property>
       <clock-master>false</clock-master>
@@ -91,7 +143,7 @@ videomixer name=mix sink_0::zorder=0 sink_1::zorder=1
     
     <component name="muxer-audio-video"
                type="gst-flv-muxer"
-               label="muxer-audio-video"
+               label="6 - muxer"
                worker="localhost"
                project="flumotion"
                version="0.11.0.1">
@@ -104,7 +156,7 @@ videomixer name=mix sink_0::zorder=0 sink_1::zorder=1
   
     <component name="disk-loop"
                type="disk-consumer"
-               label="disk-loop"
+               label="7 - saver"
                worker="localhost"
                project="flumotion"
                version="0.11.0.1">
@@ -121,7 +173,7 @@ videomixer name=mix sink_0::zorder=0 sink_1::zorder=1
  
     <component name="http-audio-video"
                type="http-streamer"
-               label="http-audio-video"
+               label="7 - preview"
                worker="localhost"
                project="flumotion"
                version="0.11.0.1">
@@ -142,7 +194,7 @@ videomixer name=mix sink_0::zorder=0 sink_1::zorder=1
 
     <component name="fgdp-audio-video"
                type="fgdp-consumer"
-               label="fgdp-audio-video"
+               label="7 - sender"
                worker="localhost"
                project="flumotion"
                version="0.11.0.1">
