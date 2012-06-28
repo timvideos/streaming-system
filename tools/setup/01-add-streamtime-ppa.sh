@@ -7,6 +7,8 @@
 # of advanced features.
 #
 
+exit 0
+
 # Install the PPA.
 if [ ! -e /etc/apt/sources.list.d/gstreamer-developers-ppa-lucid.list ]; then
   apt-add-repository ppa:mithro/streamtime/ppa
