@@ -14,8 +14,8 @@
 	
 	"default": {
 		"channel":	"#pycon",
-		"irclog":	"http://pycon.streamti.me/~irc/%23pycon/latest.log.html",
-		"preview":	"http://pycon.streamti.me/~irc/%23pycon/latest.png",
+		"irclog":	"http://logs.timvideos.us/%23pycon/preview.log.html",
+		"preview":	"http://preview.timvideos.us/%23pycon/latest.png",
 		"twitter":	"@pycon OR #pycon OR #pyconus",
 		"logo":		"/static/logo/pycon.png",
                 "link":         "https://us.pycon.org/2012/schedule/",
@@ -27,63 +27,75 @@
                 "": ""
 	},
 
-	"track-1": {
-		"channel":	"#pycon-track-1",
-		"irclog":	"http://primary.streamti.me/~irc/%23pycon-track-1/latest.log.html",
-		"preview":	"http://d5-encoder-pycon.streamti.me/preview.jpg",
-		"title":	"Track I (D5)",
-		"justintv_user": "pycon_track_1",
-                "flumotion-mixer": "192.168.0.141",
-                "flumotion-encoder": "d5-encoder-pycon.streamti.me",
-                "flumotion-collector": "d5-collect-pycon.streamti.me",
+	"mission": {
+		"channel":	"#pycon-mission",
+		"irclog":	"http://logs.timvideos.us/%23pycon-mission/preview.log.html",
+		"preview":	"http://preview.timvideos.us/%23pycon-mission/latest.png",
+		"title":	"Grand Ballroom AB",
+		"justintv_user": "pycon_mission",
+                "flumotion-mixer": "mission.mixer.timvideos.us",
+                "flumotion-encoder": "mission.encoder.timvideos.us",
+                "flumotion-collector": "mission.collector.timvideos.us",
                 "": ""
 	},
 
-	"track-2": {
-		"channel":	"#pycon-track-2",
-		"irclog":	"http://primary.streamti.me/~irc/%23pycon-track-2/latest.log.html",
-		"preview":	"http://e1-encoder-pycon.streamti.me/preview.jpg",
-		"title":	"Track II (E1)",
-		"justintv_user": "pycon_track_2",
-                "flumotion-mixer": "192.168.0.151",
-                "flumotion-encoder": "e1-encoder-pycon.streamti.me",
-                "flumotion-collector": "e1-collect-pycon.streamti.me",
+	"ab": {
+		"channel":	"#pycon-ab",
+		"irclog":	"http://logs.timvideos.us/%23pycon-ab/preview.log.html",
+		"preview":	"http://preview.timvideos.us/%23pycon-ab/latest.png",
+		"title":	"Grand Ballroom AB",
+		"justintv_user": "pycon_ab",
+                "flumotion-mixer": "ab.mixer.timvideos.us",
+                "flumotion-encoder": "ab.encoder.timvideos.us",
+                "flumotion-collector": "ab.collector.timvideos.us",
                 "": ""
 	},
 
-	"track-3": {
-		"channel":	"#pycon-track-3",
-		"irclog":	"http://primary.streamti.me/~irc/%23pycon-track-3/latest.log.html",
-		"preview":	"http://e2-encoder-pycon.streamti.me/preview.jpg",
-		"title":	"Track III (E2)",
-		"justintv_user": "pycon_track_3",
-                "flumotion-mixer": "192.168.0.161",
-                "flumotion-encoder": "e2-encoder-pycon.streamti.me",
-                "flumotion-collector": "e2-collect-pycon.streamti.me",
+	"cd": {
+		"channel":	"#pycon-cd",
+		"irclog":	"http://logs.timvideos.us/%23pycon-cd/preview.log.html",
+		"preview":	"http://preview.timvideos.us/%23pycon-cd/latest.png",
+		"title":	"Grand Ballroom AB",
+		"justintv_user": "pycon_cd",
+                "flumotion-mixer": "cd.mixer.timvideos.us",
+                "flumotion-encoder": "cd.encoder.timvideos.us",
+                "flumotion-collector": "cd.collector.timvideos.us",
                 "": ""
 	},
 
-	"track-4": {
-		"channel":	"#pycon-track-4",
-		"irclog":	"http://primary.streamti.me/~irc/%23pycon-track-4/latest.log.html",
-		"preview":	"http://e3-encoder-pycon.streamti.me/preview.jpg",
-		"title":	"Track IV (E3)",
-		"justintv_user": "pycon_track_4",
-                "flumotion-mixer": "192.168.0.171",
-                "flumotion-encoder": "e3-encoder-pycon.streamti.me",
-                "flumotion-collector": "e3-collect-pycon.streamti.me",
+	"ef": {
+		"channel":	"#pycon-ef",
+		"irclog":	"http://logs.timvideos.us/%23pycon-ef/preview.log.html",
+		"preview":	"http://preview.timvideos.us/%23pycon-ef/latest.png",
+		"title":	"Grand Ballroom AB",
+		"justintv_user": "pycon_ef",
+                "flumotion-mixer": "ef.mixer.timvideos.us",
+                "flumotion-encoder": "ef.encoder.timvideos.us",
+                "flumotion-collector": "ef.collector.timvideos.us",
                 "": ""
 	},
 
-	"track-5": {
-		"channel":	"#pycon-track-5",
-		"irclog":	"http://primary.streamti.me/~irc/%23pycon-track-5/latest.log.html",
-		"preview":	"http://e4-encoder-pycon.streamti.me/preview.jpg",
-		"title":	"Track V (E4)",
-		"justintv_user": "pycon_track_5",
-                "flumotion-mixer": "192.168.0.111",
-                "flumotion-encoder": "e4-encoder-pycon.streamti.me",
-                "flumotion-collector": "e4-collect-pycon.streamti.me",
+	"gh": {
+		"channel":	"#pycon-gh",
+		"irclog":	"http://logs.timvideos.us/%23pycon-gh/preview.log.html",
+		"preview":	"http://preview.timvideos.us/%23pycon-gh/latest.png",
+		"title":	"Grand Ballroom AB",
+		"justintv_user": "pycon_gh",
+                "flumotion-mixer": "gh.mixer.timvideos.us",
+                "flumotion-encoder": "gh.encoder.timvideos.us",
+                "flumotion-collector": "gh.collector.timvideos.us",
+                "": ""
+	},
+
+	"america": {
+		"channel":	"#pycon-america",
+		"irclog":	"http://logs.timvideos.us/%23pycon-america/preview.log.html",
+		"preview":	"http://preview.timvideos.us/%23pycon-america/latest.png",
+		"title":	"Grand Ballroom AB",
+		"justintv_user": "pycon_america",
+                "flumotion-mixer": "america.mixer.timvideos.us",
+                "flumotion-encoder": "america.encoder.timvideos.us",
+                "flumotion-collector": "america.collector.timvideos.us",
                 "": ""
 	},
 
