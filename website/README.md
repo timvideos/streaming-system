@@ -9,7 +9,7 @@ Initial Configuration
 
 To get the code and dependencies:
 
-    git clone git@github.com:timsvideo/timsvideo.git
+    git clone git@github.com:timvideos/timvideos.git
     cd timsvide/website
     make
 
@@ -46,7 +46,7 @@ Production Deployment
     deploy script.
 
  *  To do the deployment, I use the ``setup.sh`` script in conf directory. It
-    takes a copy of the current code in ``~website/timsvideo`` and puts it in
+    takes a copy of the current code in ``~website/timvideos`` and puts it in
     ``~website/$VERSION-$DATE-$TIME`` directory and then links
     ``~website/current`` to that.
 
