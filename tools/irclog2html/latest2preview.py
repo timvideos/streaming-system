@@ -22,7 +22,7 @@ if __name__ == "__main__":
     new_order = []
     for row in list(table.children):
         new_order.insert(0, row.extract())
-    for row in new_order:
+    for row in new_order[:40]:
         table.append(row)
 
     table['style'] = "font-size: 8pt;"
