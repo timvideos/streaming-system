@@ -90,13 +90,12 @@ class ConfigWrapper(dict):
     def config(self, group):
         """Get a dictionary containing configuration values for a group."""
         assert group in self
-        config_group = {}
+        config_group = {'group': group}
         for name, default_value in self['default'].iteritems():
             config_group[name] = self[group].get(name, default_value)
 
         for name, value in config_group.iteritems():
             context = dict(config_group)
-            context['group'] = group
             try:
                 config_group[name] = value % context
             except:
