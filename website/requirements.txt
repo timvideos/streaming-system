@@ -1,14 +1,13 @@
 -e git://github.com/mithro/git-cl.git#egg=git-cl
 -e git://github.com/mithro/django-testing-fixes.git#egg=django-testing-fixes
-svn+http://code.djangoproject.com/svn/django/trunk#egg=django
+django==1.5
 BeautifulSoup4
 django-live-server
 distribute>=0.6.14
-django-extensions==0.7.1
-ez-setup==0.9
-gunicorn==0.13.4
+django-extensions
+ez-setup
+gunicorn
 ordereddict
-pylint==0.25.1
+pylint
 simplejson
-selenium
-unittest2==0.5.1
+unittest2
