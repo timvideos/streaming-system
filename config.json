@@ -27,6 +27,18 @@
                 "": ""
 	},
 
+	"av": {
+		"channel":	"#pycon-av",
+		"irclog":	"http://logs.timvideos.us/%23pycon-av/preview.log.html",
+		"preview":	"http://preview.timvideos.us/%23pycon-av/latest.png",
+		"title":	"TESTING CHANNEL",
+		"justintv_user": "pycon_av",
+                "flumotion-mixer": "av.mixer.timvideos.us",
+                "flumotion-encoder": "av.encoder.timvideos.us",
+                "flumotion-collector": "av.collector.timvideos.us",
+                "": ""
+	},
+
 	"mission": {
 		"channel":	"#pycon-mission",
 		"irclog":	"http://logs.timvideos.us/%23pycon-mission/preview.log.html",
