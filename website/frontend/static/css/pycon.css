@@ -64,11 +64,11 @@ hr {
  z-index: 1000;
 }
 
-.abstract_cell {
+.now_cell {
   height: 1px;
 }
 
-.abstract_div {
+.now_div {
   color: #F9F2E6;
   text-shadow: 0 1px 0 #222;
   background: #006e91;
@@ -76,7 +76,24 @@ hr {
   height: 100%;
 }
 
-.abstract_desc_group {
+.now_desc_group {
+  padding-left: 100px;
+  padding-right: 100px;
+  padding-bottom: 25px;
+}
+.next_cell {
+  height: 1px;
+}
+
+.next_div {
+  color: #F9F2E6;
+  text-shadow: 0 1px 0 #222;
+  background: #006e91;
+  min-height: 1em;
+  height: 100%;
+}
+
+.next_desc_group {
   padding-left: 100px;
   padding-right: 100px;
   padding-bottom: 25px;

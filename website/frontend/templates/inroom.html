@@ -14,11 +14,11 @@ vim: set ts=2 sw=2 et sts=2 ai:
 {% endblock %}
 
 {% block content %}
-      <td id="abstract_cell abstract_cell_group" colspan=2 style="height: 1px;">
-        <div id="showing" class='abstract_div abstract_div_group'>
-          <div id='abstract_info' class='abstract_info abstract_info_group' onclick='$(".abstract_desc").fadeToggle();'>(More info)</div>
-          <div id='abstract_title' class='abstract_title abstract_title_group'></div>
-          <div id='abstract_desc' class='abstract_desc abstract_desc_group'></div>
+      <td id="now_cell now_cell_group" colspan=2 style="height: 1px;">
+        <div id="showing" class='now_div now_div_group'>
+          <div id='now_info' class='now_info now_info_group' onclick='$(".now_desc").fadeToggle();'>(More info)</div>
+          <div id='now_title' class='now_title now_title_group'></div>
+          <div id='now_desc' class='now_desc now_desc_group'></div>
         </div>
       </td>
     </tr><tr>
@@ -55,6 +55,14 @@ vim: set ts=2 sw=2 et sts=2 ai:
           </div>
         </div>
       </td>
+    </tr><tr>
+      <td id="next_cell next_cell_group" colspan=2 style="height: 1px;">
+        <div id="showing" class='next_div next_div_group'>
+          <div id='next_info' class='next_info next_info_group' onclick='$(".next_desc").fadeToggle();'>(More info)</div>
+          <div id='next_title' class='next_title next_title_group'></div>
+          <div id='next_desc' class='next_desc next_desc_group'></div>
+        </div>
+      </td>
 {% endblock %}
 
 {% block script %}
@@ -77,7 +85,7 @@ $(document).ready(function() {
 });
 
 function schedule_callback() {
-  update_schedule($('#abstract_title'), $('#abstract_desc'), '{{config.title|escapejs}}');
+  update_schedule($('#now_title'), $('#now_desc'), '{{config.title|escapejs}}');
   setTimeout(schedule_callback, 60e3);
   resize();
 }

@@ -28,10 +28,10 @@ vim: set ts=2 sw=2 et sts=2 ai:
     </tr><tr>
     {% for group, details in groups.items %}
       <td class="{{group}}_td" style="display: none;">
-        <div id="{{group}}_abstract_div" class="abstract_div">
-          <div id='{{group}}_abstract_info' class='abstract_info' onclick='$(".abstract_desc").fadeToggle();'>(More info)</div>
-          <div id='{{group}}_abstract_title' class='abstract_title'></div>
-          <div id='{{group}}_abstract_desc' class='abstract_desc'></div>
+        <div id="{{group}}_now_div" class="now_div">
+          <div id='{{group}}_now_info' class='now_info' onclick='$(".now_desc").fadeToggle();'>(More info)</div>
+          <div id='{{group}}_now_title' class='now_title'></div>
+          <div id='{{group}}_now_desc' class='now_desc'></div>
         </div>
       </td>
     {% endfor %}
@@ -40,6 +40,16 @@ vim: set ts=2 sw=2 et sts=2 ai:
       <td id="{{group}}_preview" class="preview {{group}}_td" style="display: none;">
         <div class="container_2" onClick="window.location='/{{group}}'">
           <img id="video-preview-{{group}}" class="video_preview">
+        </div>
+      </td>
+    {% endfor %}
+    </tr><tr>
+    {% for group, details in groups.items %}
+      <td class="{{group}}_td" style="display: none;">
+        <div id="{{group}}_next_div" class="next_div">
+          <div id='{{group}}_next_info' class='next_info' onclick='$(".next_desc").fadeToggle();'>(More info)</div>
+          <div id='{{group}}_next_title' class='next_title'></div>
+          <div id='{{group}}_next_desc' class='next_desc'></div>
         </div>
       </td>
     {% endfor %}
@@ -119,7 +129,7 @@ var update_chat_for = new Array();
 {% for group, details in groups.items %}
 update_chat_for['{{group}}'] = function() {
  $('#chat-preview-{{group|escapejs}}').attr(
-  'src', "/{{group|urlencode}}/logs"
+  'src', "{{details.irclog}}"
   );
 };
 {% endfor %}
@@ -162,7 +172,7 @@ function update_active_streams() {
 // FIXME: This is all a big hack
 function schedule_callback() {
 {% for group, details in groups.items %}
-  update_schedule($('#{{group|escapejs}}_abstract_title'), $('#{{group|escapejs}}_abstract_desc'), '{{details.title|escapejs}}');
+  update_schedule($('#{{group|escapejs}}_now_title'), $('#{{group|escapejs}}_now_desc'), '{{details.title|escapejs}}');
 {% endfor %}
   resize_twitter();
   setTimeout(schedule_callback, 60e3);

@@ -114,20 +114,37 @@ img {
   font-size: 12px;
 }
 
-.abstract_title {
+.now_title {
   text-align: center;
 }
-.abstract_title a {
+.now_title a {
   text-decoration: none;
   font-size: 16pt;
   color: #ddecf8;
 }
-.abstract_info {
+.now_info {
   font-size: 8px;
   font-style: italic;
   float: right;
 }
-.abstract_desc {
+.now_desc {
+  width: 100%;
+  display: none;
+}
+.next_title {
+  text-align: center;
+}
+.next_title a {
+  text-decoration: none;
+  font-size: 16pt;
+  color: #ddecf8;
+}
+.next_info {
+  font-size: 8px;
+  font-style: italic;
+  float: right;
+}
+.next_desc {
   width: 100%;
   display: none;
 }
