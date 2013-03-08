@@ -1,9 +1,9 @@
 [submodule "tools/flumotion-ugly"]
 	path = tools/flumotion-ugly
-	url = git://github.com/timsvideo/flumotion-ugly.git
+	url = git://github.com/timvideos/flumotion-ugly.git
 [submodule "tools/flumotion"]
 	path = tools/flumotion
-	url = git://github.com/timsvideo/flumotion.git
+	url = git://github.com/timvideos/flumotion.git
 [submodule "tools/flumotion-extra"]
 	path = tools/flumotion-extra
-	url = git://github.com/timsvideo/flumotion-extra.git
+	url = git://github.com/timvideos/flumotion-extra.git
