@@ -7,6 +7,8 @@ from django.views.decorators.cache import never_cache
 from django.views.generic import RedirectView
 
 class NeverCacheRedirectView(RedirectView):
+    permanent = False
+
     @never_cache
     def get(self, request, *args, **kwargs):
         return RedirectView.get(self, request, *args, **kwargs)
