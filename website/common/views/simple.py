@@ -4,8 +4,9 @@
 # vim: set ts=4 sw=4 et sts=4 ai:
 
 from django.views.decorators.cache import never_cache
-from django.views.generic.simple import redirect_to
+from django.views.generic import RedirectView
 
-@never_cache
-def never_cache_redirect_to(*args, **kw):
-    return redirect_to(*args, **kw)
+class NeverCacheRedirectView(RedirectView):
+    @never_cache
+    def get(self, request, *args, **kwargs):
+        return RedirectView.get(self, request, *args, **kwargs)

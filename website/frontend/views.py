@@ -25,7 +25,7 @@ from django.views.decorators.cache import cache_page
 from django.views.decorators.cache import cache_control
 
 # Our App imports
-from common.views.simple import never_cache_redirect_to
+from common.views.simple import NeverCacheRedirectView
 from tracker import models
 
 config_path = os.path.realpath(os.path.dirname(__file__)+"/../..")
@@ -35,15 +35,16 @@ import config as common_config
 CONFIG = common_config.config_load()
 LOCALIPS = [re.compile(x) for x in CONFIG['config']['localips'] if x]
 
+
 def group(request, group):
     if not CONFIG.valid(group):
-        return never_cache_redirect_to(request, url="/")
+        return NeverCacheRedirectView.as_view(url="/")(request)
 
     config = CONFIG.config(group)
 
     template = request.GET.get('template', 'default')
     if not re.match('[a-z]+', template):
-        return never_cache_redirect_to(request, url="/")
+        return NeverCacheRedirectView.as_view(url="/")(request)
     elif template == 'default':
         template = "group"
         # Is the request coming from the room?

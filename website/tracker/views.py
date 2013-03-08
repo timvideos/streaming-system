@@ -29,7 +29,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django import template
 
 # Our App imports
-from common.views.simple import never_cache_redirect_to
+from common.views.simple import NeverCacheRedirectView
 from tracker import models
 
 
@@ -138,7 +138,7 @@ class error(object):
 def client_common(request, group):
     """Check the common information for an client request."""
     if request.method != 'POST':
-        return (never_cache_redirect_to(request, url="/"), None, None)
+        return NeverCacheRedirectView.as_view(url="/")(request)
 
     response = http.HttpResponse(content_type='application/javascript')
 
@@ -239,7 +239,7 @@ def client_stats(request, group, _now=None):
 def endpoint_common(request, check_group=True):
     """Check the common information for an endpoint request."""
     if request.method != 'POST':
-        return never_cache_redirect_to(request, url="/")
+        return NeverCacheRedirectView.as_view(url="/")(request)
 
     response = http.HttpResponse(content_type='text/plain')
 
