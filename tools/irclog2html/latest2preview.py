@@ -2,11 +2,33 @@
 
 import sys
 import os
+import re
 
+import slimmer
 from bs4 import BeautifulSoup
 
 if __name__ == "__main__":
     soup = BeautifulSoup(file(sys.argv[1]).read())
+
+    # Remove tags we don't need
+    for meta in soup.find_all("meta"):
+        meta.extract() 
+    for title in soup.find_all("title"):
+        title.extract() 
+
+    # Remove attributes we don't need
+    for a in soup.find_all("a"):
+        if a['href'].startswith('#'):
+            del a['href']
+    for tr in soup.find_all("tr"):
+        del tr['id']
+
+    # Make attributes shorter
+    for tag in soup.find_all(re.compile(".*")):
+        try:
+            tag['class'] = tag['class'][0]
+        except KeyError:
+            pass
 
     body = soup.find("body")
     body['style'] = "background: transparent;"
@@ -26,4 +48,5 @@ if __name__ == "__main__":
         table.append(row)
 
     table['style'] = "font-size: 8pt;"
-    print str(soup)
+#    print str(soup)
+    print slimmer.xhtml_slimmer(str(soup))
