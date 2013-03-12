@@ -24,8 +24,8 @@ adduser $USER website-run
 
 # Set up the website directory
 BASEDIR=/home/website
-STATICDIR=/var/www/timsvideo-static/
-rm -r /tmp/timsvideo-static || true
+STATICDIR=/var/www/timvideos-static/
+rm -r /tmp/timvideos-static || true
 
 if [ ! -f ~website/.gitconfig ]; then
 
@@ -37,16 +37,16 @@ EOF
 fi
 
 (
-if [ ! -d $BASEDIR/timsvideo ]; then
-	as_website "cd $BASEDIR; git clone git://github.com/timsvideo/timsvideo.git timsvideo"
+if [ ! -d $BASEDIR/timvideos ]; then
+	as_website "cd $BASEDIR; git clone git://github.com/timvideos/timvideos.git timvideos"
 else
-	chown website:website -R .
-	as_website "cd $BASEDIR/timsvideo; git pull" || exit
+	chown website:website -R $BASEDIR/timvideos
+	as_website "cd $BASEDIR/timvideos; git pull" || exit
 fi
 cd $BASEDIR
 
 # Update the repository
-cd timsvideo
+cd timvideos
 as_website git submodule init
 as_website git submodule update
 as_website chmod -R g+r .
@@ -55,16 +55,16 @@ export VERSION=$(git describe --tags --long)-$(date +%Y%m%d-%H%M%S)
 cd ..
 
 # Version the code
-as_website cp -arf timsvideo timsvideo-$VERSION
+as_website cp -arf timvideos timvideos-$VERSION
 as_website rm current || true
-as_website ln -s timsvideo-$VERSION current
+as_website ln -s timvideos-$VERSION current
 
 # Directory for the static stuff
-mkdir /var/www/timsvideo-static || true
-chown website:website /var/www/timsvideo-static
+mkdir /var/www/timvideos-static || true
+chown website:website /var/www/timvideos-static
 
 # Version the static files
-cp -R /tmp/timsvideo-static $STATICDIR/$VERSION
+cp -R /tmp/timvideos-static $STATICDIR/$VERSION
 as_website rm $STATICDIR/current || true
 as_website ln -s $STATICDIR/$VERSION $STATICDIR/current
 
@@ -72,13 +72,13 @@ as_website ln -s $STATICDIR/$VERSION $STATICDIR/current
 # Need to get settings-private.py
 
 # Add the init script
-cp $BASEDIR/timsvideo-$VERSION/website/conf/init.conf /etc/init/website.conf
+cp $BASEDIR/timvideos-$VERSION/website/conf/init.conf /etc/init/website.conf
 ln -sf /lib/init/upstart-job /etc/init.d/website
 service website restart
 
 # Add the ngnix config
 apt-get install nginx
-cp $BASEDIR/timsvideo-$VERSION/website/conf/nginx.conf /etc/nginx/sites-available/website-$VERSION
+cp $BASEDIR/timvideos-$VERSION/website/conf/nginx.conf /etc/nginx/sites-available/website-$VERSION
 ln -sf /etc/nginx/sites-available/website-$VERSION /etc/nginx/sites-enabled/website
 service nginx restart
 )
