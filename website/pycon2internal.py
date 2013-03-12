@@ -7,7 +7,7 @@ import cStringIO as StringIO
 
 import urllib2
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytz
 from dateutil import parser
 
@@ -144,7 +144,9 @@ if __name__ == "__main__":
 
 
             delta = (start - end).seconds/60
-            if delta:
+            if delta and delta == 10:
+                final_data[channel][-1]['end'] = final_data[channel][-1]['end']+timedelta(seconds=delta*60)
+            elif delta:
                 title = BREAK_NAMES.get(delta, 'Unknown %s' % delta)
 
                 if title is not None:
@@ -173,6 +175,8 @@ if __name__ == "__main__":
     for channel in final_data.keys():
         sys.stderr.write('\n%s\n' % channel)
         for value in final_data[channel]:
+            value['start'] = str(value['start'])
+            value['end'] = str(value['end'])
             sys.stderr.write("%s | %s | %s\n" % (value['start'], value['end'], value['title']))
 
     out = StringIO.StringIO()
