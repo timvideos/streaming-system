@@ -3,6 +3,7 @@ import simplejson
 import pprint
 import sys
 import hashlib
+import cStringIO as StringIO
 
 import urllib2
 
@@ -43,6 +44,7 @@ tz = pytz.timezone('US/Pacific')
 class tzinfo(tz.__class__):
     def __repr__(self):
          return 'pytz.timezone("US/Pacific")'
+    __str__ = __repr__
 tz.__class__ = tzinfo
 
 defaulttime = datetime.now(tz)
@@ -173,9 +175,11 @@ if __name__ == "__main__":
         for value in final_data[channel]:
             sys.stderr.write("%s | %s | %s\n" % (value['start'], value['end'], value['title']))
 
+    out = StringIO.StringIO()
+    pprint.pprint(final_data, stream=out)
     print """\
 import datetime
 import pytz
 
 data = \\"""
-    pprint.pprint(final_data)
+    print out.getvalue().replace("<DstTzInfo 'US/Pacific' PDT-1 day, 17:00:00 DST>", 'pytz.timezone("US/Pacific")')
