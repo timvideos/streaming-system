@@ -27,6 +27,15 @@ BASEDIR=/home/website
 STATICDIR=/var/www/timsvideo-static/
 rm -r /tmp/timsvideo-static || true
 
+if [ ! -f ~website/.gitconfig ]; then
+
+   cat > ~website/.gitconfig <<EOF
+[user]
+	email = deployed@mithis.com
+	name = `hostname`
+EOF
+fi
+
 (
 if [ ! -d $BASEDIR/timsvideo ]; then
 	as_website "cd $BASEDIR; git clone git://github.com/timsvideo/timsvideo.git timsvideo"
