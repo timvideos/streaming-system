@@ -15,6 +15,11 @@ import sys
 import time
 import re
 import urllib2
+import simplejson as json
+from .data import data
+from itertools import ifilter, islice
+from datetime import datetime, timedelta
+import pytz
 
 from bs4 import BeautifulSoup
 
@@ -82,4 +87,31 @@ def schedule(request):
         schedule = urllib2.urlopen('https://us.pycon.org/2012/schedule/json').read()
         cache.set('schedule', schedule, 120)
     response.write(schedule)
+    return response
+
+def get_current_next(group, howmany=2):
+    if group in data:
+        tz = pytz.timezone('US/Pacific')
+        now = str(datetime.now(tz))
+        return islice(
+            ifilter(
+                lambda x: x['end'] > now,
+                data[group]
+            ),
+            howmany
+        )
+    else:
+        return []
+
+def json_feed(request, group):
+    response = http.HttpResponse(content_type='text/javascript')
+    two_elements = list(get_current_next(group))
+
+    for index, element in enumerate(two_elements):
+        element = dict(element)
+        for key in ('start', 'end'):
+            element[key] = str(element[key])
+        two_elements[index] = element
+
+    response.write(json.dumps(two_elements))
     return response
