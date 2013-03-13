@@ -3,6 +3,7 @@
 // vim: set ts=8 sw=8 et sts=8 ai ft=javascript:
 {
 	"config": {
+        "secret": "publiclyknown",
 		"localips": [
 			"^127\\.",
                         "^66\\.78\\.236\\.243",
