@@ -11,5 +11,7 @@ website/bin/
 website/include/
 website/lib/
 website/src/
+website/local
 website/build/
 website/private
+website/frontend/data.py
