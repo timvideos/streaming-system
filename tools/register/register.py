@@ -3,7 +3,7 @@
 # -*- coding: utf-8 -*-
 # vim: set ts=4 sw=4 et sts=4 ai:
 
-"""Connect to the streamti.me server and report our stats."""
+"""Connect to the timvideos.us server and report our stats."""
 
 __author__ = "mithro@mithis.com (Tim 'mithro' Ansell)"
 
@@ -30,7 +30,7 @@ def eb(e):
 
 
 class Register(common.AdminCommand):
-    description = "Register this encoder on streamti.me server and report stats."
+    description = "Register this encoder on timvideos.us server and report stats."
     usage = "-g [group]"
 
     def addOptions(self):
@@ -38,7 +38,7 @@ class Register(common.AdminCommand):
             action="store", dest="group",
             help="group this machine is encoding for")
 
-        default = 'http://view.streamti.me/register'
+        default = 'http://timvideos.us/tracker/endpoint/register'
         self.parser.add_option('-r', '--register',
             action="store", dest="register_url",
             help="Server to register on. (defaults to %s)" % default,
@@ -151,7 +151,7 @@ class Register(common.AdminCommand):
 
 
 class Command(main.Command):
-    description = "Send stats to the streamti.me server."
+    description = "Send stats to the timvideos.us server."
 
     subCommandClasses = [Register]
 
