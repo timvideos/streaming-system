@@ -133,6 +133,7 @@ img {
 }
 .next_title {
   text-align: center;
+  padding: 4px;
 }
 .next_title a {
   text-decoration: none;
@@ -147,6 +148,11 @@ img {
 .next_desc {
   width: 100%;
   display: none;
+}
+.next_time {
+  float: left;
+  font-size: 16pt;
+  padding: 4px;
 }
 
 img.video_preview {

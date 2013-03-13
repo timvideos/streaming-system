@@ -6,62 +6,58 @@ function current_time() {
   return Date.now() - 18000*1e3;
 }
 
-var schedule = [];
-function get_schedule(callback) {
+var schedule = [], schedules = [];
+function get_schedule(callback, group) {
+  var url = window.location.href.substring(0,window.location.href.indexOf('?')) + '/json';
+  if(group){
+    url = '/' + group + '/json';
+  }
+
   $.ajax({
-    url: '/schedule.js',
+    url: url,
     dataType: 'json',
     cache: true,
     async: true,
     success: function(data) {
-      schedule = data;
+      if(group) schedules[group] = data;
+      else schedule = data;
       callback();
     }
   });
 }
 
-function current_session(group) {
-  var time = current_time();
+function update_schedule(widget_title, widget_desc, group, next_title, next_desc, next_time, group_key) {
+  var talk = schedule;
+  if(group_key) talk = schedules[group_key];
 
-  for (var i = 0; i < schedule.length; i++) {
-    var talk = schedule[i];
-    if (group)
-      if (!talk['room'] || talk['room'] != group) {
-        continue;
-      }
-
-    var start = Date.parse(talk['start_iso'] + "Z");
-    var duration = parseInt(talk['duration'])*60;
-    var end = start + duration*1e3;
-
-    if (time >= start && time < end) {
-      return talk;
+  var title = "", description = "";
+  if (talk && talk.length) {
+    title = talk[0]['title'];
+    if(talk[0]['url']){
+      title = '<a href="' + talk[0]['url'] + ' "onClick="return confirm(\'Leave the video?\');">' + title + '</a>';
     }
-  }
-}
-
-function update_schedule(widget_title, widget_desc, group) {
-  var talk = current_session(group);
-
-  if (!talk) {
-    talk = current_session();
+    if(talk[0]['abstract']) description = talk[0]['abstract'];
+  } else {
+    title = "Unknown Talk";
+    description = 'Cannot get talk title and description.';
   }
 
-  if (!talk) {
-    talk = new Array();
-    talk['title'] = "Unknown Talk";
-    talk['description'] = 'Cannot get talk title and description.';
-  }
-
-  var title = "";
-  if (talk['url']) {
-    title += "<a href='" + talk['url'] + "' onClick=\"return confirm('Leave the video?');\">";
-  }
-  title += talk['title'];
-  if (talk['url']) {
-    title += "</a>";
-  }
   widget_title.html(title);
+  widget_desc.html("<br>" + description.replace("\n", '<br><br>'));
 
-  widget_desc.html("<br>" + talk['description'].replace("\n", '<br><br>'));
+  title = "";
+  description = "";
+
+  if (talk && talk.length > 1 && next_title) {
+    if(talk[1] && talk[1]['title']) {
+      title = talk[1]['title'];
+      if(talk[1]['url']){
+        title = '<a href="' + talk[1]['url'] + ' "onClick="return confirm(\'Leave the video?\');">' + title + '</a>';
+      }
+      if(talk[1]['abstract']) description = talk[1]['abstract'];
+    }
+    next_title.html(title);
+    if(next_desc) next_desc.html("<br>" + description.replace("\n", '<br><br>'));
+    if(next_time) next_time.html(talk[1].start.substring(11, 16));
+  }
 }
