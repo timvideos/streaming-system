@@ -8,13 +8,8 @@ function current_time() {
 
 var schedule = [], schedules = [];
 function get_schedule(callback, group) {
-  var url = window.location.href.substring(0,window.location.href.indexOf('?')) + '/json';
-  if(group){
-    url = '/' + group + '/json';
-  }
-
   $.ajax({
-    url: url,
+    url: '/' + group + '/json',
     dataType: 'json',
     cache: true,
     async: true,

@@ -55,6 +55,7 @@ function fit_player (group) {
 
 function jwplayers() {
 {% for group in groups %}
+    try {
     var jwsettings = {
       autostart: true,
       skin: '/static/third_party/jwplayer/skin/glow.zip',
@@ -69,6 +70,9 @@ function jwplayers() {
       var player_sizer = $("#{{group}}");
       {{group|safe_js}}_player_jwobject.resize(player_sizer.width(), player_sizer.height());
     });
+    } catch (e) {
+      if(window.console) window.console.log([e,' likely stream not registered.']);
+    }
 {% endfor %}
 }
 

@@ -59,6 +59,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
       <td id="next_cell next_cell_group" colspan=2 style="height: 1px;">
         <div id="showing" class='next_div next_div_group'>
           <div id='next_info' class='next_info next_info_group' onclick='$(".next_desc").fadeToggle();'>(More info)</div>
+          <div id='next_time' class='next_time next_time_group'></div>
           <div id='next_title' class='next_title next_title_group'></div>
           <div id='next_desc' class='next_desc next_desc_group'></div>
         </div>
@@ -85,11 +86,11 @@ $(document).ready(function() {
 });
 
 function schedule_callback() {
-  update_schedule($('#now_title'), $('#now_desc'), '{{config.title|escapejs}}');
+  update_schedule($('#now_title'), $('#now_desc'), '{{config.title|escapejs}}', $('#next_title'), $('#next_desc'), $('#next_time'), '{{group|escapejs}}');
   setTimeout(schedule_callback, 60e3);
   resize();
 }
 
-get_schedule(schedule_callback);
+get_schedule(schedule_callback, '{{group|escapejs}}');
 </script>
 {% endblock %}
