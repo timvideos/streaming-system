@@ -25,7 +25,7 @@ apt-get install -y python-kiwi python-twisted.* ssl-cert
 
 # Install the core flumotion
 (
-  cd timsvideo/tools/flumotion
+  cd timvideos/tools/flumotion
   git clean -f -x
   ./autogen.sh
   make -j16
@@ -34,7 +34,7 @@ apt-get install -y python-kiwi python-twisted.* ssl-cert
 
 # Install the ugly plugins
 (
-  cd timsvideo/tools/flumotion-ugly
+  cd timvideos/tools/flumotion-ugly
   git clean -f -x
   ./autogen.sh
   make -j16
@@ -52,7 +52,7 @@ else
 fi
 
 # Copy the config files to /etc
-cp -rf timsvideo/tools/flumotion-config/fromdeb/etc/* /usr/local/etc/
+cp -rf timvideos/tools/flumotion-config/fromdeb/etc/* /usr/local/etc/
 ln -sf /usr/local/etc/init.d/flumotion /etc/init.d/flumotion
 
 # Create a SSL certificate used for encryption.
