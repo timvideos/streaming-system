@@ -130,7 +130,6 @@ OUR_APPS = (
 )
 
 INSTALLED_APPS = OUR_APPS + (
-    'documentation',
     'django_extensions',
     'django_testing_fixes',
     'django.contrib.auth',
