@@ -50,7 +50,7 @@ src/pip-delete-this-directory.txt: requirements.txt
 install: lib/python2.6/site-packages/ez_setup.py lib/python2.6/site-packages/distribute-0.6.24-py2.6.egg-info src/pip-delete-this-directory.txt frontend/data.py
 
 frontend/data.py:
-	python pycon2internal.py > frontend/data.py
+	$(ACTIVATE) && python pycon2internal.py > frontend/data.py
 
 prepare-serve: install
 	$(ACTIVATE) && python manage.py collectstatic --noinput
