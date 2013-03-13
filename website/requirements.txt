@@ -11,3 +11,4 @@ ordereddict
 pylint
 simplejson
 unittest2
+pytz
