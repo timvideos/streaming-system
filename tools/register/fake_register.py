@@ -13,7 +13,21 @@ import time
 import urllib
 import urllib2
 
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--server", help="server to register on", action="store",
+    default="http://localhost:8000/tracker/endpoint/register")
+parser.add_argument(
+    "--secret", help="secret to use to register", action="store",
+    default="move me to config.private.json")
+parser.add_argument(
+    "--group", help="group to register on the server", action="store",
+    default="av")
+
 if __name__ == "__main__":
+    args = parser.parse_args()
+
     while True:
         data = {
             "overall_clients": 0,
@@ -30,23 +44,20 @@ if __name__ == "__main__":
             data["overall_bitrate"] += bitrate
             data["overall_cbitrate"] += clients*streambitrate
 
-        try:
-            r = urllib2.urlopen(
-                'http://localhost:8000/tracker/endpoint/register',
-                urllib.urlencode((
-                    ('secret', 'publiclyknown'),
-                    ('group', 'av'),
-                    ('data', simplejson.dumps(data)),
-                    ))
-                )
-        except urllib2.HTTPError, e:
-            print e
-            print e.read()
-            raise
-        print "Registered at", datetime.datetime.now(), "result", r.read().strip(),
-        print 'clients:', data['overall_clients'],
-        print 'bitrate:', data['overall_bitrate'],
-        print "(%s %s)" % (data['overall_bitrate']/1e6, 'megabits/second'),
-        print 'theory:', data['overall_bitrate']/1e6, 'megabits/second'
+        for group in args.group.split(','):
+            try:
+                r = urllib2.urlopen(
+                    args.server,
+                    urllib.urlencode((
+                        ('secret', args.secret),
+                        ('group', group),
+                        ('data', simplejson.dumps(data)),
+                        )))
+            except urllib2.HTTPError, e:
+                print e
+                print e.read()
+                raise
+
+            print "Registered at", datetime.datetime.now(), "result", r.read().strip()
 
         time.sleep(1)
