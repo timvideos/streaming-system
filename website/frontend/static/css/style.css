@@ -326,7 +326,10 @@ div.options-group li {
 
 
 #twitter-cell {
-  height: 70px;
+  height: 80px;
+}
+#twitter-search {
+  padding: 6px;
 }
 
 /*
