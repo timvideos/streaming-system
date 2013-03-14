@@ -9,7 +9,7 @@ import warnings
 
 def _config_merge_into(dicta, dictb):
     for nameb, valueb in dictb.iteritems():
-        if nameb in dicta:
+        if nameb in dicta and isinstance(dicta[nameb], dict):
             valuea = dicta[nameb]
             assert isinstance(valuea, dict), "%r not dict" % valuea
             assert isinstance(valueb, dict), "%r not dict" % valueb

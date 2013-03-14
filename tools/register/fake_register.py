@@ -58,6 +58,6 @@ if __name__ == "__main__":
                 print e.read()
                 raise
 
-            print "Registered at", datetime.datetime.now(), "result", r.read().strip()
+            print "Registered", group, "at", datetime.datetime.now(), "result", r.read().strip()
 
         time.sleep(1)

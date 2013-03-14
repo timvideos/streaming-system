@@ -69,7 +69,7 @@ if __name__ == "__main__":
                if otherroom == "Mission City":
                    continue
                newitem = dict(item)
-               newitem['name'] = "Change to Mission for<b>%s</b>" % newitem['name']
+               newitem['name'] = "Change to Mission for <b>%s</b>" % newitem['name']
                newitem['abstract'] = ''
                newitem['room'] = otherroom
                newitem['abstract'] = ''

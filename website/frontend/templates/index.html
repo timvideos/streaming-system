@@ -46,6 +46,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
       <td class="{{group}}_td" style="display: none;">
         <div id="{{group}}_now_div" class="now_div">
           <div id='{{group}}_now_info' class='now_info' onclick='$(".now_desc").fadeToggle();'>(More info)</div>
+          <div id='{{group}}_now_time' class='now_time'></div>
           <div id='{{group}}_now_title' class='now_title'></div>
           <div id='{{group}}_now_desc' class='now_desc'></div>
         </div>
@@ -64,6 +65,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
       <td class="{{group}}_td" style="display: none;">
         <div id="{{group}}_next_div" class="next_div">
           <div id='{{group}}_next_info' class='next_info' onclick='$(".next_desc").fadeToggle();'>(More info)</div>
+          <div id='{{group}}_next_time' class='next_time'></div>
           <div id='{{group}}_next_title' class='next_title'></div>
           <div id='{{group}}_next_desc' class='next_desc'></div>
         </div>
@@ -186,16 +188,16 @@ function update_active_streams() {
 
 // Code which updates the currently displayed schedule.
 // FIXME: This is all a big hack
-function schedule_callback() {
 {% for group, details in groups.items %}
-  update_schedule($('#{{group|escapejs}}_now_title'), $('#{{group|escapejs}}_now_desc'), '{{details.title|escapejs}}');
-{% endfor %}
+function schedule_{{group|escapejs}}_callback() {
+  update_schedule($('#{{group|escapejs}}_now_title'), $('#{{group|escapejs}}_now_desc'), '{{details.title|escapejs}}', $('#{{group|escapejs}}_next_title'), $('#{{group|escapejs}}_next_desc'), $('#{{group|escapejs}}_next_time'), $('#{{group|escapejs}}_now_time'),'{{group|escapejs}}');
   resize_twitter();
-  setTimeout(schedule_callback, 60e3);
+  setTimeout(schedule_{{group|escapejs}}_callback, 60e3);
   setTimeout(function() { location.reload(true); }, {{ config.reload }}e3);
 }
+get_schedule(schedule_{{group|escapejs}}_callback, '{{group|escapejs}}');
+{% endfor %}
 
-get_schedule(schedule_callback);
 
 // Functions which keep twitter in the right place.
 function resize_twitter() {

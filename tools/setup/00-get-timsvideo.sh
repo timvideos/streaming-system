@@ -10,18 +10,18 @@
 apt-get install -y git-core
 
 # Either pull for the first time, or update the current repository
-if [ ! -d timsvideo ]; then
-  git clone git://github.com/mithro/timsvideo.git
+if [ ! -d timvideos ]; then
+  git clone git://github.com/timvideos/timvideos.git
 else
   (
-    cd timsvideo
+    cd timvideos
     git pull
   )
 fi
 
 # Update the submodules
 (
-  cd timsvideo
+  cd timvideos
   git submodule init
   git submodule update
 )

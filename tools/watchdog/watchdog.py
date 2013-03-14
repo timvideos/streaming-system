@@ -241,7 +241,7 @@ class WatchDog(common.AdminCommand):
         common.AdminCommand.__init__(self, *args, **kw)
 
     def addOptions(self):
-        default = "http://streamti.me/tracker/flumotion/log"
+        default = "http://timvideos.us/tracker/flumotion/log"
         self.parser.add_option('-r', '--register',
             action="store", dest="register_url",
             help="Server to register on. (defaults to %s)" % default,
