@@ -3,7 +3,7 @@
 # -*- coding: utf-8 -*-
 # vim: set ts=4 sw=4 et sts=4 ai:
 
-"""Connect to the streamti.me server and report our stats."""
+"""Connect to the timvideos.us server and report our stats."""
 
 __author__ = "mithro@mithis.com (Tim 'mithro' Ansell)"
 
@@ -268,6 +268,12 @@ class WatchDog(common.AdminCommand):
             help="Flumotion server type (defaults to %s)." % default,
             default=default)
 
+        default = False
+        self.parser.add_option('-n', '--dry-run',
+            action="store_true", dest="dry_run",
+            help="Defaults to %s" % default,
+            default=default)
+
 
     def handleOptions(self, options):
         logging.basicConfig(
@@ -278,6 +284,7 @@ class WatchDog(common.AdminCommand):
         self.register = options.register_url
         self.secret = options.secret
         self.type = options.type
+        self.dry_run = options.dry_run
 
         self.identifier = options.identifier
         if '$(' in self.identifier:
@@ -294,11 +301,17 @@ class WatchDog(common.AdminCommand):
 
     def restart_full(self):
         """Restart the whole of flumotion."""
+        if self.dry_run:
+            logging.info("Would restart flumotion")
+            return
         logging.error('Starting the whole of flumotion')
         return subprocess.call('/etc/init.d/flumotion restart', shell=True)
 
     def restart_component(self, component, count=Counter()):
         """Restart an individual flumotion component."""
+        if self.dry_run:
+            logging.info("%s - Would restart", component.get('name'))
+            return
         try:
             count.acquire()
 
@@ -481,7 +494,7 @@ class WatchDog(common.AdminCommand):
 
 
 class Command(main.Command):
-    description = "Send stats to the streamti.me server."
+    description = "Send stats to the timvideos.us server."
 
     subCommandClasses = [WatchDog]
 
