@@ -30,7 +30,7 @@ var interval = function(){
     //msg = 'Ends in '+days+':'+hours+':'+minutes+':'+seconds;
     msg = hours+':'+minutes;
 
-    window.console.log([diff, raw, rawD, (new Date()).valueOf()]);
+    //window.console.log([diff, raw, rawD, (new Date()).valueOf()]);
     $(ele).html(msg);
   });
 }
