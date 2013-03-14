@@ -7,6 +7,36 @@ function current_time() {
 }
 
 var schedule = [], schedules = [];
+var interval = function(){
+  $('.now_time').each(function(ind, ele){
+    var raw = $(ele).attr('raw');
+    var rawD = Date.parse(raw);
+    var diff = Date.parse(raw) - (new Date()).valueOf(), msg = "Ends in ";
+    var days = 0, hours = 0, minutes = 0, seconds = 0;
+    if(diff > 24 * 60 * 60e3) {
+      days = parseInt(diff / (24 * 60 * 60e3));
+      diff -= days * 24 * 60 * 60e3;
+    }
+    if(diff > 60 * 60e3) {
+      hours = parseInt(diff / (60 * 60e3));
+      diff -= hours * 60 * 60e3;
+    }
+    if(diff > 60e3) {
+        minutes = parseInt(diff / 60e3);
+        diff -= minutes * 60e3;
+    }
+    if(diff > 1e3)
+        seconds = parseInt(diff / 1e3);
+    //msg = 'Ends in '+days+':'+hours+':'+minutes+':'+seconds;
+    msg = hours+':'+minutes;
+
+    window.console.log([diff, raw, rawD, (new Date()).valueOf()]);
+    $(ele).html(msg);
+  });
+}
+
+setInterval(interval , 60e3);
+setTimeout(interval, 2e3);
 function get_schedule(callback, group) {
   $.ajax({
     url: '/' + group + '/json',
@@ -21,7 +51,7 @@ function get_schedule(callback, group) {
   });
 }
 
-function update_schedule(widget_title, widget_desc, group, next_title, next_desc, next_time, group_key) {
+function update_schedule(widget_title, widget_desc, group, next_title, next_desc, next_time, now_time, group_key) {
   var talk = schedule;
   if(group_key) talk = schedules[group_key];
 
@@ -54,5 +84,8 @@ function update_schedule(widget_title, widget_desc, group, next_title, next_desc
     next_title.html(title);
     if(next_desc) next_desc.html("<br>" + description.replace("\n", '<br><br>'));
     if(next_time) next_time.html(talk[1].start.substring(11, 16));
+    if(now_time) {
+      now_time.attr('raw', talk[0].end);
+    }
   }
 }

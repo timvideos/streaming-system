@@ -154,6 +154,11 @@ img {
   font-size: 16pt;
   padding: 4px;
 }
+.now_time {
+  float: left;
+  font-size: 16pt;
+  padding: 4px;
+}
 
 img.video_preview {
   width: 300px;
