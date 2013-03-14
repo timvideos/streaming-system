@@ -30,6 +30,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
       <td class="{{group}}_td" style="display: none;">
         <div id="{{group}}_now_div" class="now_div">
           <div id='{{group}}_now_info' class='now_info' onclick='$(".now_desc").fadeToggle();'>(More info)</div>
+          <div id='{{group}}_now_time' class='now_time'></div>
           <div id='{{group}}_now_title' class='now_title'></div>
           <div id='{{group}}_now_desc' class='now_desc'></div>
         </div>
@@ -173,7 +174,7 @@ function update_active_streams() {
 // FIXME: This is all a big hack
 {% for group, details in groups.items %}
 function schedule_{{group|escapejs}}_callback() {
-  update_schedule($('#{{group|escapejs}}_now_title'), $('#{{group|escapejs}}_now_desc'), '{{details.title|escapejs}}', $('#{{group|escapejs}}_next_title'), $('#{{group|escapejs}}_next_desc'), $('#{{group|escapejs}}_next_time'), '{{group|escapejs}}');
+  update_schedule($('#{{group|escapejs}}_now_title'), $('#{{group|escapejs}}_now_desc'), '{{details.title|escapejs}}', $('#{{group|escapejs}}_next_title'), $('#{{group|escapejs}}_next_desc'), $('#{{group|escapejs}}_next_time'), $('#{{group|escapejs}}_now_time'),'{{group|escapejs}}');
   resize_twitter();
   setTimeout(schedule_{{group|escapejs}}_callback, 60e3);
   setTimeout(function() { location.reload(true); }, {{ config.reload }}e3);
