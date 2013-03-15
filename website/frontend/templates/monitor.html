@@ -76,9 +76,6 @@ function jwplayers() {
       autostart: true,
       //skin: '/static/third_party/jwplayer/skin/glow.zip',
       modes: streamer_{{group|safe_js}}.modes('flash', 'sd'),
-      plugins: {
-        'spectrumvisualizer-1': {}
-      },
       'width': '250', 'height': '200'
     };
     {{group|safe_js}}_player_jwobject = jwplayer('{{group}}').setup(jwsettings);
