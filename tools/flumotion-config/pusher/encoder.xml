@@ -89,7 +89,7 @@
       <property name="pipeline">ffmpegcolorspace ! ffenc_flv bitrate=2000000</property>
     </component>
     <component name="encoder-audio-loop"
-               type="faac-encoder"
+               type="pipeline-converter"
                label="encoder-audio-loop"
                worker="localhost"
                project="flumotion"
@@ -97,7 +97,7 @@
       <eater name="default">
         <feed alias="default">producer-decoder:audio</feed>
       </eater>
-      <property name="bitrate">192000</property>
+      <property name="pipeline">lame bitrate=192</property>
       <clock-master>false</clock-master>
     </component>
 
@@ -114,7 +114,6 @@
       <clock-master>false</clock-master>
     </component>
 
-<!--
     <component name="justintv"
                type="pipeline-converter"
                label="justintv"
@@ -122,12 +121,15 @@
                project="flumotion"
                version="0.9.0.1">
       <eater name="default">
-        <feed alias="default">muxer-loop:default</feed>
+         <feed alias="default">muxer-loop:default</feed> 
       </eater>
       <clock-master>false</clock-master>
-      <property name="pipeline">tee name=t ! queue ! rtmpsink location=rtmp://live.justin.tv/app/%(justintv_key)s  t. ! queue</property>
+      <property name="pipeline">tee name=t ! queue ! rtmpsink location="rtmp://live.justin.tv/app/%(justintv_key)s flashver=FME/2.5\20(compatible;\20FMSc\201.0)" sync=false  t. ! queue</property>
+
+<!-- ffenc_flv ! flvmux streamable=true !  -->
+
+
     </component>
--->
 
     <component name="http-loop"
                type="http-streamer"
@@ -144,7 +146,7 @@
       <property name="port">8081</property>
       <property name="bandwidth-limit">10000000</property>
       <property name="type">slave</property>
-      <property name="client-limit">1</property>
+      <property name="client-limit">10</property>
       <property name="porter-socket-path">flu-8081.socket</property>
       <property name="porter-password">ffDtYpfsEvOK</property>
       <clock-master>false</clock-master>
@@ -393,7 +395,7 @@
       <property name="port">8080</property>
       <property name="bandwidth-limit">100000000</property> <!-- 100Mbit/s -->
       <property name="type">slave</property>
-      <property name="client-limit">100</property>
+      <property name="client-limit">1000</property>
       <property name="porter-socket-path">flu-8080.socket</property>
       <property name="porter-password">ffDtYpfsEvOK</property>
       <clock-master>false</clock-master>
@@ -415,7 +417,7 @@
       <property name="port">8080</property>
       <property name="bandwidth-limit">100000000</property> <!-- 100Mbit/s -->
       <property name="type">slave</property>
-      <property name="client-limit">100</property>
+      <property name="client-limit">1000</property>
       <property name="porter-socket-path">flu-8080.socket</property>
       <property name="porter-password">ffDtYpfsEvOK</property>
       <clock-master>false</clock-master>
@@ -439,7 +441,7 @@
       <property name="port">8080</property>
       <property name="bandwidth-limit">100000000</property> <!-- 100Mbit/s -->
       <property name="type">slave</property>
-      <property name="client-limit">100</property>
+      <property name="client-limit">1000</property>
       <property name="porter-socket-path">flu-8080.socket</property>
       <property name="porter-password">ffDtYpfsEvOK</property>
       <clock-master>false</clock-master>
@@ -463,7 +465,7 @@
       <property name="port">8080</property>
       <property name="bandwidth-limit">100000000</property> <!-- 100Mbit/s -->
       <property name="type">slave</property>
-      <property name="client-limit">100</property>
+      <property name="client-limit">1000</property>
       <property name="porter-socket-path">flu-8080.socket</property>
       <property name="porter-password">ffDtYpfsEvOK</property>
       <clock-master>false</clock-master>
@@ -485,7 +487,7 @@
       <property name="port">8080</property>
       <property name="bandwidth-limit">100000000</property> <!-- 100Mbit/s -->
       <property name="type">slave</property>
-      <property name="client-limit">100</property>
+      <property name="client-limit">1000</property>
       <property name="porter-socket-path">flu-8080.socket</property>
       <property name="porter-password">ffDtYpfsEvOK</property>
       <clock-master>false</clock-master>
@@ -509,7 +511,7 @@
       <property name="port">8080</property>
       <property name="bandwidth-limit">100000000</property> <!-- 100Mbit/s -->
       <property name="type">slave</property>
-      <property name="client-limit">100</property>
+      <property name="client-limit">1000</property>
       <property name="porter-socket-path">flu-8080.socket</property>
       <property name="porter-password">ffDtYpfsEvOK</property>
       <clock-master>false</clock-master>
@@ -533,7 +535,7 @@
       <property name="port">8080</property>
       <property name="bandwidth-limit">100000000</property> <!-- 100Mbit/s -->
       <property name="type">slave</property>
-      <property name="client-limit">100</property>
+      <property name="client-limit">1000</property>
       <property name="porter-socket-path">flu-8080.socket</property>
       <property name="porter-password">ffDtYpfsEvOK</property>
       <clock-master>false</clock-master>
