@@ -23,11 +23,19 @@ vim: set ts=2 sw=2 et sts=2 ai:
 
 {% block content %}
     <td style="height: 220px;">
-      <div>
   {% for group in groups %}
       <div style="float: left; height: 220px; width: auto;">
         {{group}}
-        <div id="{{group}}"></div>
+        <div id="{{group}}_video"></div>
+      </div>
+  {% endfor %}
+    </td>
+  </tr><tr>
+    <td style="height: 600px;">
+  {% for group in groups %}
+      <div style="float: left; height: 600px; width: auto;">
+        {{group}}
+        <div id="{{group}}_audio"></div>
       </div>
   {% endfor %}
     </td>
@@ -55,10 +63,18 @@ function fit_player (group) {
 
 function start_it () {
 {% for group in groups %}
-  if ({{group|safe_js}}_player_jwobject) {
-    var state = player_jwobject.getState();
-    if (state == {{group|safe_js}}_player_jwobject.IDLE) {
-       {{group|safe_js}}_player_jwobject.play(true);
+  if ({{group|safe_js}}_player_jwobject_video) {
+    var state = {{group|safe_js}}_player_jwobject_video.getState();
+    if (state == {{group|safe_js}}_player_jwobject_video.IDLE) {
+       {{group|safe_js}}_player_jwobject_video.play(true);
+    }
+  }
+{% endfor %}
+{% for group in groups %}
+  if ({{group|safe_js}}_player_jwobject_audio) {
+    var state = {{group|safe_js}}_player_jwobject_audio.getState();
+    if (state == {{group|safe_js}}_player_jwobject_audio.IDLE) {
+       {{group|safe_js}}_player_jwobject_audio.play(true);
     }
   }
 {% endfor %}
@@ -66,26 +82,53 @@ function start_it () {
 setInterval(start_it, 1e3);
 
 {% for group in groups %}
-var {{group|safe_js}}_player_jwobject = null;
+var {{group|safe_js}}_player_jwobject_video = null;
+var {{group|safe_js}}_player_jwobject_audio = null;
 {% endfor %}
 
 function jwplayers() {
+  var jwsettings = null;
 {% for group in groups %}
-    try {
-    var jwsettings = {
+try {
+    jwsettings = {
       autostart: true,
-      //skin: '/static/third_party/jwplayer/skin/glow.zip',
+      mute: false,
       modes: streamer_{{group|safe_js}}.modes('flash', 'sd'),
       'width': '250', 'height': '200'
     };
-    {{group|safe_js}}_player_jwobject = jwplayer('{{group}}').setup(jwsettings);
-    {{group|safe_js}}_player_jwobject.onReady(function() {
-      var player_sizer = $("#{{group}}");
-      {{group|safe_js}}_player_jwobject.resize(player_sizer.width(), player_sizer.height());
+    {{group|safe_js}}_player_jwobject_video = jwplayer('{{group}}_video').setup(jwsettings);
+    {{group|safe_js}}_player_jwobject_video.onReady(function() {
+      var player_sizer = $("#{{group}}_video");
+      {{group|safe_js}}_player_jwobject_video.resize(player_sizer.width(), player_sizer.height());
     });
-    } catch (e) {
-      if(window.console) window.console.log([e,' likely stream not registered.']);
-    }
+} catch (e) {
+    if(window.console) window.console.log(["#{{group}}_video", e,' likely stream not registered.']);
+}
+{% endfor %}
+{% for group in groups %}
+try {
+    jwsettings = {
+      autostart: true,
+      mute: true,
+      modes: streamer_{{group|safe_js}}.modes('audio', 'sd'),
+      'width': '250', 'height': '600',
+      'provider': 'sound',
+      'bufferlength': '0',
+      'plugins': {
+        'subeq-1': {}
+      },
+      players: [
+       {type: "flash", src: "player.swf"}
+      ]
+    };
+    {{group|safe_js}}_player_jwobject_audio = jwplayer('{{group}}_audio').setup(jwsettings);
+    {{group|safe_js}}_player_jwobject_audio.onReady(function() {
+      var player_sizer = $("#{{group}}_audio");
+      {{group|safe_js}}_player_jwobject_audio.resize(player_sizer.width(), player_sizer.height());
+    });
+} catch (e) {
+  if(window.console) window.console.log(["#{{group}}_video", e,' likely stream not registered.']);
+}
 {% endfor %}
 }
 

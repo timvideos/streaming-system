@@ -31,8 +31,6 @@ function Streams(server) {
   this.audio_streams = {
     'modes': ['html5', 'flash'],
     'sd': [
-      { 'bitrate': 192, 'file': server+'audio-only.aac', 'width': 100 },
-      { 'bitrate': 128, 'file': server+'audio-only.ogg', 'width': 100 },
       { 'bitrate': 48, 'file': server+'audio-only.mp3', 'width': 100 }
     ],
     'download': server+'audio-only.mp3',
