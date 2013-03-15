@@ -217,6 +217,7 @@ quality_change();
 
 function schedule_callback() {
   update_schedule($('#now_title'), $('#now_desc'), '{{config.title|escapejs}}', $('#next_title'), $('#next_desc'), $('#next_time'), $('#now_time'), '{{group|escapejs}}');
+  get_schedule(schedule_callback, '{{group|escapejs}}');
   setTimeout(schedule_callback, 60e3);
   fit_player();
 }
