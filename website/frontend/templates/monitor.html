@@ -53,6 +53,22 @@ vim: set ts=2 sw=2 et sts=2 ai:
 function fit_player (group) {
 }
 
+function start_it () {
+{% for group in groups %}
+  if ({{group|safe_js}}_player_jwobject) {
+    var state = player_jwobject.getState();
+    if (state == {{group|safe_js}}_player_jwobject.IDLE) {
+       {{group|safe_js}}_player_jwobject.play(true);
+    }
+  }
+{% endfor %}
+}
+setInterval(start_it, 1e3);
+
+{% for group in groups %}
+var {{group|safe_js}}_player_jwobject = null;
+{% endfor %}
+
 function jwplayers() {
 {% for group in groups %}
     try {

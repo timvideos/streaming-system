@@ -96,6 +96,7 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
 {% block script %}
 <script type="text/javascript">
 
+
 /**
  * Resize the player to fit the window.
  */
@@ -105,6 +106,17 @@ function fit_player () {
     player_jwobject.resize(player_sizer.width()-20, player_sizer.height()-20);
   }
 }
+
+function start_it () {
+  if (player_jwobject) {
+    var state = player_jwobject.getState();
+    if (state == player_jwobject.IDLE) {
+       player_jwobject.play(true);
+    }
+  }
+}
+setInterval(start_it, 1e3);
+
 
 // When the window's size changes, so does ours.
 $(window).resize(fit_player);
@@ -192,7 +204,10 @@ function format_set(value) {
     };
     player_jwobject = jwplayer("player").setup(jwsettings);
     fit_player();
-    player_jwobject.onReady(fit_player);
+
+    player_jwobject.onPlaylist(start_it);
+    player_jwobject.onPlaylistItem(start_it);
+    player_jwobject.onComplete(start_it);
 
     // Enable the quality widget
     $('#quality-container').show();
