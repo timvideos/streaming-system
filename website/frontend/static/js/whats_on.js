@@ -28,7 +28,8 @@ var interval = function(){
     if(diff > 1e3)
         seconds = parseInt(diff / 1e3);
     //msg = 'Ends in '+days+':'+hours+':'+minutes+':'+seconds;
-    msg = hours+':'+minutes;
+    var m = '000' + minutes;
+    msg = hours + ':' + m.substr(m.length-2);
 
     //window.console.log([diff, raw, rawD, (new Date()).valueOf()]);
     $(ele).html(msg);
