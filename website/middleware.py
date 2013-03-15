@@ -10,5 +10,12 @@ class SetHttpRealIp(object):
         if not settings.DEBUG:
             assert 'HTTP_X_REAL_IP' in request.META
             return
-        elif 'HTTP_X_REAL_IP' not in request.META:
-            request.META['HTTP_X_REAL_IP'] = request.META['REMOTE_ADDR']
+        else:
+            if request.GET.get('REMOTE_ADDR', None):
+                request.META['HTTP_X_REAL_IP'] = request.GET['REMOTE_ADDR']
+                return
+            elif request.POST.get('REMOTE_ADDR', None):
+                request.META['HTTP_X_REAL_IP'] = request.POST['REMOTE_ADDR']
+                return
+        request.META['HTTP_X_REAL_IP'] = request.META['REMOTE_ADDR']
+        return

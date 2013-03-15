@@ -24,6 +24,9 @@ parser.add_argument(
 parser.add_argument(
     "--group", help="group to register on the server", action="store",
     default="av")
+parser.add_argument(
+    "--ip", help="IP to pretend to be", action="store",
+    default="")
 
 if __name__ == "__main__":
     args = parser.parse_args()
@@ -46,13 +49,15 @@ if __name__ == "__main__":
 
         for group in args.group.split(','):
             try:
-                r = urllib2.urlopen(
+                req = urllib2.Request(
                     args.server,
                     urllib.urlencode((
                         ('secret', args.secret),
                         ('group', group),
                         ('data', simplejson.dumps(data)),
+                        ('REMOTE_ADDR', args.ip),
                         )))
+                r = urllib2.urlopen(req)
             except urllib2.HTTPError, e:
                 print e
                 print e.read()
