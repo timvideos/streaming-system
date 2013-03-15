@@ -42,6 +42,11 @@ CONFIG = common_config.config_load()
 # IP Address which are considered "In Room"
 LOCALIPS = CONFIG['config']['localips']
 
+class funnydict(dict):
+    def __getattr__(self, key):
+        return self[key]
+
+
 @never_cache
 def stream(request, group):
     """Gives an end user a streaming server for a group.
@@ -96,9 +101,13 @@ def endpoint_stats(request):
             active_servers.append(server)
 
     types = list(sorted([x for x in dir(models.Endpoint()) if x.endswith('_clients')]))
+    all_types = list(sorted([x for x in dir(models.Endpoint()) if not x.startswith('_')]))
 
     active_servers = sorted(active_servers, cmp=lambda a, b: cmp((a.group, a.overall_bitrate), (b.group, b.overall_bitrate)))
+    active_overall = funnydict((t, sum([0, getattr(x, t, None)][isinstance(getattr(x, t, None), (int, float))] for x in active_servers)) for t in all_types)
+
     inactive_servers = sorted(inactive_servers, cmp=lambda a, b: cmp((a.group, a.overall_bitrate), (b.group, b.overall_bitrate)))
+    inactive_overall = funnydict((t, sum([0, getattr(x, t, None)][isinstance(getattr(x, t, None), (int, float))] for x in inactive_servers)) for t in all_types)
 
     return render(request, 'stats.html', locals(), content_type='text/html',
                   context_instance=template.RequestContext(request))

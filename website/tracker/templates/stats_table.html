@@ -9,11 +9,22 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
         <th>ip</th>
         <th>group</th>
         <th>clients</th>
-        <th>bitrate <b>bytes</b></th>
-        <th>bitrate <b>bits</b></th>
+        <th>bitrate <b>bytes</b> (per client)</th>
+        <th>bitrate <b>bits</b> (per client)</th>
         <th>lastseen</th>
   {% for type in types %}
         <th class="tiny">{{type}}</th>
+  {% endfor %}
+      </tr>
+      <tr>
+        <td>ALL</td>
+        <td>ALL</td>
+        <td>ALL</td>
+        <td>{{overall.overall_bitrate|byterate}}/s (<b>{{overall.overall_cbitrate|byterate}}/s</b>)</td>
+        <td>{{overall.overall_bitrate|bitrate}}/s (<b>{{overall.overall_cbitrate|bitrate}}/s</b>)</td>
+        <td></td>
+  {% for type in types %}
+        <th class="tiny">{{ overall|getattr:type }}</th>
   {% endfor %}
       </tr>
 {% for server in servers %}

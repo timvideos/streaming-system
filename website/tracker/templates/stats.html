@@ -14,13 +14,9 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
       }
     </style>
     <h1>Active Servers</h1>
-    {% with active_servers as servers %}
-    {% include "stats_table.html" %}
-    {% endwith %}
+    {% include "stats_table.html" with servers=active_servers overall=active_overall %}
     <hr>
     <h1>In-Active Servers</h1>
-    {% with inactive_servers as servers %}
-    {% include "stats_table.html" %}
-    {% endwith %}
+    {% include "stats_table.html" with servers=inactive_servers overall=inactive_overall %}
   </body>
 </html>
