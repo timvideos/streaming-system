@@ -40,6 +40,23 @@ function Streams(server) {
       'src': '/static/third_party/jwplayer/player.swf'
     }
   };
+
+  this.idevice_streams = {
+    'modes': ['html5', 'flash'],
+    'sd': [
+      { 'bitrate': 192, 'file': server+'audio-only.aac', 'width': 100 },
+      { 'bitrate': 128, 'file': server+'audio-only.ogg', 'width': 100 },
+      { 'bitrate': 48, 'file': server+'audio-only.mp3', 'width': 100 }
+/*
+    'sd': [
+      { 'file': server+'/Manifest' },
+*/
+    ],
+    'download': server+'audio-only.mp3',
+    'extra': {
+      'src': '/static/third_party/jwplayer/player.swf'
+    }
+  };
 }
 
 Streams.prototype.streams = function(format) {

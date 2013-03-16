@@ -125,10 +125,6 @@
       </eater>
       <clock-master>false</clock-master>
       <property name="pipeline">tee name=t ! queue ! rtmpsink location="rtmp://live.justin.tv/app/%(justintv_key)s flashver=FME/2.5\20(compatible;\20FMSc\201.0)" sync=false  t. ! queue</property>
-
-<!-- ffenc_flv ! flvmux streamable=true !  -->
-
-
     </component>
 
     <component name="http-loop"
@@ -196,6 +192,8 @@
       </eater>
       <property name="keyframe-maxdistance">25</property>
       <property name="bitrate">800000</property>
+      <property name="profile">base</property>
+      <property name="byte-stream">0</property>
       <clock-master>false</clock-master>
     </component>
     <component name="encoder-video-h264-low"
@@ -209,6 +207,8 @@
       </eater>
       <property name="keyframe-maxdistance">25</property>
       <property name="bitrate">300000</property>
+      <property name="profile">base</property>
+      <property name="byte-stream">0</property>
       <clock-master>false</clock-master>
     </component>
 
@@ -541,6 +541,134 @@
       <clock-master>false</clock-master>
       <plugs>
       </plugs>
+    </component>
+
+    <!-- ============================================================= -->
+    <!-- = Outputting the streams for iPod/iPad devices              = -->
+    <!-- ============================================================= -->
+    <component name="scale-video-200x150"
+               type="video-converter"
+               label="scale-video-200x150"
+               worker="localhost">
+      <eater name="default">
+        <feed alias="default">producer-decoder:video</feed>
+      </eater>
+      <property name="width">200</property>
+      <property name="height">150</property>
+      <property name="is-square">true</property>
+    </component>
+
+    <component name="scale-video-400x300"
+	       type="video-converter"
+	       label="scale-video-400x300"
+	       worker="localhost">
+      <eater name="default">
+        <feed alias="default">producer-decoder:video</feed>
+      </eater>
+      <property name="width">400</property>
+      <property name="height">300</property>
+      <property name="is-square">true</property>
+    </component>
+
+    <component name="fragmented-aac-encoder"
+               type="aac-encoder"
+               label="fragmented-aac-encoder"
+               worker="localhost">
+      <eater name="default">
+        <feed alias="default">producer-decoder:audio</feed>
+      </eater>
+      <property name="bitrate">64000</property>
+      <property name="high-efficiency-version">0</property>
+      <clock-master>false</clock-master>
+    </component>
+
+    <component name="smooth-low-h264-encoder"
+               type="h264-encoder"
+               label="smooth-low-h264-encoder"
+               worker="localhost">
+      <eater name="default">
+        <feed alias="default">scale-video-200x150:default</feed>
+      </eater>
+      <property name="bitrate">400000</property>
+      <property name="profile">base</property>
+      <property name="byte-stream">0</property>
+      <clock-master>false</clock-master>
+    </component>
+
+    <component name="smooth-medium-h264-encoder"
+               type="h264-encoder"
+               label="smooth-medium-h264-encoder"
+               worker="localhost">
+      <eater name="default">
+        <feed alias="default">scale-video-400x300:default</feed>
+      </eater>
+      <property name="bitrate">800000</property>
+      <property name="profile">base</property>
+      <property name="byte-stream">0</property>
+      <clock-master>false</clock-master>
+    </component>
+
+    <component name="smooth-high-h264-encoder"
+               type="h264-encoder"
+               label="smooth-high-h264-encoder"
+               worker="localhost">
+      <eater name="default">
+        <feed alias="default">scale-video-400x300:default</feed>
+      </eater>
+      <property name="bitrate">1400000</property>
+      <property name="profile">base</property>
+      <property name="byte-stream">0</property>
+      <clock-master>false</clock-master>
+    </component>
+
+    <component name="smooth-low-muxer"
+               type="fmp4-muxer"
+               label="smooth-muxer-low"
+               worker="localhost">
+      <eater name="default"><feed>smooth-low-h264-encoder</feed></eater>
+    </component>
+    
+    <component name="smooth-med-muxer"
+               type="fmp4-muxer"
+               label="smooth-muxer-med"
+               worker="localhost">
+      <eater name="default"><feed>smooth-medium-h264-encoder</feed></eater>
+    </component>
+
+    <component name="smooth-high-muxer"
+                 type="fmp4-muxer"
+                 label="smooth-muxer-high"
+                 worker="localhost">
+      <eater name="default"><feed>smooth-high-h264-encoder</feed></eater>
+    </component>
+
+    <component name="smooth-audio-muxer"
+                 type="fmp4-muxer"
+                 label="smooth-muxer-audio"
+                 worker="localhost">
+      <eater name="default"><feed>fragmented-aac-encoder</feed></eater>
+    </component>
+
+    <component name="fmp4-aggregator"
+               type="fmp4-aggregator"
+               label="fmp4-muxer"
+               worker="localhost">
+      <eater name="default">
+        <feed alias="default">smooth-low-muxer:default</feed>
+        <feed alias="default">smooth-med-muxer:default</feed>
+        <feed alias="default">smooth-high-muxer:default</feed>
+        <feed alias="default">smooth-audio-muxer:default</feed>
+      </eater>
+    </component>
+
+    <component name="http-smoothstreamer"
+               type="http-smoothstreamer"
+               label="smoothstreamer"
+               worker="localhost">
+      <eater name="default">
+        <feed alias="default">fmp4-aggregator:default</feed>
+      </eater>
+      <property name="dvr-window">20</property>
     </component>
 
   </flow>
