@@ -7,3 +7,6 @@
 [submodule "tools/flumotion-extra"]
 	path = tools/flumotion-extra
 	url = git://github.com/timvideos/flumotion-extra.git
+[submodule "tools/flumotion-fragmented-streaming"]
+	path = tools/flumotion-fragmented-streaming
+	url = git://code.flumotion.com/flumotion-fragmented-streaming.git
