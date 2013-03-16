@@ -56,7 +56,7 @@ function fit_player (group) {
 function start_it () {
 {% for group in groups %}
   if ({{group|safe_js}}_player_jwobject) {
-    var state = player_jwobject.getState();
+    var state = {{group|safe_js}}_player_jwobject.getState();
     if (state == {{group|safe_js}}_player_jwobject.IDLE) {
         jwplayer_{{group|safe_js}}();
     }
