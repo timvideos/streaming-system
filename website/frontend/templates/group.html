@@ -9,10 +9,15 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script type="text/javascript" src="/static/third_party/jquery-extra/jquery.relatedtweets-1.0.min.js"></script>
-    <script type="text/javascript" src="/static/third_party/jwplayer/jwplayer.js"></script>
+
+    <script src="/static/third_party/jwplayer/jwplayer.js"></script>
+    <script>jwplayer.key="W+PLeaMTEzFyPpNZFpnclrlPCQCg01gmsTnuhA=="</script>
+
     <script type="text/javascript" src="/static/js/whats_on.js"></script>
     <script type="text/javascript" src="/static/js/streams.js"></script>
-    <script type="text/javascript" src="/tracker/{{group}}/stream.js"></script>
+
+    <script type="text/javascript" src="/tracker/{{group}}/stream.js?q={{now}}"></script>
+
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <link rel="stylesheet" type="text/css" href="/static/css/tweet.css">
     <title>Streaming for {{ config.title }}</title>
@@ -35,20 +40,9 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
             <ul>
               <li><input type="radio" name="format" value="videooff">Video Off
               <li><input type="radio" name="format" value="auto" checked>Auto
-              <li><input type="radio" name="format" value="flash">Flash
-              <li><input type="radio" name="format" value="html5">HTML5
+              <li><input type="radio" name="format" value="flash">Flash Only
               <li><input type="radio" name="format" value="justintv">Justin.tv
               <li><input type="radio" name="format" value="audio">Audio Only
-            </ul>
-          </form>
-        </div>
-        <div id="quality-container" class="options-group container_1">
-          Quality:
-          <form id="quality">
-            <ul>
-              <li><input type="radio" name="quality" value="auto" checked>Auto
-              <li><input type="radio" name="quality" value="hd">HD on
-              <li><input type="radio" name="quality" value="sd">HD off
             </ul>
           </form>
         </div>
@@ -122,31 +116,6 @@ setInterval(start_it, 1e3);
 $(window).resize(fit_player);
 
 /**
- * HD stream options
- */
-var quality_option = $('input[name=quality][type=radio]');
-function quality_set(value) {
-  if (player_jwobject) {
-    var format = player_format;
-    if (value == format)
-      return;
-
-    if (player_format == 'auto') {
-      format = player_jwobject.renderingMode;
-    }
-    if (format)
-      player_jwobject.load(streamer_{{group|safe_js}}.levels(format, value));
-  }
-  var option = $('input[name=quality][type=radio][value='+value+']');
-  option.attr('checked', true);
-}
-function quality_change(evt) {
-  var value = $('input[name=quality][type=radio]:checked').val();
-  quality_set(value);
-}
-quality_option.change(quality_change);
-
-/**
  * Format of the streaming.
  */
 var player_jwobject = null;
@@ -189,31 +158,24 @@ function format_set(value) {
   }
 
   if (value == 'auto' || value == 'flash' || value == 'html5' || value == 'audio') {
-    // Create the player
-    var jwsettings = {
-      autostart: true,
-      plugins: {
-        'gapro-2': {
-          'trackstarts': true,
-          'trackpercentage': false,
-          'trackseconds': true
-        }
-      },
-      //skin: '/static/third_party/jwplayer/skin/glow.zip',
-      modes: streamer_{{group|safe_js}}.modes(value, 'auto')
-    };
-    player_jwobject = jwplayer("player").setup(jwsettings);
-    fit_player();
+      // Create the player
+      var jwsettings = streamer_{{group|safe_js}}.settings(value);
+      jwsettings.autostart = true;
+      jwsettings.ga = {};
 
-    player_jwobject.onPlaylist(start_it);
-    player_jwobject.onPlaylistItem(start_it);
-    player_jwobject.onComplete(start_it);
+      player_jwobject = jwplayer("player").setup(jwsettings);
+      fit_player();
 
-    // Enable the quality widget
-    $('#quality-container').show();
-  } else {
-    // Disable the quality widget
-    $('#quality-container').hide();
+      player_jwobject.onPlaylist(start_it);
+      player_jwobject.onPlaylistItem(start_it);
+      player_jwobject.onComplete(start_it);
+    try {
+    } catch (err) {
+      if (window.console) {
+        console.log('Error:'+err);
+      }
+      return;
+    }
   }
 
   player_format = value;
@@ -228,7 +190,6 @@ function format_change(evt) {
 format_option.change(format_change);
 
 format_change();
-quality_change();
 
 function schedule_callback() {
   update_schedule($('#now_title'), $('#now_desc'), '{{config.title|escapejs}}', $('#next_title'), $('#next_desc'), $('#next_time'), $('#now_time'), '{{group|escapejs}}');

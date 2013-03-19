@@ -58,6 +58,7 @@ def group(request, group):
                 template = 'inroom'
                 break
 
+    now = time.time()
     screenstr = request.GET.get('screen', 'False')
     if screenstr.lower()[0] in ('y', 't'):
         screen = True
