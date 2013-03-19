@@ -8,41 +8,24 @@ viewing sides.
 It has been used with conferences like PyCon US and Linux.conf.au and at user
 groups like Sydney Linux User Group and Sydney Python User Group.
 
-## Mailing List
-
- * timvideos@googlegroups.com
- * Code: http://github.com/timvideos/timvideos
-
-
-<iframe
-  src="https://groups.google.com/forum/embed/?place=forum/timvideos&showsearch=false&showpopout=false&showtabs=false&hideforumtitle=true&hidesubject=true"
-  scrolling="no"
-  frameborder="1"
-  height="500"
-  width="100%"
-  style="align: left;"></iframe>
-
-
 ## Software Projects
-
 
 ### gst-switch
 
-Mailing List: hdmi2usb@googlegroups.com
-Code: http://github.com/timvideos/hdmi2usb
+ * Mailing List: hdmi2usb@googlegroups.com
+ * Code: http://github.com/timvideos/hdmi2usb
 
+gst-switch is a project to replace the wonderful but aging
+[dv-switch tool][dvswitch] with a modern system based on top of
+ [gstreamer][gst].
 
-<iframe
-  src="https://groups.google.com/forum/embed/?place=forum/gst-switch&showsearch=false&showpopout=false&showtabs=false&hideforumtitle=true&hidesubject=true"
-  scrolling="no"
-  frameborder="1"
-  width="100%"
-  height="500"
-  style="align: left;"></iframe>
+ [dvswitch]: http://dvswitch.alioth.debian.org/wiki/
+ [gst]: http://gstreamer.freedesktop.org/
 
 
 ### timvideos website
 
+Simple website for doing streaming of a complete conference.
 
  * Mailing List: timvideosb@googlegroups.com
  * Code: http://github.com/timvideos/timvideos/website
@@ -50,18 +33,15 @@ Code: http://github.com/timvideos/hdmi2usb
 
 ## Hardware Projects
 
-
 ### HDMI2USB
+
+A HDMI stream capturing system which connects with PC and will appears as a
+video/web camera. Act as a passthru system.
+
+Design to be a high definition, digital replacement for TwinPac.
+
+Initial design is based on Digilent Atlys. Custom boards coming soon.
+
 
  * Mailing List: hdmi2usb@googlegroups.com
  * Code: http://github.com/timvideos/hdmi2usb
-
-
-<iframe
-  src="https://groups.google.com/forum/embed/?place=forum/hdmi2usb&showsearch=false&showpopout=false&showtabs=false&hideforumtitle=true&hidesubject=true"
-  scrolling="no"
-  frameborder="1"
-  width="100%"
-  height="500"
-  style="align: left;"></iframe>
-
