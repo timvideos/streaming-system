@@ -162,6 +162,7 @@ function format_set(value) {
       var jwsettings = streamer_{{group|safe_js}}.settings(value);
       jwsettings.autostart = true;
       jwsettings.ga = {};
+      jwsettings.skin = "/static/third_party/jwplayer/skin/five.xml";
 
       player_jwobject = jwplayer("player").setup(jwsettings);
       fit_player();
