@@ -61,14 +61,6 @@ hr {
   width: 130px;
 }
 
-/*
-#exp {
- position: absolute;
- top: 0;
- left: 0;
- z-index: 1000;
-}*/
-
 .now_cell {
   height: 1px;
 }
@@ -89,12 +81,6 @@ hr {
   padding-right: 100px;
   padding-bottom: 25px;
 }
-
-/* id=next_cell is used but not class=next_cell  This should be #next_cell
-
-.next_cell {
-  height: 1px;
-} */
 
 .next_div {
   color: #F9F2E6;
@@ -299,19 +285,6 @@ img {
   border-radius: 5px;
   background-color: #ffffff;
 }
-
-/*
-.container_4 {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  text-align:left;
-  color: #ddecf8;
-  padding: 5px;
-  border-radius: 5px;
-  background-color: #3d91d6;
-}
-*/
 
 .title h1 {
   padding: 0;
