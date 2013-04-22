@@ -69,9 +69,7 @@ def group(request, group):
 
 def index(request, template="index"):
     groups = ordereddict.OrderedDict()
-    #for group in sorted(CONFIG.groups()):
-    # Hardcoded for order.
-    for group in ('mission', 'america', 'ab', 'cd', 'ef', 'gh'):
+    for group in sorted(CONFIG.groups()):
         groups[group] = CONFIG.config(group)
 
     config = CONFIG['config']
