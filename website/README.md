@@ -9,8 +9,8 @@ Initial Configuration
 
 To get the code and dependencies:
 
-    git clone git@github.com:timvideos/timvideos.git
-    cd timsvide/website
+    git clone git@github.com:timvideos/streaming-system.git
+    cd streaming-system/website
     make
 
 Running a test server
@@ -22,6 +22,25 @@ test server will be started.
 
 If this is your first time running ``make serve`` you'll be prompted to provide
 a username and password for an admin account.
+
+Registering a flumotion encoder server onto frontend
+====================================================
+
+```cd ../tools/register/```
+
+```python fake_register.py --ip 127.0.0.1```
+
+Sample output:
+
+    Registered av at 2013-04-24 09:32:43.961403 result OK
+    Registered av at 2013-04-24 09:32:45.130072 result OK
+    ...
+
+This keeps on going.
+
+Open http://127.0.0.1:8000/av?template=group to view the page
+
+Note: DO NOT run ``make serve`` as root. If you do, virtualenv folders won't have write permissions, so fake_register.py won't be able to write to sqlite database.
 
 Production Deployment
 =====================
