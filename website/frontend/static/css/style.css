@@ -1,3 +1,205 @@
+/*-----------------------------------------------------------
+---------------------- Pycon Styles -------------------------
+------------------------------------------------------------*/
+
+@font-face {
+  font-family: 'LeagueGothicRegular';
+  src: url('https://us.pycon.org/2012/site_media/static/fonts/league_gothic-webfont.eot');
+  src: url('https://us.pycon.org/2012/site_media/static/fonts/league_gothic-webfont.eot?#iefix') format('embedded-opentype'),
+       url('https://us.pycon.org/2012/site_media/static/fonts/league_gothic-webfont.woff') format('woff'),
+       url('https://us.pycon.org/2012/site_media/static/fonts/league_gothic-webfont.ttf') format('truetype'),
+       url('https://us.pycon.org/2012/site_media/static/fonts/league_gothic-webfont.svg#LeagueGothicRegular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  background-image: url('/static/img/bg.png');
+  color: #222;
+  font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-shadow: 0 1px 0 #F9F2E6;
+}
+
+div {
+  border-radius: 5px;
+}
+
+div.container_3 {
+  border: 0;
+  background: transparent;
+}
+
+h1 a {
+  font-family: LeagueGothicRegular, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.04em;
+  color: #006E91;
+  font-variant: small-caps;
+  text-shadow: 0 1px 0 #f9f2e6;
+}
+
+#twitter-container {
+  border: 3px solid #e3dfd4;
+  background: #f5f5f5;
+}
+
+div.chat {
+  border: 1px solid #e3dfd4;
+  background: #f5f5f5;
+}
+
+hr {
+  clear:both;
+  width:100%;
+  margin:15px 0;
+  height:2px;
+  background:none;
+  border:0;
+  background: url('https://us.pycon.org/2012/site_media/static/img/thin_stripe.png') repeat-x 0 0;
+}
+
+.sponsor-cell {
+  width: 130px;
+}
+
+.now_cell {
+  height: 1px;
+}
+
+.now_div {
+  color: #F9F2E6;
+  text-shadow: 0 1px 0 #222;
+  background: #006e91;
+  min-height: 1em;
+  height: 100%;
+}
+
+.now_title {
+  padding: 4px;
+}
+.now_desc_group {
+  padding-left: 100px;
+  padding-right: 100px;
+  padding-bottom: 25px;
+}
+
+.next_div {
+  color: #F9F2E6;
+  text-shadow: 0 1px 0 #222;
+  background: #006e91;
+  min-height: 1em;
+  height: 100%;
+}
+
+.next_desc_group {
+  padding-left: 100px;
+  padding-right: 100px;
+  padding-bottom: 25px;
+}
+
+.next_time_group {
+  float: left;
+  font-size: 16pt;
+  padding: 4px;
+}
+.now_time_group {
+  float: left;
+  font-size: 16pt;
+  padding: 4px;
+}
+
+/*-----------------------------------------------------------
+---------------------- Twitter Styles -------------------------
+------------------------------------------------------------*/
+
+/* container */
+div.related-tweets{ }
+/* inner div */
+div.rrt-inner{
+  height:48px;
+  padding:4px;
+  overflow:hidden;
+}
+/* ul list */
+div.rrt-inner ul{
+  float:left;
+  padding:0 0 0 0;
+  margin:0 0 0 0;
+}
+div.rrt-inner li{
+  float:left;
+  margin:0 0 0 0;
+  list-style-type:none;
+  position:relative;
+}
+/* author img */
+div.rrt-inner span.rrt-author-img{
+  display:block;
+  width:48px;
+  height:48px;
+  margin:0 5px 0 0;
+  overflow:hidden;
+  left:0;
+  position:absolute;
+}
+/* author name */
+div.rrt-inner strong a{
+  margin-right:5px;
+}
+
+/* tweet body */
+div.rrt-inner span.rrt-body {
+  display:block;
+  margin-left:55px;
+}
+/* tweet content */
+div.rrt-inner span.rrt-content{
+}
+/* tweet date and source */
+div.rrt-inner span.rrt-meta {
+  color:#999999;
+  display:block;
+  font-size:0.764em;
+  margin:3px 0 0;
+}
+div.rrt-inner span.rrt-meta a{
+  color:#999999;
+  text-decoration:none;
+}
+div.rrt-inner span.rrt-meta a:hover{
+  text-decoration:underline;
+}
+/* customize date link */
+div.rrt-inner a.rrt-date { }
+/* customize source link */
+div.rrt-inner a.rrt-source { }
+
+/* customize links */
+div.rrt-inner a.rrt-link { }
+/* customize @user links */
+div.rrt-inner a.rrt-at { }
+/* customize #hashtags links */
+div.rrt-inner a.rrt-hashtag { }
+
+/*-----------------------------------------------------------
+---------------------- Stats Styles -------------------------
+------------------------------------------------------------*/
+
+table {
+ width: 100%;
+}
+
+th {
+  text-align: left; 
+}
+
+td {
+  text-align: left; 
+}
+
+/*-----------------------------------------------------------
+---------------------- Custom Styles -------------------------
+------------------------------------------------------------*/
+
 * {
 	-moz-box-sizing: border-box;
 	-ms-box-sizing: border-box;
@@ -82,17 +284,6 @@ img {
   border: 2px solid #ced1b8;
   border-radius: 5px;
   background-color: #ffffff;
-}
-
-.container_4 {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  text-align:left;
-  color: #ddecf8;
-  padding: 5px;
-  border-radius: 5px;
-  background-color: #3d91d6;
 }
 
 .title h1 {
