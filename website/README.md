@@ -1,17 +1,33 @@
 Layout
 =====================
 
-Frontend is the UI which provides the tool and feel of the system.
-Tracker is the backend which keeps track of stats about the system.
+The website is split two **independent** parts. 
+(Which if needed could run on two different machines.)
+
+The **Frontend** is the UI which provides the tool and feel of the system, this
+system requires no databases.
+
+The **Tracker** is the backend which keeps track of stats about the system. It
+is only accessed through a JSON API.
+
+For how this website fits into the overall streaming system look at the following diagram;
+![Streaming System overall Diagram](https://docs.google.com/drawings/d/1ZN5uqd-fo62e0IZSzuOSo6YadRY_n7umkUThmqckACA/pub?w=960&h=720)
+
+For how the website fits into the overall TimVideos.us project, look at the
+following diagram:
+![TimVideos.US overall Diagram](https://docs.google.com/drawings/d/1crkdqukOAV9Alq9BOMFucDmwc_HD6qnJ4OF5MJpkrLg/pub?w=960&h=720)
+
 
 Initial Configuration
 =====================
 
 To get the code and dependencies:
 
-    git clone git@github.com:timvideos/streaming-system.git
-    cd streaming-system/website
-    make
+```
+# git clone git@github.com:timvideos/streaming-system.git
+# cd streaming-system/website
+# make
+```
 
 Running a test server
 =====================
@@ -23,24 +39,36 @@ test server will be started.
 If this is your first time running ``make serve`` you'll be prompted to provide
 a username and password for an admin account.
 
-Registering a flumotion encoder server onto frontend
-====================================================
+Registering a (fake) flumotion encoder server onto tracker
+==========================================================
 
-```cd ../tools/register/```
+The frontend will only show rooms which are available on the tracking module.
 
-```python fake_register.py --ip 127.0.0.1```
+The register.py command is normally used on a flumotion encoder machine to
+register the encoder's existence. If you are not running an encoder machine
+locally, you can use the fake_register command to pretend you have one.
+
+```
+# cd ../tools/register
+# python fake_register.py --ip 127.0.0.1
+```
 
 Sample output:
 
-    Registered av at 2013-04-24 09:32:43.961403 result OK
-    Registered av at 2013-04-24 09:32:45.130072 result OK
-    ...
+```
+Registered av at 2013-04-24 09:32:43.961403 result OK
+Registered av at 2013-04-24 09:32:45.130072 result OK
+...
+```
 
 This keeps on going.
 
 Open http://127.0.0.1:8000/av?template=group to view the page
 
-Note: DO NOT run ``make serve`` as root. If you do, virtualenv folders won't have write permissions, so fake_register.py won't be able to write to sqlite database.
+Note: DO NOT run ``make serve`` as root. If you do, virtualenv folders won't
+have write permissions, so the tracker won't be able to write to sqlite
+database.
+
 
 Production Deployment
 =====================
