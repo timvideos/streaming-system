@@ -1,6 +1,7 @@
 #!/bin/bash -x
 
 # wget -N https://raw.github.com/timvideos/streaming-system/master/tools/setup/runall.sh
+# wget -N https://github.com/CarlFK/streaming-system/master/tools/setup/runall.sh
 # chmod u+x runall.sh
 # ./runall.sh
 
