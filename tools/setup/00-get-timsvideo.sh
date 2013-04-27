@@ -11,7 +11,7 @@ apt-get install -y git-core
 
 # Either pull for the first time, or update the current repository
 if [ ! -d timvideos ]; then
-  git clone git://github.com/timvideos/timvideos.git
+  git clone https://github.com/timvideos/streaming-system.git
 else
   (
     cd timvideos
@@ -21,7 +21,7 @@ fi
 
 # Update the submodules
 (
-  cd timvideos
+  cd streaming-system
   git submodule init
   git submodule update
 )

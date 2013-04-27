@@ -6,6 +6,9 @@
 # Enable the multiverse package repositories.
 #
 
+sudo apt-add-repository multiverse
+exit
+
 if grep -R multiverse /etc/apt/sources.list*; then
   echo "Multiverse already enabled."
 else
