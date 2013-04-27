@@ -9,9 +9,10 @@ sudo apt-get install -y git-core
 
 git clone https://github.com/CarlFK/streaming-system.git
 
+streaming-system/tools/setup/00-get-timsvideo.sh
+
 cd streaming-system/tools/setup
 
-./00-get-timsvideo.sh
 ./01-add-multiverse.sh
 ./01-add-streamtime-ppa.sh
 ./05-update.sh

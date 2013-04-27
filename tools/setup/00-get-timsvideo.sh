@@ -7,14 +7,14 @@
 #
 
 # We need to install git
-apt-get install -y git-core
+sudo apt-get install -y git-core
 
 # Either pull for the first time, or update the current repository
-if [ ! -d timvideos ]; then
+if [ ! -d streaming-system ]; then
   git clone https://github.com/timvideos/streaming-system.git
 else
   (
-    cd timvideos
+    cd streaming-system
     git pull
   )
 fi
