@@ -6,6 +6,8 @@
 # Install our custom version of flumotion.
 #
 
+# this script should be next to flumotion and flumotion-ugly
+
 set -x
 set -e
 
