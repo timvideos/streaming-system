@@ -6,11 +6,11 @@
 # Updates the machine to the latest version of every installed package.
 #
 
-sudo rm /etc/apt/apt.conf.d/02cache
+sudo rm /etc/apt/apt.conf.d/02cache || true
 
 # Remove any duplicate .save files which end up in /etc/apt/sources.list.d from
 # installing PPAs multiple times. This prevents warning about duplicate sources.
-sudo rm /etc/apt/sources.list.d/*.save
+sudo rm /etc/apt/sources.list.d/*.save || true
 
 # Update the software
 sudo aptitude update
