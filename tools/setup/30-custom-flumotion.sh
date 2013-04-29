@@ -60,5 +60,4 @@ sudo make-ssl-cert /usr/share/ssl-cert/ssleay.cnf /usr/local/etc/flumotion/defau
 sudo chown flumotion:flumotion /usr/local/etc/flumotion/default.pem
 
 # Give access to the firewire ports
-# chmod a+rw /dev/raw1394 || true
 sudo adduser flumotion video
