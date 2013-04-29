@@ -1,9 +1,7 @@
 #!/bin/bash -x
 
-# wget -N https://raw.github.com/timvideos/streaming-system/master/tools/setup/runall.sh
-# wget -N https://raw.github.com/CarlFK/streaming-system/master/tools/setup/runall.sh
-# chmod u+x runall.sh
-# ./runall.sh
+# curl https://raw.github.com/CarlFK/streaming-system/master/tools/setup/runall.sh | bash
+# curl https://raw.github.com/timvideos/streaming-system/master/tools/setup/runall.sh | bash
 
 sudo apt-get install -y git-core
 
@@ -20,3 +18,4 @@ cd streaming-system/tools/setup
 ./20-useful-packages.sh
 ./30-custom-flumotion.sh
 ./99-remove-ppa.sh
+
