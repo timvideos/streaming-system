@@ -3,6 +3,10 @@
 # curl https://raw.github.com/CarlFK/streaming-system/master/tools/setup/runall.sh | bash
 # curl https://raw.github.com/timvideos/streaming-system/master/tools/setup/runall.sh | bash
 
+# these are here because the #! line is not used when the curl...|bash boot strap is used.
+set -x
+set -e
+
 sudo apt-get install -y git-core
 
 git clone https://github.com/CarlFK/streaming-system.git
