@@ -1,6 +1,4 @@
 #!/bin/bash -xe
-:q
-:q
 
 # To bootstrap, run the following # lines:
 
