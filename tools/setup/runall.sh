@@ -3,7 +3,6 @@
 # To bootstrap, run the following # lines:
 
 # sudo apt-get install -y git-core
-# git clone https://github.com/CarlFK/streaming-system.git
 # git clone https://github.com/timvideos/streaming-system.git
 # streaming-system/tools/setup/runall.sh
 
