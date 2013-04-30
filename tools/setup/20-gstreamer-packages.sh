@@ -5,5 +5,8 @@
 #
 # Install the gstreamer packages needed by our flumotion setup.
 #
-apt-cache policy gstreamer-tools
-apt-get install -y gstreamer0.10.* python-gst0.10 gstreamer-tools
+
+# make sure your getting the gstreamer-tools from where you think you are
+# apt-cache policy gstreamer-tools
+
+sudo apt-get install -y gstreamer0.10.* python-gst0.10 gstreamer-tools

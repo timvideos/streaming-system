@@ -7,11 +7,11 @@
 #
 
 # Editors
-apt-get install -y vim vim-gnome
+sudo apt-get install -y vim vim-gnome
 
 # Revision control systems
-apt-get install -y git-core subversion bzr
+sudo apt-get install -y git-core subversion bzr
 
 # System tools
-apt-get install -y htop bash-completion
+sudo apt-get install -y htop bash-completion
 
