@@ -6,6 +6,8 @@
 # Enable the multiverse package repositories.
 #
 
+sudo apt-get --assume-yes install python-software-properties
+
 # this doesn't work on precise
 # sudo apt-add-repository multiverse
 
