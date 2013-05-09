@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -xe
 #
 # Copyright 2011 Google Inc. All Rights Reserved.
 # Author: tansell@google.com (Tim Ansell)
