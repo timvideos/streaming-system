@@ -13,11 +13,11 @@ sudo apt-get --assume-yes install python-software-properties
 
 # so use these lines:
 sudo apt-add-repository \
-    "http://archive.ubuntu.com/ubuntu precise multiverse"
+    "deb http://archive.ubuntu.com/ubuntu precise multiverse"
 sudo apt-add-repository \
-    "http://archive.ubuntu.com/ubuntu precise-updates multiverse"
+    "deb http://archive.ubuntu.com/ubuntu precise-updates multiverse"
 sudo apt-add-repository \
-    "http://archive.ubuntu.com/ubuntu precise-backports multiverse"
+    "deb http://archive.ubuntu.com/ubuntu precise-backports multiverse"
 sudo apt-add-repository \
-    "http://archive.ubuntu.com/ubuntu precise-security multiverse"
+    "deb http://archive.ubuntu.com/ubuntu precise-security multiverse"
 
