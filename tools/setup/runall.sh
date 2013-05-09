@@ -16,5 +16,6 @@ cd streaming-system/tools/setup
 ./20-gstreamer-packages.sh
 ./20-useful-packages.sh
 ./30-custom-flumotion.sh
+./40-gst-dvswitch.sh
 ./99-remove-ppa.sh
 
