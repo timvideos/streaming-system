@@ -89,7 +89,7 @@ class ConfigWrapper(dict):
 
     def config(self, group):
         """Get a dictionary containing configuration values for a group."""
-        assert group in self
+        assert group in self, "%s not %s" % (group, self.keys())
         config_group = {'group': group}
         for name, default_value in self['default'].iteritems():
             config_group[name] = self[group].get(name, default_value)
