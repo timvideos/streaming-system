@@ -54,7 +54,7 @@ def config_load():
     try:
         config_private = json.load(_skip_start_comments(open(private_config)))
     except (ValueError, IOError), e:
-        warnings.warn('Unable to open config_private.json\n%s' % e)
+        warnings.warn('Unable to open config.private.json\n%s' % e)
         config_private = {}
 
     _clean_empty(config)
