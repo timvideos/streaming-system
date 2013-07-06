@@ -1,9 +1,13 @@
+#! /usr/bin/python
+# vim: set ts=4 sw=4 et sts=4 ai:
 
 import simplejson
 import pprint
 import sys
 import hashlib
 import cStringIO as StringIO
+import re
+import time
 
 import urllib2
 
@@ -29,6 +33,7 @@ ROOM_MAP = {
     'Mission City M1': 'mission',
     'Mission City M2': 'mission',
     'Mission City M3': 'mission',
+    'Plenary Hall': 'pyconau',
 }
 
 BREAK_NAMES = {
@@ -40,18 +45,35 @@ BREAK_NAMES = {
     920: None,
 }
 
-tz = pytz.timezone('US/Pacific')
+tz = pytz.timezone('Australia/Sydney')
 class tzinfo(tz.__class__):
     def __repr__(self):
-         return 'pytz.timezone("US/Pacific")'
+         return 'pytz.timezone("Australia/Sydney")'
     __str__ = __repr__
 tz.__class__ = tzinfo
 
 defaulttime = datetime.now(tz)
 convert = markdown.Markdown().convert
 
+def tolower(d):
+    newd = {}
+    for key, value in d.items():
+        if type(value) is dict:
+            value = tolower(value)
+        newd[key.lower()] = value
+    return newd
+
+
+def parse_duration(s):
+    bits = re.split('[^0-9]+', s)
+    if len(bits) == 2:
+        return timedelta(hours=int(bits[0]), minutes=int(bits[1]))
+    elif len(bits) == 3:
+        return timedelta(hours=int(bits[0]), minutes=int(bits[1]), seconds=int(bits[2]))
+
+
 if __name__ == "__main__":
-    incoming_json = urllib2.urlopen("https://us.pycon.org/2013/schedule/conference.json").read()
+    incoming_json = urllib2.urlopen("http://2013.pycon-au.org/programme/schedule/json").read()
     incoming_data = simplejson.loads(incoming_json)
 
     # Resort into
@@ -59,18 +81,26 @@ if __name__ == "__main__":
  
     outgoing_data = {}
     while len(incoming_data) > 0:
-        item = incoming_data.pop(0)
-        if item['kind'] not in ('plenary', 'talk'):
+        item = tolower(incoming_data.pop(0))
+        if 'kind' in item and item['kind'] not in ('plenary', 'talk'):
             continue
 
-        if len(item['room'].split(',')) > 1:
-            for otherroom in item['room'].split(','):
+        roomkey = 'room'
+        if roomkey not in item:
+            roomkey = 'room name'
+
+        namekey = 'name'
+        if namekey not in item:
+            namekey = 'title'
+
+        # FIXME: Hack for move room at PyCon US
+        if len(item[roomkey].split(',')) > 1:
+            for otherroom in item[roomkey].split(','):
                otherroom = otherroom.strip()
                if otherroom == "Mission City":
                    continue
                newitem = dict(item)
-               newitem['name'] = "Change to Mission for <b>%s</b>" % newitem['name']
-               newitem['abstract'] = ''
+               newitem['title'] = "Change to Mission for <b>%s</b>" % newitem[namekey]
                newitem['room'] = otherroom
                newitem['abstract'] = ''
                newitem['conf_url'] += '?'
@@ -78,11 +108,10 @@ if __name__ == "__main__":
 
             room = 'Mission City'
         else:
-            room = item['room'].strip()
+            room = item[roomkey].strip()
 
         channel = ROOM_MAP.get(room, None)
         if not channel:
-            print room, channel
             continue
         if channel not in outgoing_data:
             outgoing_data[channel] = {}
@@ -90,17 +119,27 @@ if __name__ == "__main__":
         outitem = {}
 
         outitem['start'] = parser.parse(item['start'], default=defaulttime)
-        outitem['end'] = parser.parse(item['end'], default=defaulttime)
-
-        outitem['url'] = item['conf_url']
-
-        if item['name'] == 'Keynote':
-            outitem['title'] = "%s: <b>%s</b>" % (item['name'], item['authors'][0])
+        if 'end' in item:
+            outitem['end'] = parser.parse(item['end'], default=defaulttime)
         else:
-            outitem['title'] = item['name']
-        outitem['abstract'] = convert(item['abstract'])
+            outitem['end'] = outitem['start'] + parse_duration(item['duration'])
 
-        outitem['guid'] = hashlib.md5(item['conf_url']).hexdigest()
+        if 'conf_url' in item:
+            outitem['conf_url'] = item['conf_url']
+        else:
+            outitem['conf_url'] = str(time.time())
+
+        if item[namekey] == 'Keynote':
+            outitem['title'] = "%s: <b>%s</b>" % (item[namekey], item['authors'][0])
+        else:
+            outitem['title'] = item[namekey]
+
+        if 'abstract' in item:
+            outitem['abstract'] = convert(item['abstract'])
+        else:
+            outitem['abstract'] = ''
+
+        outitem['guid'] = hashlib.md5(outitem['conf_url']).hexdigest()
 
 	outgoing_data[channel][(outitem['start'], outitem['end'])] = outitem
 
