@@ -3,7 +3,7 @@
 # Copyright 2011 Google Inc. All Rights Reserved.
 # Author: tansell@google.com (Tim Ansell)
 #
-# Install gst-dvswitch
+# Install gst-plugins-dvswitch
 #
 
 
@@ -17,7 +17,7 @@ sudo apt-get install --assume-yes build-essential autoconf autopoint libtool lib
 # build and install
 (
   cd 
-  git clone https://github.com/timvideos/gst-dvswitch.git
+  git clone https://github.com/timvideos/gst-plugins-dvswitch.git
   cd gst-dvswitch
   git clean -f -x
   ./autogen.sh
