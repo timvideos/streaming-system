@@ -5,31 +5,56 @@ vim: set ts=2 sw=2 et sts=2 ai:
 {% endcomment %}
 
 {% block head %}
-    <script language="javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" type="text/javascript"></script>
-    <script type="text/javascript" src="/static/third_party/tweet/tweet/jquery.tweet.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.tweet.js"></script>
+    <link href="/static/css/jquery.tweet.css" media="all" rel="stylesheet" type="text/css"/>
     <script type='text/javascript'>
-    jQuery(function($){
-        $(".tweet").tweet({
+    jQuery(function(){
+        var switter_url = '{% url "switter_tweets" %}';
+
+        // Individual tweets from @PyconAV to inform about the website
+        $("#announce").tweet({
+            twitter_api_proxy_url: switter_url,
+            
             username: "pyconav",
             join_text: "auto",
             avatar_size: 0,
-            count: 99,
+            count: 1,
             auto_join_text_default: "PyCon AV:",
-            loading_text: "loading tweets..."
+            loading_text: "",
+            template: "{text}",
+
+            refresh_interval: 60,
+        });
+
+        // Twitter search for Individual tweets from @PyconAV to inform about the website
+        $("#tweets").tweet({
+            twitter_api_proxy_url: switter_url,
+
+            count: 20,
+            fetch: 100,
+            avatar_size: 32,
+
+            result_type: 'recent',
+            retweets: false,
+            filter: function(t){
+                return !t.retweet && !/RT\s+@/.test(t.tweet_raw_text); 
+            },
+
+            query: "{{ default.twitter|urlencode }}",
+            loading_text: "searching twitter...",
+
+            refresh_interval: 60,
         });
     });
     </script>
-    <script type="text/javascript" src="/static/third_party/jquery-extra/jquery.juitter-1.0.0.js"></script>
     <script type="text/javascript" src="/static/js/whats_on.js"></script>
-    <link href="/static/third_party/tweet/tweet/jquery.tweet.css" media="all" rel="stylesheet" type="text/css"/>
-    <link rel="stylesheet" type="text/css" href="/static/third_party/jquery-extra/jquery.juitter-1.0.0.css">
     <script type="text/javascript" src="/tracker/streams.js"></script>
     <meta http-equiv="refresh" content="{{ config.reload }}">
     <title>Streaming for PyCon 2013</title>
 {% endblock %}
 
 {% block content %}
-    <div class="tweet"></div>
+    <div id="announce"></div>
     {% for group, details in groups.items %}
       <td class="{{group}}_td" style="display: none;">
         <div id="{{group}}_title" class="title">
@@ -89,13 +114,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
               </div>
             </td>
             <td id="twitter-cell" style="height: auto;">
-              <div id="twitter-container">
-                <div id="twitter-sizer" class="sizer">
-                  <div id="twitter-juitter">
-                    <div id="juitterContainer"></div>
-                  </div>
-                </div>
-              </div>
+              <div id="tweets"></div>
             </td>
           </tr>
         </table>
@@ -189,7 +208,6 @@ function update_active_streams() {
 {% for group, details in groups.items %}
 function schedule_{{group|escapejs}}_callback() {
   update_schedule($('#{{group|escapejs}}_now_title'), $('#{{group|escapejs}}_now_desc'), '{{details.title|escapejs}}', $('#{{group|escapejs}}_next_title'), $('#{{group|escapejs}}_next_desc'), $('#{{group|escapejs}}_next_time'), $('#{{group|escapejs}}_now_time'),'{{group|escapejs}}');
-  resize_twitter();
   setTimeout(schedule_{{group|escapejs}}_callback, 60e3);
   setTimeout(function() { location.reload(true); }, {{ config.reload }}e3);
 }
@@ -197,24 +215,8 @@ get_schedule(schedule_{{group|escapejs}}_callback, '{{group|escapejs}}');
 {% endfor %}
 
 
-// Functions which keep twitter in the right place.
-function resize_twitter() {
- $("#twitter-juitter").height(5);
- $("#twitter-juitter").height($("#twitter-cell").innerHeight()-5);
-}
-$.Juitter.onUpdate = resize_twitter;
-$(window).resize(resize_twitter);
-
 //----------------------------------------------------------------------------/
 $(document).ready(function() {
-  resize_twitter();
-  $.Juitter.start({
-    live:"live-5",
-    total: 20,
-    searchType: "searchWord",
-    searchObject: "{{ default.twitter|urlencode }}",
-    });
-
   update_active_streams();
   update_video();
   update_chat();

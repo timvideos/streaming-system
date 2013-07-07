@@ -140,6 +140,7 @@ INSTALLED_APPS = OUR_APPS + (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
+    'switter',
 )
 
 # A sample logging configuration. The only tangible logging

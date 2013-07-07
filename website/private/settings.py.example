@@ -1,0 +1,22 @@
+#!/usr/bin/python
+#
+# -*- coding: utf-8 -*-
+# vim: set ts=4 sw=4 et sts=4 ai:
+
+# Override the database settings to use a real database, only needed on
+# production systems.
+#---------------------------------------------------------------------------
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': 'website-run',
+#    }
+#}
+
+
+# Get these settings from the "OAuth" tab at https://dev.twitter.com/apps
+#---------------------------------------------------------------------------
+SWITTER_CONSUMER_KEY = '...'
+SWITTER_CONSUMER_SECRET = '...'
+SWITTER_ACCESS_TOKEN = '...'
+SWITTER_ACCESS_TOKEN_SECRET = '...'

@@ -21,10 +21,9 @@ from itertools import ifilter, islice
 from datetime import datetime, timedelta
 import pytz
 
-from bs4 import BeautifulSoup
-
 from django import http
 from django.core.cache import cache
+from django.conf import settings
 from django.shortcuts import render_to_response
 from django.views.decorators.cache import cache_page
 from django.views.decorators.cache import cache_control
@@ -43,13 +42,19 @@ LOCALIPS = [re.compile(x) for x in CONFIG['config']['localips'] if x]
 
 def group(request, group):
     if not CONFIG.valid(group):
-        return NeverCacheRedirectView.as_view(url="/")(request)
+        if settings.DEBUG:
+            raise Exception("Invalid group: %s (valid groups %s)" % (group, CONFIG.keys()))
+        else:
+            return NeverCacheRedirectView.as_view(url="/")(request)
 
     config = CONFIG.config(group)
 
     template = request.GET.get('template', 'default')
     if not re.match('[a-z]+', template):
-        return NeverCacheRedirectView.as_view(url="/")(request)
+        if settings.DEBUG:
+            raise Exception("Unknown template: %s" % template)
+        else:
+            return NeverCacheRedirectView.as_view(url="/")(request)
     elif template == 'default':
         template = "group"
         # Is the request coming from the room?

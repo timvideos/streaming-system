@@ -26,8 +26,14 @@ To get the code and dependencies:
 ```
 # git clone git@github.com:timvideos/streaming-system.git
 # cd streaming-system/website
-# make
+
+# cp private/settings.py.example private/settings.py
+# vi private/settings.py
+
+# make serve
 ```
+
+
 
 Running a test server
 =====================

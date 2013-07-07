@@ -238,5 +238,33 @@ function poll_schedule() {
 }
 setInterval(poll_schedule, 60e3);
 poll_schedule();
+
+
+
+/*
+jQuery(function($){
+        $("#related-tweets").tweet({
+          username: "seaofclouds",
+          page: 1,
+          avatar_size: 32,
+          count: 20,
+          loading_text: "loading ..."
+        }).bind("loaded", function() {
+          var ul = $(this).find(".tweet_list");
+          var ticker = function() {
+            setTimeout(function() {
+              var top = ul.position().top;
+              var h = ul.height();
+              var incr = (h / ul.children().length);
+              var newTop = top - incr;
+              if (h + newTop <= 0) newTop = 0;
+              ul.animate( {top: newTop}, 500 );
+              ticker();
+            }, 5000);
+          };
+          ticker();
+        });
+      });
+*/
 </script>
 {% endblock %}

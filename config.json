@@ -112,5 +112,17 @@
                 "": ""
         },
 
+        "pyconau": {
+                "channel": "#pycon-pyconau",
+                "irclog": "http://logs.timvideos.us/%23pycon-pyconau/preview.log.html",
+                "preview": "http://preview.timvideos.us/%23pycon-pyconau/latest.png",
+                "title": "Great America",
+                "justintv_user": "pycon2013_pyconau",
+                "flumotion-mixer": "pyconau.mixer.timvideos.us",
+                "flumotion-encoder": "pyconau.encoder.timvideos.us",
+                "flumotion-collector": "pyconau.collector.timvideos.us",
+                "": ""
+        },
+
         "": {}
 }
