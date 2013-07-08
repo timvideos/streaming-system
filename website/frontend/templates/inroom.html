@@ -5,9 +5,11 @@ vim: set ts=2 sw=2 et sts=2 ai:
 {% endcomment %}
 
 {% block head %}
-    <script type="text/javascript" src="/static/third_party/jquery-extra/jquery.juitter-1.0.0.js"></script>
     <script type="text/javascript" src="/static/js/whats_on.js"></script>
-    <link rel="stylesheet" type="text/css" href="/static/third_party/jquery-extra/jquery.juitter-1.0.0.css">
+
+    <script type="text/javascript" src="/static/js/jquery.tweet.js"></script>
+    <link href="/static/css/jquery.tweet.css" media="all" rel="stylesheet" type="text/css"/>
+
     <title>Streaming for {{ config.title }}</title>
 {% endblock %}
 
@@ -26,7 +28,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
           Tweet&nbsp;with&nbsp;hashtag:&nbsp;{{ config.twitter }}
         </div>
         <div class="options-group container_1">
-          Web&nbsp;chat&nbsp;at&nbsp;http://pycon.timvideos.us/{{group}}
+          Web&nbsp;chat&nbsp;at&nbsp;http://timvideos.us/{{group}}
         </div>
         <div class="options-group container_1">
           Join&nbsp;IRC&nbsp;on&nbsp;irc://irc.frenode.net/{{ config.channel }}
@@ -36,9 +38,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
       <td id="twitter-cell" style="height: auto;">
         <div id="twitter-container" class="container_3">
           <div id="twitter-sizer" class="sizer">
-            <div id="twitter-juitter">
-              <div id="juitterContainer"></div>
-            </div>
+            <div id="twitter"></div>
           </div>
         </div>
       </td>
@@ -67,30 +67,31 @@ vim: set ts=2 sw=2 et sts=2 ai:
 
 {% block script %}
 <script type="text/javascript">
-function resize() {
- $("#twitter-juitter").height(5);
- $("#twitter-juitter").height($("#twitter-cell").innerHeight()-20);
-}
-$.Juitter.onUpdate = resize;
-$(window).resize(resize);
 
 $(document).ready(function() {
-  resize();
-  $.Juitter.start({
-    live:"live-5",
-    total: 20,
-    searchType: "searchWord",
-    searchObject: "{{ config.twitter|urlencode }}",
-    });
+  $("#twitter").tweet({
+    twitter_api_proxy_url: '{% url "switter_tweets" %}',
+
+    query: "{{ config.twitter }}",
+    page: 1,
+    avatar_size: 32,
+    count: 100,
+    loading_text: "Loading Tweets...",
+    retweet: false,
+
+  });
 });
 
 function schedule_callback() {
-  update_schedule($('#now_title'), $('#now_desc'), '{{config.title|escapejs}}', $('#next_title'), $('#next_desc'), $('#next_time'), $('#now_time'), '{{group|escapejs}}');
-  get_schedule(schedule_callback, '{{group|escapejs}}');
+  get_schedule(function() {
+      update_schedule(
+        $('#now_title'), $('#now_desc'), '{{config.title|escapejs}}',
+        $('#next_title'), $('#next_desc'), $('#next_time'), $('#now_time'),
+        '{{group|escapejs}}');
+    }, '{{group|escapejs}}');
   setTimeout(schedule_callback, 60e3);
-  resize();
 }
+setTimeout(schedule_callback, 0);
 
-get_schedule(schedule_callback, '{{group|escapejs}}');
 </script>
 {% endblock %}

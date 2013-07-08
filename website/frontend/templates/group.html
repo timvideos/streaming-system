@@ -8,11 +8,14 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
 {% block head %}
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script type="text/javascript" src="/static/third_party/jquery-extra/jquery.relatedtweets-1.0.min.js"></script>
     <script type="text/javascript" src="/static/third_party/jwplayer/jwplayer.js"></script>
     <script type="text/javascript" src="/static/js/whats_on.js"></script>
     <script type="text/javascript" src="/static/js/streams.js"></script>
     <script type="text/javascript" src="/tracker/{{group}}/stream.js"></script>
+
+    <script type="text/javascript" src="/static/js/jquery.tweet.js"></script>
+    <link href="/static/css/jquery.tweet.css" media="all" rel="stylesheet" type="text/css"/>
+
     <title>Streaming for {{ config.title }}</title>
 {% endblock %}
 
@@ -73,7 +76,7 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
       <td id="twitter-cell" colspan=2>
         <div id="twitter-container" class="container_3">
           <div id="twitter-sizer" class="sizer">
-            <div class="related-tweets" options="{debug: false}">Related tweets loading....</div>
+            <div class="related-tweets" style="height: 48px; overflow: hidden;">Related tweets loading....</div>
             <div id="twitter-search">Search on Twitter:
               <a class=tag href="https://twitter.com/search?q={{ config.twitter|urlencode }}" rel="tag">{{ config.twitter }}</a>
             </div>
@@ -93,6 +96,35 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
 
 {% block script %}
 <script type="text/javascript">
+
+$(document).ready(function() {
+  $(".related-tweets").tweet({
+    twitter_api_proxy_url: '{% url "switter_tweets" %}',
+
+    query: "{{ config.twitter }}",
+    page: 1,
+    avatar_size: 32,
+    count: 20,
+    loading_text: "Loading tweets...",
+
+    retweet: false,
+  }).bind("loaded", function() {
+    var ul = $(".related-tweets").find(".tweet_list");
+    ul.css("position", "relative");
+    var ticker = function() {
+      setTimeout(function() {
+        var top = ul.position().top;
+        var h = ul.height();
+        var incr = (h / ul.children().length);
+        var newTop = top - incr;
+        if (h + newTop <= 0) newTop = 0;
+        ul.animate( {top: newTop+"px"}, 500 );
+        ticker();
+      }, 5000);
+    };
+    ticker();
+  });
+});
 
 
 /**
@@ -239,32 +271,5 @@ function poll_schedule() {
 setInterval(poll_schedule, 60e3);
 poll_schedule();
 
-
-
-/*
-jQuery(function($){
-        $("#related-tweets").tweet({
-          username: "seaofclouds",
-          page: 1,
-          avatar_size: 32,
-          count: 20,
-          loading_text: "loading ..."
-        }).bind("loaded", function() {
-          var ul = $(this).find(".tweet_list");
-          var ticker = function() {
-            setTimeout(function() {
-              var top = ul.position().top;
-              var h = ul.height();
-              var incr = (h / ul.children().length);
-              var newTop = top - incr;
-              if (h + newTop <= 0) newTop = 0;
-              ul.animate( {top: newTop}, 500 );
-              ticker();
-            }, 5000);
-          };
-          ticker();
-        });
-      });
-*/
 </script>
 {% endblock %}
