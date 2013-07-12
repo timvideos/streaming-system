@@ -88,3 +88,5 @@ Initial design is based on Digilent Atlys. Custom boards coming soon.
 
  * Mailing List: hdmi2usb@googlegroups.com
  * Code: http://github.com/timvideos/hdmi2usb
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/9f3b89d7feac43bbbd791b9313d2e7e3 "githalytics.com")](http://githalytics.com/github.com/timvideos)
