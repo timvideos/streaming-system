@@ -6,6 +6,7 @@
 # git clone https://github.com/timvideos/streaming-system.git
 # streaming-system/tools/setup/runall.sh
 
+sudo apt-get update
 streaming-system/tools/setup/00-get-timsvideo.sh
 
 cd streaming-system/tools/setup
