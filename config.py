@@ -61,8 +61,6 @@ def config_load():
     _clean_empty(config_private)
 
     only_private = set(config_private.keys()) - set(config.keys())
-    assert not only_private, (
-        'Private config has the following extra keys: %s' % only_private)
 
     _config_merge_into(config, config_private)
 
