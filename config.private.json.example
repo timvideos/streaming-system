@@ -1,0 +1,128 @@
+// Configuration file for application.
+// See config.private.json for private values.
+// vim: set ts=8 sw=8 et sts=8 ai ft=javascript:
+{
+        "config": {
+                "secret": "move me to config.private.json",
+                "localips": [
+                        "^127\\.",
+                        "^66\\.78\\.236\\.243",
+                        ""
+                ],
+                "reload" : 600,
+                "": ""
+        },
+        
+        "default": {
+                "channel": "#pycon",
+                "irclog": "http://logs.timvideos.us/%23pycon/preview.log.html",
+                "preview": "http://preview.timvideos.us/%23pycon/latest.png",
+                "twitter": "@pycon OR #pycon OR #pyconus",
+                "logo": "/static/logo/pycon.png",
+                "link": "https://us.pycon.org/2012/schedule/",
+                "title": "Unknown stream",
+                "justintv_user": false,
+                "flumotion-mixer": false,
+                "flumotion-encoder": false,
+                "flumotion-collector": false,
+                "": ""
+        },
+
+        "av": {
+                "channel": "#pycon-av",
+                "irclog": "http://logs.timvideos.us/%23pycon-av/preview.log.html",
+                "preview": "http://preview.timvideos.us/%23pycon-av/latest.png",
+                "title": "TESTING CHANNEL",
+                "justintv_user": "pycon_av",
+                "flumotion-mixer": "av.mixer.timvideos.us",
+                "flumotion-encoder": "av.encoder.timvideos.us",
+                "flumotion-collector": "av.collector.timvideos.us",
+                "": ""
+        },
+
+        "mission": {
+                "channel": "#pycon-mission",
+                "irclog": "http://logs.timvideos.us/%23pycon-mission/preview.log.html",
+                "preview": "http://preview.timvideos.us/%23pycon-mission/latest.png",
+                "title": "Mission City",
+                "justintv_user": "pycon2013_mission",
+                "flumotion-mixer": "mission.mixer.timvideos.us",
+                "flumotion-encoder": "mission.encoder.timvideos.us",
+                "flumotion-collector": "mission.collector.timvideos.us",
+                "": ""
+        },
+
+        "ab": {
+                "channel": "#pycon-ab",
+                "irclog": "http://logs.timvideos.us/%23pycon-ab/preview.log.html",
+                "preview": "http://preview.timvideos.us/%23pycon-ab/latest.png",
+                "title": "Grand Ballroom AB",
+                "justintv_user": "pycon2013_ab",
+                "flumotion-mixer": "ab.mixer.timvideos.us",
+                "flumotion-encoder": "ab.encoder.timvideos.us",
+                "flumotion-collector": "ab.collector.timvideos.us",
+                "": ""
+        },
+
+        "cd": {
+                "channel": "#pycon-cd",
+                "irclog": "http://logs.timvideos.us/%23pycon-cd/preview.log.html",
+                "preview": "http://preview.timvideos.us/%23pycon-cd/latest.png",
+                "title": "Grand Ballroom CD",
+                "justintv_user": "pycon2013_cd",
+                "flumotion-mixer": "cd.mixer.timvideos.us",
+                "flumotion-encoder": "cd.encoder.timvideos.us",
+                "flumotion-collector": "cd.collector.timvideos.us",
+                "": ""
+        },
+
+        "ef": {
+                "channel": "#pycon-ef",
+                "irclog": "http://logs.timvideos.us/%23pycon-ef/preview.log.html",
+                "preview": "http://preview.timvideos.us/%23pycon-ef/latest.png",
+                "title": "Grand Ballroom EF",
+                "justintv_user": "pycon2013_ef",
+                "flumotion-mixer": "ef.mixer.timvideos.us",
+                "flumotion-encoder": "ef.encoder.timvideos.us",
+                "flumotion-collector": "ef.collector.timvideos.us",
+                "": ""
+        },
+
+        "gh": {
+                "channel": "#pycon-gh",
+                "irclog": "http://logs.timvideos.us/%23pycon-gh/preview.log.html",
+                "preview": "http://preview.timvideos.us/%23pycon-gh/latest.png",
+                "title": "Grand Ballroom GH",
+                "justintv_user": "pycon2013_gh",
+                "flumotion-mixer": "gh.mixer.timvideos.us",
+                "flumotion-encoder": "gh.encoder.timvideos.us",
+                "flumotion-collector": "gh.collector.timvideos.us",
+                "": ""
+        },
+
+        "america": {
+                "channel": "#pycon-america",
+                "irclog": "http://logs.timvideos.us/%23pycon-america/preview.log.html",
+                "preview": "http://preview.timvideos.us/%23pycon-america/latest.png",
+                "title": "Great America",
+                "justintv_user": "pycon2013_america",
+                "flumotion-mixer": "america.mixer.timvideos.us",
+                "flumotion-encoder": "america.encoder.timvideos.us",
+                "flumotion-collector": "america.collector.timvideos.us",
+                "": ""
+        },
+
+        "pyconau": {
+                "channel": "#pycon-pyconau",
+                "irclog": "http://logs.timvideos.us/%23pycon-pyconau/preview.log.html",
+                "preview": "http://preview.timvideos.us/%23pycon-pyconau/latest.png",
+                "title": "Great America",
+                "justintv_user": "pycon2013_pyconau",
+                "flumotion-mixer": "pyconau.mixer.timvideos.us",
+                "flumotion-encoder": "pyconau.encoder.timvideos.us",
+                "flumotion-collector": "pyconau.collector.timvideos.us",
+                "": ""
+        },
+
+        "": {}
+}
