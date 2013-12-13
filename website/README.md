@@ -75,6 +75,20 @@ Note: DO NOT run ``make serve`` as root. If you do, virtualenv folders won't
 have write permissions, so the tracker won't be able to write to sqlite
 database.
 
+Preparing the system for an event
+=================================
+
+You will need to update the following files
+
+* streaming-system/config.json
+  > Update the default object with the event details.
+  > The parent object should have a child object for each room with the room_id matching what the event feeds room_ids
+* streaming-system/website/frontend/externalschedule2internal.py
+  > This should generate a output that resembles https://gist.github.com/lukejohnosmahi/7938504
+* streaming-system/tools/register/fake_register.py#L26
+  > Update this once you have connected the events scdedule url with a room id
+
+
 
 Production Deployment
 =====================
