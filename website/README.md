@@ -78,10 +78,10 @@ database.
 Preparing the system for an event
 =================================
 
-Copy config.json to config.private.json.
+Copy config.private.json.example to config.private.json.
 
 ```
-# cp config.json config.private.json
+# cp config.private.json.example config.private.json
 # vi config.private.json
 
 ```
@@ -90,7 +90,7 @@ You will then need to update the following files;
 
 * streaming-system/config.private.json
   > Update the default object with the event details.
-  > The parent object should have a child object for each room with the room_id matching what the event feeds room_ids
+  > The parent object should have a child object for each room with the room_id matching the event feeds (used by eventfeed2internal.py) room_ids
 * streaming-system/website/Makefile#L53
   > You may need to update the name of eventfeed2internal.py if you are creating a new parser.
 * streaming-system/website/frontend/eventfeed2internal.py
