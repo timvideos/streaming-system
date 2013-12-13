@@ -78,9 +78,17 @@ database.
 Preparing the system for an event
 =================================
 
-You will need to update the following files
+Copy config.json to config.private.json.
 
-* streaming-system/config.json
+```
+# cp config.json config.private.json
+# vi config.private.json
+
+```
+
+You will then need to update the following files;
+
+* streaming-system/config.private.json
   > Update the default object with the event details.
   > The parent object should have a child object for each room with the room_id matching what the event feeds room_ids
 * streaming-system/website/Makefile#L53
@@ -91,7 +99,6 @@ You will need to update the following files
   > Update this once you have connected the events scdedule url with a room id
 * streaming-system/website/frontend/static/logos/*.png
   > Remove any old logos and add the events logo (158x217 is a known to work dimension).
-
 
 
 Production Deployment
