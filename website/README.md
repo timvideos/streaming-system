@@ -83,7 +83,9 @@ You will need to update the following files
 * streaming-system/config.json
   > Update the default object with the event details.
   > The parent object should have a child object for each room with the room_id matching what the event feeds room_ids
-* streaming-system/website/frontend/externalschedule2internal.py
+* streaming-system/website/Makefile#L53
+  > You may need to update the name of eventfeed2internal.py if you are creating a new parser.
+* streaming-system/website/frontend/eventfeed2internal.py
   > This should generate a output that resembles https://gist.github.com/lukejohnosmahi/7938504
 * streaming-system/tools/register/fake_register.py#L26
   > Update this once you have connected the events scdedule url with a room id
