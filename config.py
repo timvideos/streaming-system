@@ -60,8 +60,6 @@ def config_load():
     _clean_empty(config)
     _clean_empty(config_private)
 
-    only_private = set(config_private.keys()) - set(config.keys())
-
     _config_merge_into(config, config_private)
 
     all_keys = set(config['default'].keys())
