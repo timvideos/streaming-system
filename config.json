@@ -14,12 +14,12 @@
         },
         
         "default": {
-                "channel": "#pycon",
-                "irclog": "http://logs.timvideos.us/%23pycon/preview.log.html",
-                "preview": "http://preview.timvideos.us/%23pycon/latest.png",
-                "twitter": "@pycon OR #pycon OR #pyconus",
-                "logo": "/static/logo/pycon.png",
-                "link": "https://us.pycon.org/2012/schedule/",
+                "channel": "#EVENT",
+                "irclog": "http://logs.timvideos.us/%23EVENT/preview.log.html",
+                "preview": "http://preview.timvideos.us/%23EVENT/latest.png",
+                "twitter": "@EVENT OR #EVENT",
+                "logo": "/static/logo/EVENT_LOGO.png",
+                "link": "EVENT_URL",
                 "title": "Unknown stream",
                 "justintv_user": false,
                 "flumotion-mixer": false,
