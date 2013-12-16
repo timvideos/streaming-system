@@ -89,18 +89,18 @@ Copy config.private.json.example to config.private.json.
 You will then need to update the following files;
 
 * streaming-system/config.private.json
-  > Update the default object with the event details (where it says timvideos you will need to add your events id.
-  > The parent object should have a child object for each room with the room_id matching the event feeds (used by eventfeed2internal.py) room_ids
+  * Update the default object with the event details (where it says timvideos you will need to add your events id.
+  * The parent object should have a child object for each room with the room_id matching the event feeds (used by eventfeed2internal.py) room_ids
 * streaming-system/website/Makefile#L53
-  > You may need to update the name of eventfeed2internal.py if you are creating a new parser.
+  * You may need to update the name of eventfeed2internal.py if you are creating a new parser.
 * streaming-system/website/frontend/eventfeed2internal.py
-  > This should generate a output that resembles https://gist.github.com/lukejohnosmahi/7938504
+  * This should generate a output that resembles https://gist.github.com/lukejohnosmahi/7938504
 * streaming-system/tools/register/fake_register.py#L26
-  > Update this once you have connected the events scdedule url with a room id
+  * Update this once you have connected the events scdedule url with a room id
 * streaming-system/website/frontend/static/logos/*.png
-  > Remove any old logos and add the events logo (158x217 is a known to work dimension).
+  * Remove any old logos and add the events logo (158x217 is a known to work dimension).
 * streaming-system/website/frontend/static/img/favicon.ico
-  > Update the favicon.ico with your events logo.
+  * Update the favicon.ico with your events logo.
 
 
 
