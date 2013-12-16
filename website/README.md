@@ -95,8 +95,6 @@ You will then need to update the following files;
   * You may need to update the name of eventfeed2internal.py if you are creating a new parser.
 * streaming-system/website/frontend/eventfeed2internal.py
   * This should generate a output that resembles https://gist.github.com/lukejohnosmahi/7938504
-* streaming-system/tools/register/fake_register.py#L26
-  * Update this once you have connected the events scdedule url with a room id
 * streaming-system/website/frontend/static/logos/*.png
   * Remove any old logos and add the events logo (158x217 is a known to work dimension).
 * streaming-system/website/frontend/static/img/favicon.ico
