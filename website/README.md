@@ -89,7 +89,7 @@ Copy config.private.json.example to config.private.json.
 You will then need to update the following files;
 
 * streaming-system/config.private.json
-  > Update the default object with the event details.
+  > Update the default object with the event details (where it says timvideos you will need to add your events id.
   > The parent object should have a child object for each room with the room_id matching the event feeds (used by eventfeed2internal.py) room_ids
 * streaming-system/website/Makefile#L53
   > You may need to update the name of eventfeed2internal.py if you are creating a new parser.
