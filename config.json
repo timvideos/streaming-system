@@ -14,12 +14,12 @@
         },
         
         "default": {
-                "channel": "#EVENT",
-                "irclog": "http://logs.timvideos.us/%23EVENT/preview.log.html",
-                "preview": "http://preview.timvideos.us/%23EVENT/latest.png",
-                "twitter": "@EVENT OR #EVENT",
-                "logo": "/static/logo/EVENT_LOGO.png",
-                "link": "EVENT_URL",
+                "channel": "#timvideos",
+                "irclog": "http://logs.timvideos.us/%23timvideos/preview.log.html",
+                "preview": "http://preview.timvideos.us/%23timvideos/latest.png",
+                "twitter": "@timvideos OR #timvideos",
+                "logo": "/static/logo/timvideos.png",
+                "link": "https://us.pycon.org/2012/schedule/",
                 "title": "Unknown stream",
                 "justintv_user": false,
                 "flumotion-mixer": false,
