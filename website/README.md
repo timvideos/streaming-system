@@ -99,6 +99,9 @@ You will then need to update the following files;
   > Update this once you have connected the events scdedule url with a room id
 * streaming-system/website/frontend/static/logos/*.png
   > Remove any old logos and add the events logo (158x217 is a known to work dimension).
+* streaming-system/website/frontend/static/img/favicon.ico
+  > Update the favicon.ico with your events logo.
+
 
 
 Production Deployment
