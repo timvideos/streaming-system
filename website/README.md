@@ -75,14 +75,14 @@ Note: DO NOT run ``make serve`` as root. If you do, virtualenv folders won't
 have write permissions, so the tracker won't be able to write to sqlite
 database.
 
-Preparing the system for an event
+Setting up a new instance of the system
 =================================
 
 Copy config.private.json.example to config.private.json.
 
-```
-# cp config.private.json.example config.private.json
-# vi config.private.json
+```bash
+cp config.private.json.example config.private.json
+vi config.private.json
 
 ```
 
