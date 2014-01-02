@@ -8,7 +8,7 @@ class RoomFeed(Feed):
         if 'group' in kwargs:
             self.group = kwargs.pop('group')
             self.link = '/{0}'.format(group)
-            self.title = 'PyCon 2013 - ' + CONFIG.config(group)['title']
+            self.title = CONFIG.config(group)['title']
         else:
             self.group = ''
             self.link = '/'
@@ -27,6 +27,6 @@ class RoomFeed(Feed):
         return item['abstract']
 
     def item_link(self, item):
-        return u'http://pycon.timvideos.us/{0}'.format(self.group)
+        return u'http://timvideos.us/{0}'.format(self.group)
 
 urls = patterns('', *[(r'^{0}/rss$'.format(group), RoomFeed(group=group)) for group in data.keys()])
