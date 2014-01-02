@@ -54,6 +54,11 @@ as_website chmod -R g+r .
 export VERSION=$(date +%Y%m%d-%H%M%S)-$(git describe --tags --long --always)
 cd ..
 
+if [ ! -f $BASEDIR/timvideos/website/private/settings.py ]; then
+  echo "Please create a settings.py file in $BASEDIR/timvideos/website/private/settings.py"
+  exit 1
+fi
+
 # Version the code
 as_website cp -arf timvideos timvideos-$VERSION
 as_website rm current || true
