@@ -38,7 +38,7 @@ fi
 
 (
 if [ ! -d $BASEDIR/timvideos ]; then
-	as_website "cd $BASEDIR; git clone git://github.com/timvideos/timvideos.git timvideos"
+	as_website "cd $BASEDIR; git clone git://github.com/timvideos/streaming-system.git timvideos"
 else
 	chown website:website -R $BASEDIR/timvideos
 	as_website "cd $BASEDIR/timvideos; git pull" || exit
