@@ -82,18 +82,6 @@ def index(request, template="index"):
     return render_to_response('%s.html' % template, locals())
 
 
-@cache_control(must_revalidate=True, max_age=600)
-def schedule(request):
-    """Get the json schedule from LCA and put it in our domain so we can AJAX it."""
-    response = http.HttpResponse(content_type='text/javascript')
-
-    schedule = cache.get('schedule')
-    if not schedule:
-        schedule = urllib2.urlopen('https://us.pycon.org/2012/schedule/json').read()
-        cache.set('schedule', schedule, 120)
-    response.write(schedule)
-    return response
-
 def get_current_next(group, howmany=2):
     if group in data:
         tz = pytz.timezone('US/Pacific')

@@ -9,7 +9,6 @@ from frontend import views
 from . import feeds
 
 urlpatterns = patterns('',
-    url(r'^schedule.js$', views.schedule),
     url(r'^(monitor)$', views.index),
     url(r'^', include(feeds.urls)),
     url(r'^(.+)/json$', views.json_feed),
