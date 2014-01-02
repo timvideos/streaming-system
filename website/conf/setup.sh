@@ -22,10 +22,20 @@ adduser website website-run
 adduser $USER website
 adduser $USER website-run
 
+# Get python dependencies
+apt-get install python-pip python-setuptools python-virtualenv
+
 # Set up the website directory
 BASEDIR=/home/website
-STATICDIR=/var/www/timvideos-static/
-rm -r /tmp/timvideos-static || true
+
+# Set up upstart config file
+ln -sf $BASEDIR/current/website/conf/init.conf /etc/init/website.conf
+ln -sf /lib/init/upstart-job /etc/init.d/website
+
+# Set up nginx config file
+apt-get install nginx
+ln -sf $BASEDIR/current/website/conf/nginx.conf /etc/nginx/sites-available/website
+ln -sf /etc/nginx/sites-available/website /etc/nginx/sites-enabled/website
 
 if [ ! -f ~website/.gitconfig ]; then
 
@@ -59,31 +69,27 @@ if [ ! -f $BASEDIR/timvideos/website/private/settings.py ]; then
   exit 1
 fi
 
-# Version the code
-as_website cp -arf timvideos timvideos-$VERSION
-as_website rm current || true
-as_website ln -s timvideos-$VERSION current
+VERSIONDIR=$BASEDIR/timvideos-$VERSION
 
-# Directory for the static stuff
-mkdir /var/www/timvideos-static || true
-chown website:website /var/www/timvideos-static
+# Version the code
+as_website cp -arf $BASEDIR/timvideos $VERSIONDIR
 
 # Version the static files
-cp -R /tmp/timvideos-static $STATICDIR/$VERSION
-as_website rm $STATICDIR/current || true
-as_website ln -s $STATICDIR/$VERSION $STATICDIR/current
+cp -R /tmp/timvideos-static $VERSIONDIR/website/static
+
+# Update the current file
+as_website rm current || true
+as_website ln -s timvideos-$VERSION current
 
 # Need to get config-private.json
 # Need to get settings-private.py
 
-# Add the init script
-cp $BASEDIR/timvideos-$VERSION/website/conf/init.conf /etc/init/website.conf
-ln -sf /lib/init/upstart-job /etc/init.d/website
+# Make upstart/gunicorn reload config file
+chmod 644 $VERSIONDIR/website/conf/init.conf
+initctl reload-configuration
 service website restart
 
-# Add the ngnix config
-apt-get install nginx
-cp $BASEDIR/timvideos-$VERSION/website/conf/nginx.conf /etc/nginx/sites-available/website-$VERSION
-ln -sf /etc/nginx/sites-available/website-$VERSION /etc/nginx/sites-enabled/website
+# Make nginx reload config file
+chmod 644 $VERSIONDIR/website/conf/nginx.conf
 service nginx restart
 )
