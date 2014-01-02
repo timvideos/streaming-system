@@ -29,4 +29,4 @@ class RoomFeed(Feed):
     def item_link(self, item):
         return u'http://timvideos.us/{0}'.format(self.group)
 
-urls = patterns('', *[(r'^{0}/rss$'.format(group), RoomFeed(group=group)) for group in data.keys()])
+urls = patterns('', *[(r'^{0}/rss$'.format(group), RoomFeed(group=group)) for group in CONFIG.groups()])
