@@ -5,7 +5,7 @@ tools/portable/img/*.png
 *.sqlite3
 *.pyc
 *.swp
-website/website.sqlite*
+website/db/
 website/testing.sqlite*
 website/bin/
 website/include/
