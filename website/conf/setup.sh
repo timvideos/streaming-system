@@ -14,8 +14,8 @@ set -x
 set -e
 
 # Add the users needed
-adduser --system website --ingroup website
-adduser --system website-run --ingroup website-run
+adduser --system website --ingroup website --shell /bin/bash --disabled-password --disabled-login
+adduser --system website-run --ingroup website-run --shell /bin/false --disabled-password --disabled-login
 adduser website website-run
 
 # Add current user to the new groups
