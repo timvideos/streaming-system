@@ -51,7 +51,7 @@ as_website git submodule init
 as_website git submodule update
 as_website chmod -R g+r .
 (cd website && as_website make prepare-serve)
-export VERSION=$(git describe --tags --long --always)-$(date +%Y%m%d-%H%M%S)
+export VERSION=$(date +%Y%m%d-%H%M%S)-$(git describe --tags --long --always)
 cd ..
 
 # Version the code
