@@ -29,7 +29,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
         });
 
         // Twitter search for Individual tweets from @PyconAV to inform about the website
-        $("#tweets").tweet({
+        $("#twitter").tweet({
             twitter_api_proxy_url: switter_url,
 
             count: 20,
@@ -43,7 +43,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
             },
 
             query: "{{ default.twitter|urlencode }}",
-            loading_text: "searching twitter...",
+            loading_text: "Searching twitter...",
 
             refresh_interval: 60,
         });
@@ -116,7 +116,11 @@ vim: set ts=2 sw=2 et sts=2 ai:
               </div>
             </td>
             <td id="twitter-cell" style="height: auto;">
-              <div id="tweets"></div>
+              <div id="twitter-container" class="container_3">
+                <div id="twitter-sizer" class="sizer">
+                  <div id="twitter">Searching twitter...</div>
+                </div>
+              </div>
             </td>
           </tr>
         </table>
