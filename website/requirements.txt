@@ -12,7 +12,7 @@ ordereddict
 pylint
 simplejson
 unittest2
-
+python-datetime-tz
 pytz
 python-dateutil
 markdown
