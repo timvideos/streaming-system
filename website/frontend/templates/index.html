@@ -52,7 +52,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
     <script type="text/javascript" src="/static/js/whats_on.js"></script>
     <script type="text/javascript" src="/tracker/streams.js"></script>
     <meta http-equiv="refresh" content="{{ config.reload }}">
-    <title>Streaming for PyCon 2013</title>
+    <title>{{ default.title }}</title>
 {% endblock %}
 
 {% block content %}
@@ -111,7 +111,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
             <td class="sponsor-cell">
               <div id="sponsor-front" class="sponsor">
                <div id="sponsor-1">
-                <a href="http://us.pycon.org/"><img src="/static/logos/pycon.png"></a>
+                <a href="{{ default.link }}"><img src="{{ default.logo }}"></a>
                </div>
               </div>
             </td>
