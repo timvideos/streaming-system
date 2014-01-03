@@ -14,8 +14,8 @@ vim: set ts=2 sw=2 et sts=2 ai:
         // Individual tweets from @PyconAV to inform about the website
         $("#announce").tweet({
             twitter_api_proxy_url: switter_url,
-            
-            username: "pyconav",
+
+            username: "{{ default.twitter_announce|urlencode }}",
             join_text: "auto",
             avatar_size: 0,
             count: 1,

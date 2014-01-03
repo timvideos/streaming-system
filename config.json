@@ -12,11 +12,12 @@
                 "reload" : 600,
                 "": ""
         },
-        
+
         "default": {
                 "channel": "#timvideos",
                 "irclog": "http://logs.timvideos.us/%23timvideos/preview.log.html",
                 "preview": "http://preview.timvideos.us/%23timvideos/latest.png",
+                "twitter_announce": "@timvideos",
                 "twitter": "@timvideos OR #timvideos",
                 "logo": "/static/logo/timvideos.png",
                 "link": "https://us.pycon.org/2012/schedule/",
