@@ -106,22 +106,25 @@ class ConfigWrapper(dict):
 
 if __name__ == "__main__":
     print "config.json"
-    print "-"*80
+    print "="*80
     os.system("cat config.json | grep -v '^//' | python -m simplejson.tool")
-    print "-"*80
+    print "="*80
     print
     print "config.private.json"
-    print "-"*80
+    print "="*80
     os.system("cat config.private.json | grep -v '^//' | python -m simplejson.tool")
-    print "-"*80
+    print "="*80
     print
     print "Merged config"
-    print "-"*80
+    print "="*80
     CONFIG = config_load()
     import pprint
     pprint.pprint(CONFIG)
-    print "-"*80
+    print "="*80
     for group in CONFIG.groups():
+        print
         print group
+        print "-"*80
         pprint.pprint(CONFIG.config(group))
+        print "-"*80
 
