@@ -7,19 +7,15 @@
 
 # Python imports
 import ConfigParser
-import datetime
+import datetime_tz
 import logging
 import ordereddict
 import os
-import sys
-import time
 import re
-import urllib2
 import simplejson as json
-from .data import data
+import sys
+import urllib2
 from itertools import ifilter, islice
-from datetime import datetime, timedelta
-import pytz
 
 from django import http
 from django.core.cache import cache
@@ -38,6 +34,8 @@ if config_path not in sys.path:
 import config as common_config
 CONFIG = common_config.config_load()
 LOCALIPS = [re.compile(x) for x in CONFIG['config']['localips'] if x]
+
+from .data import data
 
 
 def group(request, group):
@@ -82,10 +80,9 @@ def index(request, template="index"):
     return render_to_response('%s.html' % template, locals())
 
 
-def get_current_next(group, howmany=2):
+def get_current_next(group, howmany=2, delta=datetime_tz.timedelta()):
     if group in data:
-        tz = pytz.timezone('US/Pacific')
-        now = str(datetime.now(tz))
+        now = datetime_tz.datetime_tz.utcnow()
         return islice(
             ifilter(
                 lambda x: x['end'] > now,
@@ -98,7 +95,9 @@ def get_current_next(group, howmany=2):
 
 def json_feed(request, group):
     response = http.HttpResponse(content_type='text/javascript')
-    two_elements = list(get_current_next(group))
+
+    delta = datetime_tz.timedelta(seconds=int(request.GET.get('delta', 0)))
+    two_elements = list(get_current_next(group, delta=delta))
 
     for index, element in enumerate(two_elements):
         element = dict(element)

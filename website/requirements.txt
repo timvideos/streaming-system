@@ -1,6 +1,7 @@
 -e git://github.com/mithro/git-cl.git#egg=git-cl
 -e git://github.com/mithro/django-testing-fixes.git#egg=django-testing-fixes
 -e git+https://bitbucket.org/mithro/django-switter.git#egg=django-swittter
+-e git://github.com/mithro/python-datetime-tz.git#egg=python-datetime-tz
 django==1.5
 BeautifulSoup4
 django-live-server
@@ -12,7 +13,6 @@ ordereddict
 pylint
 simplejson
 unittest2
-python-datetime-tz
 pytz
 python-dateutil
 markdown
