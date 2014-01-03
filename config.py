@@ -63,45 +63,45 @@ def config_load():
     _config_merge_into(config, config_private)
 
     all_keys = set(config['default'].keys())
-    for group_name, group_config in config.iteritems():
-        if group_name == "config":
+    for channel_name, channel_config in config.iteritems():
+        if channel_name == "config":
             continue
-        group_keys = set(group_config.keys())
-        assert group_keys.issubset(all_keys), \
+        channel_keys = set(channel_config.keys())
+        assert channel_keys.issubset(all_keys), \
             'Group %s has invalid keys: %s' % (
-                group_name, group_keys.difference(all_keys))
+                channel_name, channel_keys.difference(all_keys))
 
     return ConfigWrapper(config)
 
 
 class ConfigWrapper(dict):
 
-    def groups(self):
-        """Get a list of groups defined in the config file."""
-        groups = self.keys()
-        groups.remove('config')
-        groups.remove('default')
-        return list(sorted(groups))
+    def channels(self):
+        """Get a list of channels defined in the config file."""
+        channels = self.keys()
+        channels.remove('config')
+        channels.remove('default')
+        return list(sorted(channels))
 
-    def config(self, group):
-        """Get a dictionary containing configuration values for a group."""
-        assert group in self, "%s not %s" % (group, self.keys())
-        config_group = {'group': group}
+    def config(self, channel):
+        """Get a dictionary containing configuration values for a channel."""
+        assert channel in self, "%s not %s" % (channel, self.keys())
+        config_channel = {'channel': channel}
         for name, default_value in self['default'].iteritems():
-            config_group[name] = self[group].get(name, default_value)
+            config_channel[name] = self[channel].get(name, default_value)
 
-        for name, value in config_group.iteritems():
-            context = dict(config_group)
+        for name, value in config_channel.iteritems():
+            context = dict(config_channel)
             try:
-                config_group[name] = value % context
+                config_channel[name] = value % context
             except:
                 pass
 
-        return config_group
+        return config_channel
 
-    def valid(self, group):
-        """Check if a given group is valid."""
-        return group in self.groups()
+    def valid(self, channel):
+        """Check if a given channel is valid."""
+        return channel in self.channels()
 
 
 if __name__ == "__main__":
@@ -121,7 +121,7 @@ if __name__ == "__main__":
     import pprint
     pprint.pprint(CONFIG)
     print "-"*80
-    for group in CONFIG.groups():
-        print group
-        pprint.pprint(CONFIG.config(group))
+    for channel in CONFIG.channels():
+        print channel
+        pprint.pprint(CONFIG.config(channel))
 
