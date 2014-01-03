@@ -108,79 +108,6 @@ hr {
 }
 
 /*-----------------------------------------------------------
----------------------- Twitter Styles -------------------------
-------------------------------------------------------------*/
-
-/* container */
-div.related-tweets{ }
-/* inner div */
-div.rrt-inner{
-  height:48px;
-  padding:4px;
-  overflow:hidden;
-}
-/* ul list */
-div.rrt-inner ul{
-  float:left;
-  padding:0 0 0 0;
-  margin:0 0 0 0;
-}
-div.rrt-inner li{
-  float:left;
-  margin:0 0 0 0;
-  list-style-type:none;
-  position:relative;
-}
-/* author img */
-div.rrt-inner span.rrt-author-img{
-  display:block;
-  width:48px;
-  height:48px;
-  margin:0 5px 0 0;
-  overflow:hidden;
-  left:0;
-  position:absolute;
-}
-/* author name */
-div.rrt-inner strong a{
-  margin-right:5px;
-}
-
-/* tweet body */
-div.rrt-inner span.rrt-body {
-  display:block;
-  margin-left:55px;
-}
-/* tweet content */
-div.rrt-inner span.rrt-content{
-}
-/* tweet date and source */
-div.rrt-inner span.rrt-meta {
-  color:#999999;
-  display:block;
-  font-size:0.764em;
-  margin:3px 0 0;
-}
-div.rrt-inner span.rrt-meta a{
-  color:#999999;
-  text-decoration:none;
-}
-div.rrt-inner span.rrt-meta a:hover{
-  text-decoration:underline;
-}
-/* customize date link */
-div.rrt-inner a.rrt-date { }
-/* customize source link */
-div.rrt-inner a.rrt-source { }
-
-/* customize links */
-div.rrt-inner a.rrt-link { }
-/* customize @user links */
-div.rrt-inner a.rrt-at { }
-/* customize #hashtags links */
-div.rrt-inner a.rrt-hashtag { }
-
-/*-----------------------------------------------------------
 ---------------------- Stats Styles -------------------------
 ------------------------------------------------------------*/
 
@@ -555,11 +482,6 @@ div.options-group li {
 #twitter-search a {
   color: #999999;
   text-decoration: none;
-}
-
-#twitter-juitter {
-  width: 100%;
-  overflow: hidden;
 }
 
 #player {
