@@ -1,3 +1,4 @@
+import copy
 from django.contrib.syndication.views import Feed
 from django.conf.urls import patterns
 from .data import data
@@ -15,7 +16,10 @@ class RoomFeed(Feed):
         super(RoomFeed, self).__init__(*args, **kwargs)
 
     def items(self):
-        return get_current_next(self.group)
+        items = copy.deepcopy(list(get_current_next(self.group)))
+        items[0]['title'] = 'Now: ' + items[0]['title']
+        items[1]['title'] = 'Next: ' + items[1]['title']
+        return items
 
     #def get_object(self, request, *args, **kwargs):
     #    return self
@@ -27,6 +31,8 @@ class RoomFeed(Feed):
         return item['abstract']
 
     def item_link(self, item):
-        return u'http://timvideos.us/{0}'.format(self.group)
+        if 'url' in item:
+            return item['url']
+        return CONFIG.config('default')['url']
 
 urls = patterns('', *[(r'^{0}/rss$'.format(group), RoomFeed(group=group)) for group in CONFIG.groups()])
