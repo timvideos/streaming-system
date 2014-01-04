@@ -24,6 +24,9 @@ class RoomFeed(Feed):
     #def get_object(self, request, *args, **kwargs):
     #    return self
 
+    def item_guid(self, item):
+        return item['guid']
+
     def item_title(self, item):
         return item['title']
 
@@ -31,7 +34,7 @@ class RoomFeed(Feed):
         return item['abstract']
 
     def item_link(self, item):
-        if 'url' in item:
+        if item.get('url', False):
             return item['url']
         return CONFIG.config('default')['url']
 
