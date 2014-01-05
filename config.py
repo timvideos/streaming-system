@@ -51,10 +51,14 @@ def config_load():
         config = json.load(_skip_start_comments(open(public_config)))
     except ValueError, e:
         raise IOError('Unable to open config.json\n%s' % e)
-    try:
-        config_private = json.load(_skip_start_comments(open(private_config)))
-    except (ValueError, IOError), e:
-        warnings.warn('Unable to open config.private.json\n%s' % e)
+
+    if os.path.exists(private_config):
+        try:
+            config_private = json.load(_skip_start_comments(open(private_config)))
+        except Exception, e:
+            raise IOError('Unable to open config.private.json\n%s' % e)
+    else:
+        warnings.warn('No config.private.json file!\n%s' % e)
         config_private = {}
 
     _clean_empty(config)
@@ -115,9 +119,11 @@ if __name__ == "__main__":
     os.system("cat config.private.json | grep -v '^//' | python -m simplejson.tool")
     print "="*80
     print
+    print "Loading config"
+    CONFIG = config_load()
+    print
     print "Merged config"
     print "="*80
-    CONFIG = config_load()
     import pprint
     pprint.pprint(CONFIG)
     print "="*80
