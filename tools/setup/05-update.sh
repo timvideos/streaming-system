@@ -13,6 +13,6 @@ sudo rm /etc/apt/apt.conf.d/02cache || true
 sudo rm /etc/apt/sources.list.d/*.save || true
 
 # Update the software
-sudo apt-get install aptitude
-sudo aptitude update
-sudo aptitude full-upgrade -y
+sudo apt-get --assume-yes install aptitude
+sudo apt-get update
+sudo apt-get --assume-yes dist-upgrade

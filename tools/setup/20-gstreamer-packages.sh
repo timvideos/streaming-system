@@ -9,4 +9,4 @@
 # make sure your getting the gstreamer-tools from where you think you are
 # apt-cache policy gstreamer-tools
 
-sudo apt-get install -y gstreamer0.10.* python-gst0.10 gstreamer-tools
+sudo apt-get --assume-yes install gstreamer0.10.* python-gst0.10 gstreamer-tools
