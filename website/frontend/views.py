@@ -11,6 +11,7 @@ import datetime_tz
 import logging
 import ordereddict
 import os
+import pytz
 import re
 import simplejson as json
 import sys
@@ -94,6 +95,12 @@ def get_current_next(group, howmany=2, delta=datetime_tz.timedelta()):
         return []
 
 def json_feed(request, group):
+    config = CONFIG.config(group)
+
+    tzinfo = None
+    if config['schedule-timezone']:
+        tzinfo = pytz.timezone(config['schedule-timezone'])
+
     response = http.HttpResponse(content_type='text/javascript')
 
     delta = datetime_tz.timedelta(seconds=int(request.GET.get('delta', 0)))
@@ -102,7 +109,7 @@ def json_feed(request, group):
     for index, element in enumerate(two_elements):
         element = dict(element)
         for key in ('start', 'end'):
-            element[key] = str(element[key])
+            element[key] = str(element[key].astimezone(tzinfo))
         two_elements[index] = element
 
     response.write(json.dumps(two_elements))
