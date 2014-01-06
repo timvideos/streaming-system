@@ -23,6 +23,9 @@ CONFIG = common_config.config_load()
 
 
 OPTIONS = optparse.OptionParser()
+OPTIONS.add_option("-g", "--group",
+                  action="store", dest="groups", default="",
+                  help="Groups to push config for.")
 OPTIONS.add_option("-e", "--encoders",
                   action="store_true", dest="encoders", default=True,
                   help="Push configs to encoders.")
@@ -41,9 +44,18 @@ def main(args):
 
     general_context = dict(CONFIG['config'])
 
-    # Write the worker
+    # Groups to send to
+    active_groups = [x.strip for x in options.groups.split(',')]
+    if not active_groups:
+        active_groups = CONFIG.groups()
 
+    print "Pushing to groups", CONFIG.groups()
+
+    # Write the worker
     for group in CONFIG.groups():
+        if group not in active_groups:
+            continue
+
         config = CONFIG.config(group)
         config['flumotion-password-crypt'] = crypt.crypt(
             config['flumotion-password'],
