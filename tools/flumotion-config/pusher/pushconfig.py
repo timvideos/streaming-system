@@ -45,15 +45,16 @@ def main(args):
     general_context = dict(CONFIG['config'])
 
     # Groups to send to
-    active_groups = [x.strip for x in options.groups.split(',')]
+    active_groups = [x.strip() for x in options.groups.split(',') if x]
     if not active_groups:
         active_groups = CONFIG.groups()
 
-    print "Pushing to groups", CONFIG.groups()
+    print "Pushing to groups", active_groups
 
     # Write the worker
     for group in CONFIG.groups():
         if group not in active_groups:
+            print "Skipping", group
             continue
 
         config = CONFIG.config(group)
