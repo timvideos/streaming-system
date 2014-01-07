@@ -14,6 +14,10 @@ vim: set ts=2 sw=2 et sts=2 ai:
 {% endblock %}
 
 {% block content %}
+      <th colspan=2 style="text-align: center;">
+        <h1>Sorry the video streaming is not avaliable inside the venue.</h1>
+      </th>
+    </tr><tr>
       <td id="now_cell now_cell_group" colspan=2 style="height: 1px;">
         <div id="showing" class='now_div now_div_group'>
           <div id='now_info' class='now_info now_info_group' onclick='$(".now_desc").fadeToggle();'>(More info)</div>
@@ -34,15 +38,15 @@ vim: set ts=2 sw=2 et sts=2 ai:
           Join&nbsp;IRC&nbsp;on&nbsp;irc://irc.frenode.net/{{ config.channel }}
         </div>
       </th>
-    </tr><tr>
-      <td id="twitter-cell" style="height: auto;">
-        <div id="twitter-container" class="container_3">
+    </tr><tr style="height: 60%;">
+      <td id="twitter-cell" style="vertical-align: top; overflow: hidden;">
+        <div id="twitter-container" class="container_3" style="height: 1px;">
           <div id="twitter-sizer" class="sizer">
             <div id="twitter">Searching Twitter...</div>
           </div>
         </div>
       </td>
-      <td id="chat-cell" style="width: 60%;">
+      <td id="chat-cell" style="height: 60%; width: 60%;">
         <div id="chat-container" class="container_3">
           <div id="chat-sizer" class="sizer">
             {% if screen %}
