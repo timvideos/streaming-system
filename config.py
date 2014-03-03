@@ -58,7 +58,7 @@ def config_load():
         except Exception, e:
             raise IOError('Unable to open config.private.json\n%s' % e)
     else:
-        warnings.warn('No config.private.json file!\n%s' % e)
+        warnings.warn('No config.private.json file!\n')
         config_private = {}
 
     _clean_empty(config)
