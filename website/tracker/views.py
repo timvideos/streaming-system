@@ -112,6 +112,169 @@ def endpoint_stats(request):
     return render(request, 'stats.html', locals(), content_type='text/html',
                   context_instance=template.RequestContext(request))
 
+
+@never_cache
+def overall_stats_graphs(request):
+    """Display graphs of historical bitrate and clients. This view simply
+    returns the basic template with the graph placeholders and necessary JS. The
+    actual data is sent by overall_stats_json, so that the graphs can refresh
+    themselves without a page reload."""
+
+    return render(request, 'graphs.html', locals(), content_type='text/html',
+                  context_instance=template.RequestContext(request))
+
+
+def overall_stats_json(request):
+    """Generate JSON containing overall data for use by graphs. The data can
+    be generated however, and just needs to be a series of x,y points. Any
+    number of graphs can be generated. The time range is specified as a GET
+    parameter indicating the number of minutes before now.
+
+    The response is a list of graph definitions as dictionaries, and a list of
+    annotations, and looks something like:
+
+        {
+            'graphs': [
+                {
+                    'title'     : 'Graph Title',
+                    'stacked'   : True,
+                    'series'    : [
+                        {
+                            'label': 'series-1',
+                            'data': [ [x1,y1], [x2,y2], ... ]
+                        },
+                        ...
+                    ]
+                },
+                ...
+            ],
+            'annotations': [
+                {
+                    'x': 1332009326000,
+                    'label': 'Some event happened'
+                },
+            ...
+            ]
+        }
+
+    To add a graph, generate the needed list(s) of [x,y] points and include that
+    list in a structure with title and label information similar that described
+    above. Then append that "graph definition" to the list of graphs to be
+    displayed.
+
+    Note: dates should be sent as ms since epoch (unix time * 1000). Also,
+    annotations are applied to all of the graphs.
+
+    Currently, the data is Endpoint overall_bitrate and overall_clients,
+    aggregated as an average for each unique lastseen.
+    """
+
+    graphs = []
+    annotations = []
+
+    DEFAULT_RANGE = 120 # minutes
+
+    # Get the requested time range for the data, in minutes.
+    view_range = request.GET.get('range',DEFAULT_RANGE)
+
+    # Ensure the range is an int, falling back to the default if it's not.
+    try:
+        view_range = int(view_range)
+    except ValueError:
+        view_range = DEFAULT_RANGE
+
+    range_start_datetime = datetime.datetime.now() - datetime.timedelta(minutes=view_range)
+
+    # Prepare the graphs to be sent back.
+
+    bitrate_graph = {
+        'title': 'Overall Bitrate',
+        'stacked': True,
+        'series': [],
+    }
+
+    client_graph = {
+        'title': 'Overall Clients',
+        'stacked': True,
+        'series': [],
+    }
+
+    # Retrieve endpoints from within the requested data range.
+    recent_endpoints = models.Endpoint.objects.filter(
+        lastseen__gte=range_start_datetime,
+        lastseen__lte=datetime.datetime.now()
+    ).order_by('-lastseen')
+
+    # Assemble the data for each endpoint by group.
+    endpoints_by_group = {}
+
+    # Attributes that can be copied directly.
+    raw_attrs = ('overall_bitrate', 'overall_clients',)
+    for endpoint in recent_endpoints:
+        if endpoint.group not in endpoints_by_group:
+            endpoints_by_group[endpoint.group] = []
+
+        # Send time as a unix timestamp.
+        endpoint_data = {
+            'lastseen' : int(endpoint.lastseen.strftime('%s')) * 1000,
+        }
+        for attr in raw_attrs:
+            endpoint_data[attr] = getattr(endpoint, attr)
+        endpoints_by_group[endpoint.group].append(endpoint_data)
+
+    for group, endpoints in endpoints_by_group.items():
+        bitrate_data = []
+        client_data = []
+        for point in endpoints:
+            bitrate_data.append([point['lastseen'], point['overall_bitrate'] / (1000000)])
+            client_data.append([point['lastseen'], point['overall_clients']])
+        bitrate_graph['series'].append({
+            'label': group,
+            'data': bitrate_data,
+        })
+        client_graph['series'].append({
+            'label': group,
+            'data': client_data,
+        })
+
+    graphs.append(bitrate_graph)
+    graphs.append(client_graph)
+
+
+    # SAMPLE GRAPH AND ANNOTATION GENERATION
+    # Uncomment these to see sample graphs and annotations using data generated
+    # based on the current time.
+
+    # Graphs:
+    # now = datetime.datetime.now()
+    # graphs.append({
+    #     'title': 'Test graph',
+    #     'stacked': True,
+    #     'series': [{
+    #         'label': 'series-' + str(i),
+    #         'data': [[int((now - datetime.timedelta(minutes=j)).strftime('%s')) * 1000,random.randint(1,11)] for j in range(200)]
+    #     } for i in range(5)]
+    # })
+
+    # Annotations:
+    # annotations.append({
+    #     'x': int((datetime.datetime.now() - datetime.timedelta(minutes=12)).strftime('%s')) * 1000,
+    #     'label': 'Chow!'
+    # })
+
+
+    # Send the data back as JSON data.
+    response = http.HttpResponse(content_type='application/json')
+    response.write(simplejson.dumps({
+        'graphs': graphs,
+        'annotations': annotations,
+    }))
+    return response
+
+
+
+
+
 ###########################################################################################
 # Code which collects the client side system reporting.
 ###########################################################################################
