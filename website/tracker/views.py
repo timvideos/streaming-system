@@ -113,17 +113,6 @@ def endpoint_stats(request):
                   context_instance=template.RequestContext(request))
 
 
-@never_cache
-def overall_stats_graphs(request):
-    """Display graphs of historical bitrate and clients. This view simply
-    returns the basic template with the graph placeholders and necessary JS. The
-    actual data is sent by overall_stats_json, so that the graphs can refresh
-    themselves without a page reload."""
-
-    return render(request, 'graphs.html', locals(), content_type='text/html',
-                  context_instance=template.RequestContext(request))
-
-
 def overall_stats_json(request):
     """Generate JSON containing overall data for use by graphs. The data can
     be generated however, and just needs to be a series of x,y points. Any
@@ -270,10 +259,6 @@ def overall_stats_json(request):
         'annotations': annotations,
     }))
     return response
-
-
-
-
 
 ###########################################################################################
 # Code which collects the client side system reporting.

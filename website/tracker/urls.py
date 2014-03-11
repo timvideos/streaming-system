@@ -25,8 +25,6 @@ urlpatterns = patterns('',
     url(r'^endpoint/logs$', views.endpoint_logs),
     url(r'^endpoint/stats$', views.endpoint_stats),
 
-    # Endpoints for graphing.
-    url(r'^graphs$', views.overall_stats_graphs),
     url(r'^overall-stats.json$', views.overall_stats_json),
 
     # FIXME: This endpoint should probably be a different app?
