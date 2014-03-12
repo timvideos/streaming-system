@@ -1,0 +1,45 @@
+{% comment %}
+-*- coding: utf-8 -*-
+vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
+{% endcomment %}
+<html>
+  <head>
+    <title>Graphs</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/graphs.css">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/third_party/jquery.flot.js"></script>
+    <script type="text/javascript" src="/static/third_party/jquery.flot.stack.js"></script>
+    <script type="text/javascript" src="/static/js/overall_graphs.js"></script>
+    <style>
+      #spinner {
+        border: 1px solid black;
+        display: inline-block;
+        height: 1em;
+        width: 0.1em;
+        margin-right: 0.5em;
+        vertical-align: middle;
+        -webkit-transition: -webkit-transform 0.5s linear;  /* Saf3.2+, Chrome */
+        -moz-transition: -moz-transform 0.5s linear;  /* FF4+ */
+        -ms-transition: -ms-transform 0.5s linear;  /* IE10 */
+        -o-transition: -o-transform 0.5s linear;  /* Opera 10.5+ */
+        transition: transform 0.5s linear;
+      }
+      #graph-loader {
+        visibility: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    View range: <select>
+      <option value=10>10 min</option>
+      <option value=30>30 min</option>
+      <option value=60>1 hour</option>
+      <option value=120>2 hours</option>
+    </select>
+    <input id="auto-refresh" type="checkbox" checked> Auto-refresh (10 sec)
+    <div id="graph-loader"><span id="spinner"></span> Loading graphs</div>
+    <div id="stats-graph-wrapper">
+    </div>
+
+  </body>
+</html>

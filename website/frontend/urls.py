@@ -14,4 +14,7 @@ urlpatterns = patterns('',
     url(r'^(.+)/json$', views.json_feed),
     url(r'^(.+)$', views.group),
     url(r'^$', views.index),
+    
+    # Endpoints for graphing.
+    url(r'^graphs$', views.overall_stats_graphs),
    )
