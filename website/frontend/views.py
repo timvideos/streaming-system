@@ -42,7 +42,7 @@ from .data import data
 def group(request, group):
     if not CONFIG.valid(group):
         if settings.DEBUG:
-            raise Exception("Invalid group: %s (valid groups %s)" % (group, CONFIG.keys()))
+            raise Exception("Invalid group: %s (valid groups %s)" % (group, CONFIG.groups()))
         else:
             return NeverCacheRedirectView.as_view(url="/")(request)
 
