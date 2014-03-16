@@ -23,7 +23,7 @@ parser.add_argument(
     default="move me to config.private.json")
 parser.add_argument(
     "--group", help="group to register on the server", action="store",
-    default="av")
+    default="example")
 parser.add_argument(
     "--ip", help="IP to pretend to be", action="store",
     default="")

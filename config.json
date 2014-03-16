@@ -5,8 +5,9 @@
         "config": {
                 "secret": "move me to config.private.json",
                 "localips": [
-                        "^127\\.",
-                        "^66\\.78\\.236\\.243",
+                        "^192\\.168\\.",
+                        "^172\\.(16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31)\\.",
+                        "^10\\.",
                         ""
                 ],
                 "reload" : 600,
@@ -27,6 +28,9 @@
                 "flumotion-encoder": false,
                 "flumotion-collector": false,
                 "": ""
+        },
+
+        "example": {
         },
 
         "": {}

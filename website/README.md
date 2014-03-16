@@ -62,14 +62,14 @@ locally, you can use the fake_register command to pretend you have one.
 Sample output:
 
 ```
-Registered av at 2013-04-24 09:32:43.961403 result OK
-Registered av at 2013-04-24 09:32:45.130072 result OK
+Registered example at 2013-04-24 09:32:43.961403 result OK
+Registered example at 2013-04-24 09:32:45.130072 result OK
 ...
 ```
 
 This keeps on going.
 
-Open http://127.0.0.1:8000/av?template=group to view the page
+Open http://127.0.0.1:8000/example to view the page
 
 Note: DO NOT run ``make serve`` as root. If you do, virtualenv folders won't
 have write permissions, so the tracker won't be able to write to sqlite
