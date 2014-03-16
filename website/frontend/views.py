@@ -24,6 +24,7 @@ from django.conf import settings
 from django.shortcuts import render_to_response
 from django.views.decorators.cache import cache_page
 from django.views.decorators.cache import cache_control
+from django.views.decorators.cache import never_cache
 
 # Our App imports
 from common.views.simple import NeverCacheRedirectView
