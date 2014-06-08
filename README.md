@@ -5,6 +5,8 @@ For how the streaming system fits into the overall TimVideos.us projects, look
 at the following diagram:
 ![TimVideos.US overall Diagram](https://docs.google.com/drawings/d/1crkdqukOAV9Alq9BOMFucDmwc_HD6qnJ4OF5MJpkrLg/pub?w=960&h=720)
 
+# Streaming Components
+
 For how the streaming system overall looks at the following diagram;
 ![Streaming System overall Diagram](https://docs.google.com/drawings/d/1ZN5uqd-fo62e0IZSzuOSo6YadRY_n7umkUThmqckACA/pub?w=960&h=720)
 
