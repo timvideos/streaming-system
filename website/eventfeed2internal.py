@@ -2,12 +2,12 @@
 # vim: set ts=4 sw=4 et sts=4 ai:
 
 """
-This tool generates the data.py file needed by the system. 
+This tool generates the data.py file needed by the system.
 
 This file is in the following format:
     import datetime
     import pytz
-    
+
     data = \
     // Dictionary of GROUP to sorted list of all events for that group.
     {'GROUP1' : [
@@ -146,7 +146,7 @@ def main(argv):
                     data['title'] = "Move to %s for %s" % (schedule_key, item['title'])
 
                 schedule.append(data)
-        
+
         schedule.sort(key=lambda i: i['start'])
         conference_schedules[conference][channel] = schedule
 
@@ -167,7 +167,7 @@ def main(argv):
 
             config = CONFIG.config(channel)
             if not config['schedule-timezone']:
-                sys.stderr.write("%s has not timezone, can't add conference day events\n" % channel) 
+                sys.stderr.write("%s has not timezone, can't add conference day events\n" % channel)
                 continue
             tzinfo = pytz.timezone(config['schedule-timezone'])
 
@@ -205,7 +205,7 @@ def main(argv):
                         }
 
                     perday_events[day.date()].append(day_skipped_event)
-                
+
             # Add start of day / end of day events
             for day, events in perday_events.items():
                 if day > startdate.date() and events[0]['start'].astimezone(tzinfo).time() != datetime_tz.min.time():
@@ -260,7 +260,7 @@ def main(argv):
             conference_schedules[conference][channel] = newevents
 
             while len(oldevents) > 0:
-                delta = oldevents[0]['start'] - newevents[-1]['end'] 
+                delta = oldevents[0]['start'] - newevents[-1]['end']
 
                 if delta.seconds > (5*60):
                     unknown_event = {
