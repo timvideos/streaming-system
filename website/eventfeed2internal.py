@@ -105,7 +105,7 @@ def main(argv):
     for channel in CONFIG.groups():
         config = CONFIG.config(channel)
 
-        if not config['schedule']:
+    	if 'schedule' not in config or not config['schedule']:
             sys.stderr.write("Channel %s doesn't have a schedule.\n" % channel)
             continue
 
