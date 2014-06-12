@@ -78,7 +78,7 @@ if __name__ == "__main__":
 
     # Resort into
     # <room>: (start, end) : <data>
- 
+
     outgoing_data = {}
     while len(incoming_data) > 0:
         item = tolower(incoming_data.pop(0))
@@ -194,7 +194,7 @@ if __name__ == "__main__":
                     newdata = {
                         'start': end,
                         'end': start,
-                        'title': "<i>%s</i>" % title, 
+                        'title': "<i>%s</i>" % title,
                         'abstract': '',
                         'guid': hashlib.md5(str(start)+channel).hexdigest(),
                         }
