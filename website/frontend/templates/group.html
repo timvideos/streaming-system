@@ -125,7 +125,8 @@ $(document).ready(function() {
     ticker();
   });
 });
-
+</script>
+<script type="text/javascript">
 
 /**
  * Resize the player to fit the window.
@@ -259,7 +260,8 @@ format_option.change(format_change);
 
 format_change();
 quality_change();
-
+</script>
+<script type="text/javascript">
 function schedule_callback() {
   update_schedule($('#now_title'), $('#now_desc'), '{{config.title|escapejs}}', $('#next_title'), $('#next_desc'), $('#next_time'), $('#now_time'), '{{group|escapejs}}');
   fit_player();
