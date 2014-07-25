@@ -19,6 +19,11 @@
                 // How frequently to reload the front page and schedule data?
                 "reload" : 600,
 
+                // HACK for PyCon style schedule
+                "schedule-format": false,
+                "schedule-url": false,
+                "schedule-timezone": false,
+
                 // Terminator
                 "": ""
         },

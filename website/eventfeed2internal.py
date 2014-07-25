@@ -98,6 +98,10 @@ def print_schedule(conference_schedules):
 
 
 def main(argv):
+    if CONFIG['config']['schedule-format']:
+        if CONFIG['config']['schedule-format'] == 'pycon':
+            return os.system('python pycon2internal.py')
+
     conference_schedules = defaultdict(dict)
 
     # Download the schedule details for each channel and group into

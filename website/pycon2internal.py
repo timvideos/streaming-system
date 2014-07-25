@@ -37,8 +37,9 @@ BREAK_NAMES = {
     1020: None,
 }
 
-URL = CONFIG.config('default')['schedule']
-tzname = CONFIG.config('default')['schedule-timezone']
+assert CONFIG['config']['schedule-format'] == 'pycon'
+URL = CONFIG['config']['schedule-url']
+tzname = CONFIG['config']['schedule-timezone']
 
 tz = pytz.timezone(tzname)
 class tzinfo(tz.__class__):
