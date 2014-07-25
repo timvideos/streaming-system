@@ -17,38 +17,33 @@ from dateutil import parser
 
 import markdown
 
-ROOM_MAP = {
-    'Grand Ballroom AB': 'ab',
-    'Grand Ballroom CD': 'cd',
-    'Grand Ballroom EF': 'ef',
-    'Grand Ballroom GH': 'gh',
-    'Great America':  'america',
-    'Great America Floor 2B R1': 'america',
-    'Great America Floor 2B R2': 'america',
-    'Great America Floor 2B R3': 'america',
-    'Great America K': 'america',
-    'Great America J': 'america',
-#    'Great America K': 'america',
-    'Mission City': 'mission',
-    'Mission City M1': 'mission',
-    'Mission City M2': 'mission',
-    'Mission City M3': 'mission',
-    'Plenary Hall': 'pyconau',
-}
+import os
+config_path = os.path.realpath(os.path.dirname(__file__)+"..")
+if config_path not in sys.path:
+    sys.path.append(config_path)
+import config as common_config
+CONFIG = common_config.config_load()
 
+ROOM_MAP = dict((CONFIG.config(g)['schedule-key'], g) for g in CONFIG.groups() if CONFIG.config(g)['schedule-key'])
 BREAK_NAMES = {
     10: None,
     60: 'Lunch',
     40: 'Morning Break',
     30: ['Morning Break', 'Afternoon Break'],
+    90: 'Lunch Break',
     190: 'Poster Session',
     920: None,
+    1080: None,
+    1020: None,
 }
 
-tz = pytz.timezone('Australia/Sydney')
+URL = CONFIG.config('default')['schedule']
+tzname = CONFIG.config('default')['schedule-timezone']
+
+tz = pytz.timezone(tzname)
 class tzinfo(tz.__class__):
     def __repr__(self):
-         return 'pytz.timezone("Australia/Sydney")'
+         return 'pytz.timezone(tzname)'
     __str__ = __repr__
 tz.__class__ = tzinfo
 
@@ -73,7 +68,7 @@ def parse_duration(s):
 
 
 if __name__ == "__main__":
-    incoming_json = urllib2.urlopen("http://2013.pycon-au.org/programme/schedule/json").read()
+    incoming_json = urllib2.urlopen(URL).read()
     incoming_data = simplejson.loads(incoming_json)
 
     # Resort into
@@ -93,23 +88,7 @@ if __name__ == "__main__":
         if namekey not in item:
             namekey = 'title'
 
-        # FIXME: Hack for move room at PyCon US
-        if len(item[roomkey].split(',')) > 1:
-            for otherroom in item[roomkey].split(','):
-               otherroom = otherroom.strip()
-               if otherroom == "Mission City":
-                   continue
-               newitem = dict(item)
-               newitem['title'] = "Change to Mission for <b>%s</b>" % newitem[namekey]
-               newitem['room'] = otherroom
-               newitem['abstract'] = ''
-               newitem['conf_url'] += '?'
-               incoming_data.insert(0, newitem)
-
-            room = 'Mission City'
-        else:
-            room = item[roomkey].strip()
-
+        room = item[roomkey].strip()
         channel = ROOM_MAP.get(room, None)
         if not channel:
             continue
@@ -124,7 +103,7 @@ if __name__ == "__main__":
         else:
             outitem['end'] = outitem['start'] + parse_duration(item['duration'])
 
-        if 'conf_url' in item:
+        if 'conf_url' in item and item['conf_url']:
             outitem['conf_url'] = item['conf_url']
         else:
             outitem['conf_url'] = str(time.time())
