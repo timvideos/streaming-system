@@ -39,16 +39,14 @@ BREAK_NAMES = {
 
 assert CONFIG['config']['schedule-format'] == 'pycon'
 URL = CONFIG['config']['schedule-url']
-tzname = CONFIG['config']['schedule-timezone']
 
-tz = pytz.timezone(tzname)
-class tzinfo(tz.__class__):
-    def __repr__(self):
-         return 'pytz.timezone(tzname)'
-    __str__ = __repr__
-tz.__class__ = tzinfo
+# Make pretty-print output a valid python string for UTC timezone object.
+def utc__repr__(self):
+    return "pytz.utc"
+pytz.utc.__class__.__repr__ = utc__repr__
 
-defaulttime = datetime.now(tz)
+
+defaulttime = datetime.now(pytz.timezone(CONFIG['config']['schedule-timezone']))
 convert = markdown.Markdown().convert
 
 def tolower(d):
@@ -193,9 +191,9 @@ if __name__ == "__main__":
     for channel in final_data.keys():
         sys.stderr.write('\n%s\n' % channel)
         for value in final_data[channel]:
-            value['start'] = str(value['start'])
-            value['end'] = str(value['end'])
-            sys.stderr.write("%s | %s | %s\n" % (value['start'], value['end'], value['title']))
+            sys.stderr.write("%s | %s | %s\n" % (str(value['start']), str(value['end']), value['title']))
+            value['start'] = value['start'].astimezone(pytz.utc)
+            value['end'] = value['end'].astimezone(pytz.utc)
 
     out = StringIO.StringIO()
     pprint.pprint(final_data, stream=out)
