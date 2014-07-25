@@ -35,7 +35,7 @@ vim: set ts=2 sw=2 et sts=2 ai:
           Web&nbsp;chat&nbsp;at&nbsp;http://timvideos.us/{{group}}
         </div>
         <div class="options-group container_1">
-          Join&nbsp;IRC&nbsp;on&nbsp;irc://irc.frenode.net/{{ config.channel }}
+          Join&nbsp;IRC&nbsp;on&nbsp;irc://irc.frenode.net/{{ config.ircchannel }}
         </div>
       </th>
     </tr><tr style="height: 60%;">
@@ -51,9 +51,9 @@ vim: set ts=2 sw=2 et sts=2 ai:
           <div id="chat-sizer" class="sizer">
             {% if screen %}
             <iframe id="chat-frame"
-              src="http://webchat.freenode.net?nick=videoscreen-{{group|urlencode}}&channels={{ config.channel|urlencode }}&uio=MTA9dHJ1ZSYxMT0yMzYe4"></iframe>
+              src="http://webchat.freenode.net?nick=videoscreen-{{group|urlencode}}&channels={{ config.ircchannel|urlencode }}&uio=MTA9dHJ1ZSYxMT0yMzYe4"></iframe>
             {% else %}
-            <iframe id="chat-frame" src="http://webchat.freenode.net?channels={{ config.channel|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
+            <iframe id="chat-frame" src="http://webchat.freenode.net?channels={{ config.ircchannel|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
             {% endif %}
           </div>
         </div>
