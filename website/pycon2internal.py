@@ -121,7 +121,7 @@ if __name__ == "__main__":
 
         outitem['guid'] = hashlib.md5(outitem['conf_url']).hexdigest()
 
-	outgoing_data[channel][(outitem['start'], outitem['end'])] = outitem
+        outgoing_data[channel][(outitem['start'], outitem['end'])] = outitem
 
     # Fill in the breaks
     final_data = {}
@@ -129,15 +129,15 @@ if __name__ == "__main__":
         final_data[channel] = []
         channel_data = list(sorted(outgoing_data[channel].items()))
 
-	newdata = {
-	    'start': datetime.fromtimestamp(0, defaulttime.tzinfo),
-	    'end': channel_data[0][0][0],
-	    'title': '<i>Not Yet Started</i>',
-	    'abstract': '',
-	    }
+        newdata = {
+            'start': datetime.fromtimestamp(0, defaulttime.tzinfo),
+            'end': channel_data[0][0][0],
+            'title': '<i>Not Yet Started</i>',
+            'abstract': '',
+            }
         final_data[channel].append(newdata)
 
-	end = channel_data[0][0][0]
+        end = channel_data[0][0][0]
         while len(channel_data) > 0:
             (start, _), data = channel_data.pop(0)
 
@@ -161,7 +161,6 @@ if __name__ == "__main__":
                     }
                 final_data[channel].append(newdata)
 
-
             delta = (start - end).seconds/60
             if delta and delta == 10:
                 final_data[channel][-1]['end'] = final_data[channel][-1]['end']+timedelta(seconds=delta*60)
@@ -182,13 +181,13 @@ if __name__ == "__main__":
             final_data[channel].append(data)
             end = data['end']
 
-	newdata = {
-	    'start': end,
+        newdata = {
+            'start': end,
             'end': end.replace(year=2100),
-	    'title': '<i>Conference Finished :(</i>',
-	    'abstract': '',
+            'title': '<i>Conference Finished :(</i>',
+            'abstract': '',
             'guid': hashlib.md5(str(end)+channel).hexdigest(),
-	    }
+            }
         final_data[channel].append(newdata)
 
     for channel in final_data.keys():
