@@ -3,7 +3,9 @@
 # -*- coding: utf-8 -*-
 # vim: set ts=4 sw=4 et sts=4 ai:
 
+import cStringIO as StringIO
 import os
+import re
 import simplejson as json
 import warnings
 
@@ -19,15 +21,19 @@ def _config_merge_into(dicta, dictb):
             dicta[nameb] = valueb
 
 
-def _skip_start_comments(f):
-    while True:
-        value = f.read(2)
-        if value == '//':
-            f.readline()
+def _remove_comments(filename):
+    fi = open(filename)
+
+    fo = StringIO.StringIO()
+    for line in fi.readlines():
+        if re.match("^\s*//", line):
             continue
-        break
-    f.seek(-2, os.SEEK_CUR)
-    return f
+        if not line.strip():
+            continue
+        fo.write(line)
+
+    fo.seek(0)
+    return fo
 
 
 def _clean_empty(dicta):
@@ -48,13 +54,13 @@ def config_load():
     private_config = myloc+'/config.private.json'
 
     try:
-        config = json.load(_skip_start_comments(open(public_config)))
+        config = json.load(_remove_comments(public_config))
     except ValueError, e:
         raise IOError('Unable to open config.json\n%s' % e)
 
     if os.path.exists(private_config):
         try:
-            config_private = json.load(_skip_start_comments(open(private_config)))
+            config_private = json.load(_remove_comments(private_config))
         except Exception, e:
             raise IOError('Unable to open config.private.json\n%s' % e)
     else:
@@ -108,25 +114,34 @@ class ConfigWrapper(dict):
         return group in self.groups()
 
 
-if __name__ == "__main__":
+def main():
+    # Check the json files
     print "config.json"
     print "="*80
-    os.system("cat config.json | grep -v '^//' | python -m simplejson.tool")
+    if os.system("cat config.json | grep -v '^\s*//' | python -m simplejson.tool") != 0:
+        return -1
     print "="*80
     print
     print "config.private.json"
     print "="*80
-    os.system("cat config.private.json | grep -v '^//' | python -m simplejson.tool")
+    if os.system("cat config.private.json | grep -v '^\s*//' | python -m simplejson.tool") != 0:
+        return -1
     print "="*80
     print
+
+    # Try loading the config
     print "Loading config"
     CONFIG = config_load()
     print
+
+    # Pretty print the resulting merged config output
     print "Merged config"
     print "="*80
     import pprint
     pprint.pprint(CONFIG)
     print "="*80
+
+    # Print out each individual group
     for group in CONFIG.groups():
         print
         print group
@@ -134,3 +149,8 @@ if __name__ == "__main__":
         pprint.pprint(CONFIG.config(group))
         print "-"*80
 
+    return 0
+
+if __name__ == "__main__":
+    import sys
+    sys.exit(main())
