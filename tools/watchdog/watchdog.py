@@ -307,7 +307,7 @@ class WatchDog(common.AdminCommand):
             logging.info("Would restart flumotion")
             return
         logging.error('Starting the whole of flumotion')
-        return subprocess.call('/etc/init.d/flumotion stop; /etc/init.d/flumotion start; kill -9 %s' % os.getpid(), shell=True)
+        return subprocess.call('/etc/init.d/flumotion stop; sleep 5; /etc/init.d/flumotion start; kill -9 %s' % os.getpid(), shell=True)
 
     def restart_component(self, component, count=Counter()):
         """Restart an individual flumotion component."""
