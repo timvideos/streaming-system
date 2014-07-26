@@ -9,6 +9,7 @@ __author__ = "mithro@mithis.com (Tim 'mithro' Ansell)"
 
 import cStringIO as StringIO
 import datetime
+import getpass
 import logging
 import pprint
 import simplejson
@@ -500,6 +501,10 @@ class Command(main.Command):
 
 
 def main(args):
+    if getpass.getuser() != "root":
+        print "Watchdog must be run as root so it can restart flumotion."
+        sys.exit(-1)
+
     args = list(args)
     args_a = [args.pop(0)]
     args_b = []
