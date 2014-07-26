@@ -34,8 +34,8 @@ class RoomFeed(Feed):
         return item['abstract']
 
     def item_link(self, item):
-        if item.get('url', False):
-            return item['url']
-        return CONFIG.config('default')['url']
+        if item.get('conf_url', False):
+            return item['conf_url']
+        return CONFIG.config('default')['link']
 
 urls = patterns('', *[(r'^{0}/rss$'.format(group), RoomFeed(group=group)) for group in CONFIG.groups()])

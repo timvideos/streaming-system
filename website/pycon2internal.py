@@ -103,9 +103,9 @@ if __name__ == "__main__":
             outitem['end'] = outitem['start'] + parse_duration(item['duration'])
 
         if 'conf_url' in item and item['conf_url']:
-            outitem['conf_url'] = item['conf_url']
+            outitem['url'] = item['conf_url']
         else:
-            outitem['conf_url'] = str(time.time())
+            outitem['url'] = str(time.time())
 
         if item[namekey] == 'Keynote':
             outitem['title'] = "%s: <b>%s</b>" % (item[namekey], item['authors'][0])
@@ -117,7 +117,7 @@ if __name__ == "__main__":
         else:
             outitem['abstract'] = ''
 
-        outitem['guid'] = hashlib.md5(outitem['conf_url']).hexdigest()
+        outitem['guid'] = hashlib.md5(outitem['url']).hexdigest()
 
         outgoing_data[channel][(outitem['start'], outitem['end'])] = outitem
 
