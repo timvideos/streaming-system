@@ -11,6 +11,7 @@ import cStringIO as StringIO
 import datetime
 import getpass
 import logging
+import os
 import pprint
 import simplejson
 import subprocess
@@ -306,7 +307,7 @@ class WatchDog(common.AdminCommand):
             logging.info("Would restart flumotion")
             return
         logging.error('Starting the whole of flumotion')
-        return subprocess.call('/etc/init.d/flumotion restart', shell=True)
+        return subprocess.call('/etc/init.d/flumotion stop; /etc/init.d/flumotion start; kill -9 %s' % os.getpid(), shell=True)
 
     def restart_component(self, component, count=Counter()):
         """Restart an individual flumotion component."""
