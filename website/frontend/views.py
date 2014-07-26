@@ -19,11 +19,13 @@ import urllib2
 from itertools import ifilter, islice
 
 from django import http
-from django.core.cache import cache
+from django import template
 from django.conf import settings
+from django.core.cache import cache
+from django.shortcuts import render
 from django.shortcuts import render_to_response
-from django.views.decorators.cache import cache_page
 from django.views.decorators.cache import cache_control
+from django.views.decorators.cache import cache_page
 from django.views.decorators.cache import never_cache
 
 # Our App imports
