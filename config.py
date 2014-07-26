@@ -114,7 +114,13 @@ class ConfigWrapper(dict):
         return group in self.groups()
 
 
-def main():
+def main(args):
+    if args[-1] == 'groups':
+        CONFIG = config_load()
+        for group in CONFIG.groups():
+            print group
+        return 0
+
     # Check the json files
     print "config.json"
     print "="*80
@@ -153,4 +159,4 @@ def main():
 
 if __name__ == "__main__":
     import sys
-    sys.exit(main())
+    sys.exit(main(sys.argv))
