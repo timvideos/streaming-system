@@ -91,6 +91,7 @@ class ConfigWrapper(dict):
         groups = self.keys()
         groups.remove('config')
         groups.remove('default')
+        groups.remove('example')
         return list(sorted(groups))
 
     def config(self, group):
