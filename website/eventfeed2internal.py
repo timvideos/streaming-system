@@ -119,7 +119,7 @@ def main(argv):
 
         channel_schedule = get_schedule_json(config['schedule'], tzinfo)
         if config['schedule-key'] not in channel_schedule:
-            raise IOError()
+            raise IOError("%r not in %r" % (config['schedule-key'], channel_schedule.keys()))
 
         conference = config['group']
         if config['conference']:
@@ -134,10 +134,13 @@ def main(argv):
                 data = {
                     'start': item['start'],
                     'end': item['end'],
-                    'title': item['title'],
+                    'title': item['title'].strip(),
                     'abstract': item['abstract'],
                     'url': '',
                     }
+
+                if not data['title']:
+                    continue
 
                 if 'url' in item:
                     data['url'] = item['url']
