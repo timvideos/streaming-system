@@ -12,6 +12,7 @@ gunicorn
 ordereddict
 pylint
 simplejson
+South
 unittest2
 pytz
 python-dateutil
