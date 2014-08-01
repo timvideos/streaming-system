@@ -151,6 +151,8 @@ setInterval(start_it, 1e3);
 
 // When the window's size changes, so does ours.
 $(window).resize(fit_player);
+// Universal fix for every layout problem ever, amirite?
+setTimeout(fit_player, 2000);
 
 /**
  * HD stream options
