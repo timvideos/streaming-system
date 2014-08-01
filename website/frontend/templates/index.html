@@ -156,7 +156,7 @@ update_video_for['{{group}}'] = function() {
  $('#video-preload-{{group|escapejs}}').attr(
   'src', "{{details.preview}}?time="+current_time()
   );
-}
+};
 {% endfor %}
 function update_video() {
   for (var i = 0; i < streamers_active.length; i++) {
