@@ -150,7 +150,7 @@ $('#video-preload-{{group|escapejs}}').load(function() {
 });
 {% endfor %}
 
-var update_video_for = new Array();
+var update_video_for = {};
 {% for group, details in groups.items %}
 update_video_for['{{group}}'] = function() {
  $('#video-preload-{{group|escapejs}}').attr(
@@ -168,7 +168,7 @@ function update_video() {
 <script type="text/javascript">
 // Code which updates the chat windows
 //----------------------------------------------------------------------------/
-var update_chat_for = new Array();
+var update_chat_for = {};
 {% for group, details in groups.items %}
 update_chat_for['{{group}}'] = function() {
  $('#chat-preview-{{group|escapejs}}').attr(
