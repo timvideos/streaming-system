@@ -178,6 +178,13 @@ class Endpoint(models.Model):
     webm_low_clients = models.IntegerField(blank=True, null=True)
     webm_low_bitrate = models.IntegerField(blank=True, null=True)
     webm_low_cbitrate = models.IntegerField(blank=True, null=True)
+    # -- H.264 mp4
+    mp4_high_clients = models.IntegerField(blank=True, null=True)
+    mp4_high_bitrate = models.IntegerField(blank=True, null=True)
+    mp4_high_cbitrate = models.IntegerField(blank=True, null=True)
+    mp4_low_clients = models.IntegerField(blank=True, null=True)
+    mp4_low_bitrate = models.IntegerField(blank=True, null=True)
+    mp4_low_cbitrate = models.IntegerField(blank=True, null=True)
     # -- H.264 flash
     flv_high_clients = models.IntegerField(blank=True, null=True)
     flv_high_bitrate = models.IntegerField(blank=True, null=True)

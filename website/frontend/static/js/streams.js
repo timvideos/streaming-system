@@ -7,9 +7,11 @@ function Streams(server) {
     'modes': ['html5'],
     'hd': [
       { 'file': server+'webcast-high.webm' },
+      { 'file': server+'webcast-high.mp4' },
     ],
     'sd': [
       { 'file': server+'webcast-low.webm' },
+      { 'file': server+'webcast-low.mp4' },
     ],
     'download': server+'webcast-low.webm'
   };

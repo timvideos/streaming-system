@@ -114,6 +114,7 @@
       <clock-master>false</clock-master>
     </component>
 
+<!--
     <component name="justintv"
                type="pipeline-converter"
                label="justintv"
@@ -125,11 +126,8 @@
       </eater>
       <clock-master>false</clock-master>
       <property name="pipeline">tee name=t ! queue ! rtmpsink location="rtmp://live.justin.tv/app/%(justintv_key)s flashver=FME/2.5\20(compatible;\20FMSc\201.0)" sync=false  t. ! queue</property>
-
-<!-- ffenc_flv ! flvmux streamable=true !  -->
-
-
     </component>
+-->
 
     <component name="http-loop"
                type="http-streamer"
@@ -280,6 +278,18 @@
       <property name="pipeline">lame bitrate=48</property>
       <clock-master>false</clock-master>
     </component>
+    <component name="encoder-audio-mp3-low"
+               type="pipeline-converter"
+               label="encoder-audio-mp3-low"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">producer-decoder:audio</feed>
+      </eater>
+      <property name="pipeline">lame bitrate=24</property>
+      <clock-master>false</clock-master>
+    </component>
    
     <!-- ============================================================= -->
     <!-- = MUX Video & Audio Together                                = -->
@@ -348,6 +358,33 @@
       </eater>
       <clock-master>false</clock-master>
     </component>
+
+    <!-- mp4 muxing -->
+    <component name="muxer-mp4-high"
+               type="mp4-muxer"
+               label="muxer-mp4-high"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">encoder-audio-mp3-high:default</feed>
+        <feed alias="default-bis">encoder-video-h264-high:default</feed>
+      </eater>
+      <clock-master>false</clock-master>
+    </component>
+    <component name="muxer-mp4-low"
+               type="mp4-muxer"
+               label="muxer-mp4-low"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">encoder-audio-mp3-low:default</feed>
+        <feed alias="default-bis">encoder-video-h264-low:default</feed>
+      </eater>
+      <clock-master>false</clock-master>
+    </component>
+
 
     <!-- aac (audio only) muxing -->
     <component name="muxer-aac-high"
@@ -437,6 +474,52 @@
       </eater>
       <property name="porter-username">phqCIZdJkjnx</property>
       <property name="mount-point">/audio-only.ogg</property>
+      <property name="burst-on-connect">True</property>
+      <property name="port">8080</property>
+      <property name="bandwidth-limit">100000000</property> <!-- 100Mbit/s -->
+      <property name="type">slave</property>
+      <property name="client-limit">1000</property>
+      <property name="porter-socket-path">flu-8080.socket</property>
+      <property name="porter-password">ffDtYpfsEvOK</property>
+      <clock-master>false</clock-master>
+      <plugs>
+      </plugs>
+    </component>
+
+    <!-- mp4 -->
+    <component name="http-mp4-high"
+               type="http-streamer"
+               label="http-mp4-high"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">muxer-mp4-high:default</feed>
+      </eater>
+      <property name="porter-username">phqCIZdJkjnx</property>
+      <property name="mount-point">/webcast-high.mp4</property>
+      <property name="burst-on-connect">True</property>
+      <property name="port">8080</property>
+      <property name="bandwidth-limit">100000000</property> <!-- 100Mbit/s -->
+      <property name="type">slave</property>
+      <property name="client-limit">1000</property>
+      <property name="porter-socket-path">flu-8080.socket</property>
+      <property name="porter-password">ffDtYpfsEvOK</property>
+      <clock-master>false</clock-master>
+      <plugs>
+      </plugs>
+    </component>
+    <component name="http-mp4-low"
+               type="http-streamer"
+               label="http-mp4-low"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">muxer-mp4-low:default</feed>
+      </eater>
+      <property name="porter-username">phqCIZdJkjnx</property>
+      <property name="mount-point">/webcast-low.mp4</property>
       <property name="burst-on-connect">True</property>
       <property name="port">8080</property>
       <property name="bandwidth-limit">100000000</property> <!-- 100Mbit/s -->
