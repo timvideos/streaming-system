@@ -164,7 +164,8 @@ function update_video() {
   } 
 }
 //----------------------------------------------------------------------------/
-
+</script>
+<script type="text/javascript">
 // Code which updates the chat windows
 //----------------------------------------------------------------------------/
 var update_chat_for = new Array();
@@ -183,7 +184,8 @@ function update_chat() {
   setTimeout(update_chat, 30e3);
 }
 //----------------------------------------------------------------------------/
-
+</script>
+<script type="text/javascript">
 // Code which updates which streams are being displayed.
 function update_active_streams() {
   var streamers_inactive = new Array();
@@ -221,6 +223,8 @@ function schedule_{{group|escapejs}}_callback() {
 get_schedule(schedule_{{group|escapejs}}_callback, '{{group|escapejs}}');
 {% endfor %}
 
+</script>
+<script type="text/javascript">
 
 //----------------------------------------------------------------------------/
 $(document).ready(function() {
