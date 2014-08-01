@@ -4,11 +4,13 @@
 
 @font-face {
   font-family: 'LeagueGothicRegular';
+/*
   src: url('https://us.pycon.org/2012/site_media/static/fonts/league_gothic-webfont.eot');
   src: url('https://us.pycon.org/2012/site_media/static/fonts/league_gothic-webfont.eot?#iefix') format('embedded-opentype'),
        url('https://us.pycon.org/2012/site_media/static/fonts/league_gothic-webfont.woff') format('woff'),
        url('https://us.pycon.org/2012/site_media/static/fonts/league_gothic-webfont.ttf') format('truetype'),
        url('https://us.pycon.org/2012/site_media/static/fonts/league_gothic-webfont.svg#LeagueGothicRegular') format('svg');
+*/
   font-weight: normal;
   font-style: normal;
 }
