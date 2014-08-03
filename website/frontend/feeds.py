@@ -1,8 +1,8 @@
 import copy
 from django.contrib.syndication.views import Feed
 from django.conf.urls import patterns
-from .data import data
 from .views import get_current_next, CONFIG
+
 
 class RoomFeed(Feed):
     def __init__(self, *args, **kwargs):
@@ -20,9 +20,6 @@ class RoomFeed(Feed):
         items[0]['title'] = 'Now: ' + items[0]['title']
         items[1]['title'] = 'Next: ' + items[1]['title']
         return items
-
-    #def get_object(self, request, *args, **kwargs):
-    #    return self
 
     def item_guid(self, item):
         return item['guid']

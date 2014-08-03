@@ -18,4 +18,4 @@ urlpatterns = patterns('',
     url(r'^', include(feeds.urls)),       # room/rss - Schedule as RSS
     url(r'^(.+)/json$', views.json_feed), # room/json - Schedule as json
     url(r'^(.+)$', views.group),          # room/ - Base page
-   )
+)

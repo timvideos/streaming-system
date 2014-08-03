@@ -6,31 +6,23 @@
 """Simple pages."""
 
 # Python imports
-import ConfigParser
 import datetime_tz
-import logging
+from itertools import ifilter, islice
+import json
 import ordereddict
 import os
 import pytz
 import re
-import simplejson as json
 import sys
-import urllib2
-from itertools import ifilter, islice
 
 from django import http
-from django import template
 from django.conf import settings
-from django.core.cache import cache
 from django.shortcuts import render
 from django.shortcuts import render_to_response
-from django.views.decorators.cache import cache_control
-from django.views.decorators.cache import cache_page
 from django.views.decorators.cache import never_cache
 
 # Our App imports
 from common.views import NeverCacheRedirectView
-from tracker import models
 
 config_path = os.path.realpath(os.path.dirname(__file__)+"/../..")
 if config_path not in sys.path:
@@ -97,14 +89,13 @@ def get_current_next(group, howmany=2, delta=datetime_tz.timedelta()):
     else:
         return []
 
+
 def json_feed(request, group):
     config = CONFIG.config(group)
 
     tzinfo = None
     if config['schedule-timezone']:
         tzinfo = pytz.timezone(config['schedule-timezone'])
-
-    response = http.HttpResponse(content_type='text/javascript')
 
     delta = datetime_tz.timedelta(seconds=int(request.GET.get('delta', 0)))
     two_elements = list(get_current_next(group, delta=delta))
@@ -115,8 +106,8 @@ def json_feed(request, group):
             element[key] = str(element[key].astimezone(tzinfo))
         two_elements[index] = element
 
-    response.write(json.dumps(two_elements))
-    return response
+    return http.HttpResponse(json.dumps(two_elements), content_type='text/javascript')
+
 
 @never_cache
 def overall_stats_graphs(request):
@@ -125,6 +116,4 @@ def overall_stats_graphs(request):
     actual data is sent by overall_stats_json, so that the graphs can refresh
     themselves without a page reload."""
 
-    return render(request, 'graphs.html', locals(), content_type='text/html',
-                  context_instance=template.RequestContext(request))
-
+    return render(request, 'graphs.html')
