@@ -29,7 +29,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django import template
 
 # Our App imports
-from common.views.simple import NeverCacheRedirectView
+from common.views import NeverCacheRedirectView
 from tracker import models
 
 

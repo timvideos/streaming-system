@@ -29,7 +29,7 @@ from django.views.decorators.cache import cache_page
 from django.views.decorators.cache import never_cache
 
 # Our App imports
-from common.views.simple import NeverCacheRedirectView
+from common.views import NeverCacheRedirectView
 from tracker import models
 
 config_path = os.path.realpath(os.path.dirname(__file__)+"/../..")
