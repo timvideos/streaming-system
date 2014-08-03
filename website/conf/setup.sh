@@ -13,6 +13,10 @@ fi
 set -x
 set -e
 
+# Add the groups required
+addgroup --system website
+addgroup --system website-run
+
 # Add the users needed
 adduser --system website --ingroup website --shell /bin/bash --disabled-password --disabled-login
 adduser --system website-run --ingroup website-run --shell /bin/false --disabled-password --disabled-login
@@ -23,7 +27,7 @@ adduser $USER website
 adduser $USER website-run
 
 # Get python dependencies
-apt-get install python-pip python-setuptools python-virtualenv
+apt-get -y install python-pip python-setuptools python-virtualenv
 
 # Set up the website directory
 BASEDIR=/home/website
@@ -33,7 +37,7 @@ ln -sf $BASEDIR/current/website/conf/init.conf /etc/init/website.conf
 ln -sf /lib/init/upstart-job /etc/init.d/website
 
 # Set up nginx config file
-apt-get install nginx
+apt-get -y install nginx
 ln -sf $BASEDIR/current/website/conf/nginx.conf /etc/nginx/sites-available/website
 ln -sf /etc/nginx/sites-available/website /etc/nginx/sites-enabled/website
 
