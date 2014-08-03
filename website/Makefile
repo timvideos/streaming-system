@@ -78,14 +78,8 @@ lint: install
 ###############################################################################
 ###############################################################################
 
-config:
-	$(ACTIVATE) && git-cl config file://$$PWD/.codereview.settings
-
-upload:
-	$(ACTIVATE) && git-cl upload
-
 serve: prepare-serve install
 	$(ACTIVATE) && python manage.py syncdb
 	$(ACTIVATE) && python manage.py runserver
 
-.PHONY : lint upload deploy serve clean config prepare-serve
+.PHONY : lint deploy serve clean prepare-serve
