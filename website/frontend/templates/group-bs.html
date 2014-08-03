@@ -18,6 +18,26 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
       body {
         padding-top: 50px;
       }
+      @media (min-width: 992px) {
+        #twitter-container {
+          position: fixed;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          height: 68px;
+        }
+        #player-sizer, #chat-sizer {
+          display:block;
+          width:100%;
+          height:100%;
+          margin: 0 auto;
+        }
+        #chat-frame {
+          display: block;
+          width: 100%;
+          border: 0;
+        }
+      }
     </style>
 
     <title>Streaming for {{ config.title }}</title>
@@ -27,31 +47,31 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Video Format <span class="caret"></span></a> 
   <ul class="dropdown-menu" role="menu">
-    <li><input type="radio" id="f1" name="format" value="videooff">
-      <label for="f1">Video Off</label></li>
-    <li><input type="radio" id="f2" name="format" value="auto" checked>
-      <label for="f2">Auto</label></li>
-    <li><input type="radio" id="f3" name="format" value="flash">
-      <label for="f3">Flash</label></li>
-    <li><input type="radio" id="f4" name="format" value="html5">
-      <label for="f4">HTML5</label></li>
-    <li><input type="radio" id="f5" name="format" value="justintv">
-      <label for="f5">Justin.tv</label></li>
-    <li><input type="radio" id="f6" name="format" value="audio">
-      <label for="f6">Audio Only</label></li>
+    <li class="videoButton" data-f="videooff"><a href="#" onclick="format_set('videooff')">Video Off</a></li>
+    <li class="videoButton" data-f="auto"><a href="#" onclick="format_set('auto')">Automatic</a></li>
+    <li class="videoButton" data-f="flash"><a href="#" onclick="format_set('flash')">Flash</a></li>
+    <li class="videoButton" data-f="html5"><a href="#" onclick="format_set('html5')">HTML5</a></li>
+    <li class="videoButton" data-f="justintv"><a href="#" onclick="format_set('justintv')">Justin.tv</a></li>
+    <li class="videoButton" data-f="audio"><a href="#" onclick="format_set('audio')">Audio Only</a></li>
+
   </ul>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Quality <span class="caret"></span></a>
   <ul class="dropdown-menu" role="menu">
+    <li class="qualButton" data-q="auto"><a href="#" onclick="quality_set('html5')">Automatic</a></li>
+    <li class="qualButton" data-q="hd"><a href="#" onclick="quality_set('justintv')">High definition</a></li>
+    <li class="qualButton" data-q="sd"><a href="#" onclick="quality_set('audio')">Low definition</a></li>
+<!--
     <li><input type="radio" id="q1" name="quality" value="auto" checked>
       <label for="q1">Auto</label></li>
     <li><input type="radio" id="q2" name="quality" value="hd">
       <label for="q2">High definition</label></li>
     <li><input type="radio" id="q3" name="quality" value="sd">
-      <label for="q3">Low definition</label></li>
+      <label for="q3">Low definition</label></li> -->
   </ul>
 </li>
+<li><a id="ircToggle">IRC</a></li>
 <li id="now_time"></li>
 <li id="now_title"></li>
 {% endblock %}
@@ -78,20 +98,20 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
         </div>
       </td>
     </tr><tr> -->
-    
-        <div id="player-container" class="container_2">
-          <div id="player-sizer" class="sizer">
-            <a href="" id="player"></a>
-          </div>
-        </div>
 
+<div class="row">
+  <div id="player-container" class="col-md-8">
+    <div id="player-sizer" class="sizer">
+      <a href="" id="player"></a>
+    </div>
+  </div>
 
-        <div id="chat-container" class="container_3">
+        <div id="chat-container" class="col-md-4">
           <div id="chat-sizer" class="sizer">
             <iframe id="chat-frame" src="http://webchat.freenode.net?channels={{ config.ircchannel|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
           </div>
         </div>
-
+</div>
 
         <div id="twitter-container" class="container_3">
           <div id="twitter-sizer" class="sizer">
@@ -121,18 +141,14 @@ $(document).ready(function() {
   }).bind("loaded", function() {
     var ul = $(".related-tweets").find(".tweet_list");
     ul.css("position", "relative");
-    var ticker = function() {
-      setTimeout(function() {
-        var top = ul.position().top;
-        var h = ul.height();
-        var incr = (h / ul.children().length);
-        var newTop = top - incr;
-        if (h + newTop <= 0) newTop = 0;
-        ul.animate( {top: newTop+"px"}, 500 );
-        ticker();
-      }, 5000);
-    };
-    ticker();
+    setInterval(function() {
+      var top = ul.position().top;
+      var h = ul.height();
+      var incr = (h / ul.children().length);
+      var newTop = top - incr;
+      if (h + newTop <= 0) newTop = 0;
+      ul.animate( {top: newTop+"px"}, 500 );
+    }, 5000);
   });
 });
 </script>
@@ -142,10 +158,12 @@ $(document).ready(function() {
  * Resize the player to fit the window.
  */
 function fit_player () {
-  var player_sizer = $("#player-cell");
+  var player_sizer = $("#player-sizer");
   if (player_jwobject) {
-    player_jwobject.resize(player_sizer.width()-20, player_sizer.height()-20);
+    player_jwobject.resize(player_sizer.width()-20, window.innerHeight - 118);
+    //player_sizer.height()-20);
   }
+  $('#chat-frame').css({height: window.innerHeight - 118, width: $('#chat-sizer').width() - 20});
 }
 
 function start_it () {
@@ -167,7 +185,7 @@ setTimeout(fit_player, 2000);
 /**
  * HD stream options
  */
-var quality_option = $('input[name=quality][type=radio]');
+//var quality_option = $('input[name=quality][type=radio]');
 function quality_set(value) {
   if (player_jwobject) {
     var format = player_format;
@@ -180,15 +198,18 @@ function quality_set(value) {
     if (format)
       player_jwobject.load(streamer_{{group|safe_js}}.levels(format, value));
   }
-  var option = $('input[name=quality][type=radio][value='+value+']');
-  option.attr('checked', true);
+  //var option = $('input[name=quality][type=radio][value='+value+']');
+  //option.attr('checked', true);
+  $('.qualButton').removeClass('active');
+  $('.qualButton[data-q='+value+']').addClass('active');
 }
+/*
 function quality_change(evt) {
   var value = $('input[name=quality][type=radio]:checked').val();
   quality_set(value);
 }
 quality_option.change(quality_change);
-
+*/
 /**
  * Format of the streaming.
  */
@@ -261,19 +282,27 @@ function format_set(value) {
 
   player_format = value;
 
+  $('.videoButton').removeClass('active');
+  $('.videoButton[data-f='+value+']').addClass('active');
+
   var option = $('input[name=format][type=radio][value='+value+']');
   option.attr('checked', true);
 }
-function format_change(evt) {
-  var value = $('input[name=format][type=radio]:checked').val();
-  format_set(value);
-}
-format_option.change(format_change);
 
-format_change();
-quality_change();
-</script>
-<script type="text/javascript">
+
+format_set('auto');
+quality_set('auto');
+
+$('#ircToggle').click(function() {
+  $('#chat-frame').toggle();
+  $('#player-container').toggleClass('col-md-8 col-md-12');
+  fit_player();
+});
+
+if (location.search.indexOf('noirc') >= 1) {
+  $('#ircToggle').click();
+}
+
 function schedule_callback() {
   update_schedule($('#now_title'), $('#now_desc'), '{{config.title|escapejs}}', $('#next_title'), $('#next_desc'), $('#next_time'), $('#now_time'), '{{group|escapejs}}');
   fit_player();
