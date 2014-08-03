@@ -30,7 +30,7 @@ cd streaming-system/website
 cp private/settings.py.example private/settings.py
 vi private/settings.py
 
-apt-get install python-dev || yum install python-devel
+sudo apt-get install python-dev || sudo yum install python-devel
 
 pip install virtualenv
 ```
@@ -40,7 +40,7 @@ pip install virtualenv
 Running a test server
 =====================
 
-Simply ``make serve``; this will configure a virtualenv, download and install
+Run ``make serve``; this will configure a virtualenv, download and install
 dependencies (inside the virtualenv; your system will not be touched); and a
 test server will be started.
 
