@@ -86,6 +86,6 @@ upload:
 
 serve: prepare-serve install
 	$(ACTIVATE) && python manage.py syncdb
-	$(ACTIVATE) && python manage.py runserver
+	$(ACTIVATE) && python manage.py runserver ${ARGS} 
 
 .PHONY : lint upload deploy serve clean config prepare-serve
