@@ -21,16 +21,17 @@ following diagram:
 Initial Configuration
 =====================
 
-To get the code and dependencies:
+To get the code and dependencies, as a **non-root user**:
 
-```
-# git clone git@github.com:timvideos/streaming-system.git
-# cd streaming-system/website
+```bash
+git clone git@github.com:timvideos/streaming-system.git
+cd streaming-system/website
 
-# cp private/settings.py.example private/settings.py
-# vi private/settings.py
+cp private/settings.py.example private/settings.py
+vi private/settings.py
 
-# make serve
+sudo apt-get install python-dev python-pip || sudo yum install python-devel python-pip
+sudo pip install virtualenv
 ```
 
 
@@ -38,12 +39,22 @@ To get the code and dependencies:
 Running a test server
 =====================
 
-Simply ``make serve``; this will configure a virtualenv, download and install
+Run ``make serve``; this will configure a virtualenv, download and install
 dependencies (inside the virtualenv; your system will not be touched); and a
 test server will be started.
 
 If this is your first time running ``make serve`` you'll be prompted to provide
 a username and password for an admin account.
+
+This test server should not be used in production (see relevant section below).
+
+Requests are served at http://127.0.0.1:8000 by default.  If you need to change
+the listening IP or port, try ```ARGS="192.168.1.1:8000" make serve``` where ARGS
+represents your desired listening IP and port.
+
+This test server **should NOT be used in production** (see relevant section below).
+
+
 
 Registering a (fake) flumotion encoder server onto tracker
 ==========================================================
@@ -56,7 +67,7 @@ locally, you can use the fake_register command to pretend you have one.
 
 ```
 # cd ../tools/register
-# python fake_register.py --ip 127.0.0.1
+# ../../website/bin/python fake_register.py --ip 127.0.0.1
 ```
 
 Sample output:
@@ -75,12 +86,15 @@ Note: DO NOT run ``make serve`` as root. If you do, virtualenv folders won't
 have write permissions, so the tracker won't be able to write to sqlite
 database.
 
+
+
 Setting up a new instance of the system
 =================================
 
 Copy config.private.json.example to config.private.json.
 
 ```bash
+cd ..
 cp config.private.json.example config.private.json
 vi config.private.json
 
