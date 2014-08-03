@@ -30,9 +30,8 @@ cd streaming-system/website
 cp private/settings.py.example private/settings.py
 vi private/settings.py
 
-sudo apt-get install python-dev || sudo yum install python-devel
-
-pip install virtualenv
+sudo apt-get install python-dev python-pip || sudo yum install python-devel python-pip
+sudo pip install virtualenv
 ```
 
 
