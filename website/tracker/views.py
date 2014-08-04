@@ -61,7 +61,7 @@ def stream(request, group):
 
     # Pick a server
     if active_servers:
-        your_server = sorted(active_servers, cmp=lambda a, b: cmp(a.overall_bitrate, b.overall_bitrate))[0]
+        your_server = sorted(active_servers, key=lambda x: x.overall_bitrate)[0]
     else:
         your_server = None
 
@@ -101,10 +101,10 @@ def endpoint_stats(request):
     types = list(sorted([x for x in dir(models.Endpoint()) if x.endswith('_clients')]))
     all_types = list(sorted([x for x in dir(models.Endpoint()) if not x.startswith('_')]))
 
-    active_servers = sorted(active_servers, cmp=lambda a, b: cmp((a.group, a.overall_bitrate), (b.group, b.overall_bitrate)))
+    active_servers = sorted(active_servers, key=lambda x: (x.group, x.overall_bitrate))
     active_overall = funnydict((t, sum([0, getattr(x, t, None)][isinstance(getattr(x, t, None), (int, float))] for x in active_servers)) for t in all_types)
 
-    inactive_servers = sorted(inactive_servers, cmp=lambda a, b: cmp((a.group, a.overall_bitrate), (b.group, b.overall_bitrate)))
+    inactive_servers = sorted(inactive_servers, key=lambda x; (x.group, x.overall_bitrate))
     inactive_overall = funnydict((t, sum([0, getattr(x, t, None)][isinstance(getattr(x, t, None), (int, float))] for x in inactive_servers)) for t in all_types)
 
     return render(request, 'stats.html', locals(), content_type='text/html',
