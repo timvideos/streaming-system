@@ -88,7 +88,6 @@ class Stats(models.Model):
     group = models.CharField(blank=False, max_length=10)
     created_on = models.DateTimeField(default=datetime.datetime.utcnow, db_index=True)
     created_by = models.TextField(db_index=True)
-    # name_and_values = models.ManyToManyField('$(name)sName', through='$(name)sNamesAndValues') # Defined in subclass
 
     class Meta:
         abstract = True
