@@ -124,7 +124,6 @@ OUR_APPS = (
 )
 
 INSTALLED_APPS = OUR_APPS + (
-    'django_extensions',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
