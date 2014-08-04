@@ -56,6 +56,15 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
         <div id="quality-container" class="options-group container_1">
           Backup Stream <a href="http://justin.tv/{{ config.justintv_user }}">at Justin.tv</a>
         </div>
+        <div id="sidebar-container" class="options-group container_1">
+          sidebar:
+          <form id="sidebar">
+            <ul>
+              <li><input type="radio" name="sidebar" value="irc" checked>IRC
+              <li><input type="radio" name="sidebar" value="twitter">Twitter
+            </ul>
+          </form>
+        </div>
       </td>
     </tr><tr>
       <td id="player-cell">
@@ -69,6 +78,14 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
         <div id="chat-container" class="container_3">
           <div id="chat-sizer" class="sizer">
             <iframe id="chat-frame" src="http://webchat.freenode.net?channels={{ config.ircchannel|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
+          </div>
+        </div>
+        <div id="twittersb-container" class="container_3" style="height: 100%; overflow: hidden; display:none">
+          <div id="twitter-sizer" class="sizer">
+            <div class="related-tweets">Searching Twitter...</div>
+            <div id="twitter-search">Search on Twitter:
+              <a class=tag href="https://twitter.com/search?q={{ config.twitter|urlencode }}" rel="tag">{{ config.twitter }}</a>
+            </div>
           </div>
         </div>
       </td>
@@ -178,6 +195,33 @@ function quality_change(evt) {
   quality_set(value);
 }
 quality_option.change(quality_change);
+/**
+* Sidebar options for IRC and twitter
+*/
+var sidebar_option = $('input[name=sidebar][type=radio]');
+function sidebar_set(value) {
+  if (value == 'irc') {
+    console.log ('IRC selected');
+    $('#twitter-cell').parent().show();
+    $('#chat-container').show();
+    $('#twittersb-container').hide();
+
+  }
+ if (value == 'twitter') {
+    console.log ('Twitter selected');
+    $('#twitter-cell').parent().hide();
+    $('#chat-container').hide();
+    $('#twittersb-container').show();
+    ;
+
+  }
+}
+function sidebar_change(evt) {
+  var value = $('input[name=sidebar][type=radio]:checked').val();
+  sidebar_set(value);
+}
+sidebar_option.change(sidebar_change);
+
 
 /**
  * Format of the streaming.
