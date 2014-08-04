@@ -56,48 +56,20 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
 
   </ul>
 </li>
-<li class="dropdown">
+<li class="dropdown" id="quality-container">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Quality <span class="caret"></span></a>
   <ul class="dropdown-menu" role="menu">
-    <li class="qualButton" data-q="auto"><a href="#" onclick="quality_set('html5')">Automatic</a></li>
-    <li class="qualButton" data-q="hd"><a href="#" onclick="quality_set('justintv')">High definition</a></li>
-    <li class="qualButton" data-q="sd"><a href="#" onclick="quality_set('audio')">Low definition</a></li>
-<!--
-    <li><input type="radio" id="q1" name="quality" value="auto" checked>
-      <label for="q1">Auto</label></li>
-    <li><input type="radio" id="q2" name="quality" value="hd">
-      <label for="q2">High definition</label></li>
-    <li><input type="radio" id="q3" name="quality" value="sd">
-      <label for="q3">Low definition</label></li> -->
+    <li class="qualButton" data-q="auto"><a href="#" onclick="quality_set('auto')">Automatic</a></li>
+    <li class="qualButton" data-q="hd"><a href="#" onclick="quality_set('hd')">High definition</a></li>
+    <li class="qualButton" data-q="sd"><a href="#" onclick="quality_set('sd')">Low definition</a></li>
   </ul>
 </li>
-<li><a id="ircToggle">IRC</a></li>
+<li><a id="ircToggle" title="Show or hide the IRC side pane">IRC</a></li>
 <li id="now_time"></li>
 <li id="now_title"></li>
 {% endblock %}
 
 {% block content %}
-
-<!--      <td id="options" colspan=2>
-        <div class="options-group container_1">
-          Video Format:
-          <form id="format">
-            <ul>
-            </ul>
-          </form>
-        </div>
-        <div id="quality-container" class="options-group container_1">
-          Quality:
-          <form id="quality">
-            <ul>
-            </ul>
-          </form>
-        </div>
-        <div id="quality-container" class="options-group container_1">
-          Backup Stream <a href="http://justin.tv/{{ config.justintv_user }}">at Justin.tv</a>
-        </div>
-      </td>
-    </tr><tr> -->
 
 <div class="row">
   <div id="player-container" class="col-md-8">
@@ -189,8 +161,8 @@ setTimeout(fit_player, 2000);
 function quality_set(value) {
   if (player_jwobject) {
     var format = player_format;
-    if (value == format)
-      return;
+    //if (value == format)
+    //  return;
 
     if (player_format == 'auto') {
       format = player_jwobject.renderingMode;
