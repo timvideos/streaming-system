@@ -73,7 +73,11 @@ def index(request, template="index"):
 
     config = CONFIG['config']
     default = CONFIG['default']
-    return render_to_response('%s.html' % template, locals())
+    return render_to_response('%s.html' % template, {
+        'groups': groups,
+        'config': config,
+        'default': default,
+    })
 
 
 def get_current_next(group, howmany=2, delta=datetime_tz.timedelta()):
