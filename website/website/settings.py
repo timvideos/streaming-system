@@ -107,7 +107,7 @@ MIDDLEWARE_CLASSES = [
 
 if DEBUG:
     MIDDLEWARE_CLASSES += [
-        'middleware.SetHttpRealIp',
+        'website.middleware.SetHttpRealIp',
     ]
 
 ROOT_URLCONF = 'website.urls'
