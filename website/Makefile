@@ -8,6 +8,9 @@ endef
 
 ACTIVATE = . bin/activate
 
+# Use bash as the shell so we don't have to worry about portability problems.
+SHELL := /bin/bash
+
 ###############################################################################
 # Export the configuration to sub-makes
 ###############################################################################
