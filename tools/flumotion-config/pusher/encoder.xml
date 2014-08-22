@@ -114,23 +114,6 @@
       <clock-master>false</clock-master>
     </component>
 
-    <component name="justintv"
-               type="pipeline-converter"
-               label="justintv"
-               worker="localhost"
-               project="flumotion"
-               version="0.9.0.1">
-      <eater name="default">
-         <feed alias="default">muxer-loop:default</feed> 
-      </eater>
-      <clock-master>false</clock-master>
-      <property name="pipeline">tee name=t ! queue ! rtmpsink location="rtmp://live.justin.tv/app/%(justintv_key)s flashver=FME/2.5\20(compatible;\20FMSc\201.0)" sync=false  t. ! queue</property>
-
-<!-- ffenc_flv ! flvmux streamable=true !  -->
-
-
-    </component>
-
     <component name="http-loop"
                type="http-streamer"
                label="http-loop"

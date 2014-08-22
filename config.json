@@ -63,11 +63,6 @@
                 "flumotion-password": false,
                 "flumotion-salt": false,
 
-                // The "justintv_key" should be overriden in
-                // config.json.private
-                "justintv_user": false,
-                "justintv_key": false,
-
                 // Terminator
                 "": ""
         },

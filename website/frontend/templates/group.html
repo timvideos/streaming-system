@@ -38,7 +38,6 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
               <li><input type="radio" name="format" value="auto" checked>Auto
               <li><input type="radio" name="format" value="flash">Flash
               <li><input type="radio" name="format" value="html5">HTML5
-              <li><input type="radio" name="format" value="justintv">Justin.tv
               <li><input type="radio" name="format" value="audio">Audio Only
             </ul>
           </form>
@@ -52,9 +51,6 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
               <li><input type="radio" name="quality" value="sd">HD off
             </ul>
           </form>
-        </div>
-        <div id="quality-container" class="options-group container_1">
-          Backup Stream <a href="http://justin.tv/{{ config.justintv_user }}">at Justin.tv</a>
         </div>
       </td>
     </tr><tr>
@@ -193,33 +189,8 @@ function format_set(value) {
     player_jwobject.remove();
     player_jwobject = null;
   }
-  if (player_format == "justintv") {
-    swobject.removeSWF("player");
-  }
-
   var jwplayer_create = false;
   if (value == 'novideo') {
-  }
-  if (value == 'justintv') {
-    var flashvars = {
-      "start_volume": 0.5,
-      "backgroundImage": "",
-      "channel": "{{ config.justintv_user }}",
-      "hostname": "www.justin.tv",
-      "auto_play": true
-    };
-    var params = {
-      "allowFullScreen": true,
-      "allowScriptAccess": "always",
-      "allowNetworking": "all",
-      "movie": "http://www.justin.tv/widgets/live_embed_player.swf"
-    };
-
-    var url = "http://www.justin.tv/widgets/live_embed_player.swf?";
-    for (value in flashvars) {
-      url = url + "&" + value + "=" + flashvars[value];
-    }
-    swfobject.embedSWF(url, "player", "100%", "100%", "9.0.0", null, flashvars, params);
   }
 
   if (value == 'auto' || value == 'flash' || value == 'html5' || value == 'audio') {
