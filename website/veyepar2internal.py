@@ -1,32 +1,6 @@
 #! /usr/bin/python
 # vim: set ts=4 sw=4 et sts=4 ai:
 
-"""
-This tool generates the data.py file needed by the system.
-
-This file is in the following format:
-    import datetime
-    import pytz
-
-    data = \
-    // Dictionary of GROUP to sorted list of all events for that group.
-    {'GROUP1' : [
-       // Sorted list of all events in that group.
-       {'abstract': 'Long description of event proceedings',
-        'end': 'End time in YYYY-MM-DD HH:MM:SS in UTC',
-        'start': 'Start time in YYYY-MM-DD HH:MM:SS in UTC',
-        'title': 'Short title for event proceedings',
-        'url': 'URL for details to link too.'},
-       {...},
-       {...}],
-     'GROUP2': []
-    }
-
-
-
-
-"""
-
 import cStringIO as StringIO
 import hashlib
 import os
@@ -36,6 +10,8 @@ import simplejson
 import sys
 import sys
 import urllib2
+import re
+from dateutil import parser
 
 from collections import defaultdict
 from datetime_tz import datetime_tz, timedelta, iterate as dt_iterate
@@ -46,6 +22,16 @@ if config_path not in sys.path:
 import config as common_config
 CONFIG = common_config.config_load()
 
+ROOM_MAP = dict(plenary="Plenary Room", room3278="Room 327/8", room329="Room 329", room338="Room 329", elsewhere="Elsewhere", example="Example Room")
+
+"""
+345 - Plenary room
+352 - Room 327/8
+349 - Room 329
+356 - Room 338
+"""
+
+
 # Make pretty-print output a valid python string for UTC timezone object.
 def utc__repr__(self):
     return "pytz.utc"
@@ -53,9 +39,16 @@ def utc__repr__(self):
 pytz.utc.__class__.__repr__ = utc__repr__
 
 
+def parse_duration(s):
+    bits = re.split('[^0-9]+', s)
+    if len(bits) == 2:
+        return timedelta(hours=int(bits[0]), minutes=int(bits[1]))
+    elif len(bits) == 3:
+        return timedelta(hours=int(bits[0]), minutes=int(bits[1]), seconds=int(bits[2]))
+
 
 url_cache = {}
-def get_schedule_json(url, tzinfo=None):
+def get_schedule_json(url, channel, tzinfo=None):
     if not url in url_cache:
         sys.stderr.write("Downloading %s\n" % url)
         url_json = urllib2.urlopen(url).read()
@@ -63,20 +56,30 @@ def get_schedule_json(url, tzinfo=None):
         url_data = simplejson.loads(url_json)
 
         # Convert the time/date values into datetime objects
-        for room in url_data:
-            for item in url_data[room]:
-                for value in item:
-                    if value not in ('start', 'end',):
-                        continue
+        channel_url_data = []
+        for item in url_data:
+            if item['fields']['location'] != ROOM_MAP[channel]:
+                continue
 
-                    dt = datetime_tz.smartparse(item[value], tzinfo)
-                    item[value] = dt.astimezone(pytz.utc)
+            # no end time, generate one from start+duration...
 
-                # If no end time, generate one from start+duration...
+            endtime = parser.parse(item['fields']['start']) + parse_duration(item['fields']['duration'])
+            enddt = datetime_tz.smartparse(str(endtime), tzinfo)
+            endtime = enddt.astimezone(pytz.utc)
 
-        url_cache[url] = url_data
+            for value in item['fields']:
+                if value not in ('start', 'end',):
+                    continue
 
-    return url_cache[url]
+                dt = datetime_tz.smartparse(item['fields'][value], tzinfo)
+                item['fields'][value] = dt.astimezone(pytz.utc)
+                channel_url_data.append(item)
+
+            item['fields'].update(dict(end=endtime))
+
+        #url_cache[url] = url_data
+
+    return channel_url_data
 
 
 def print_schedule(conference_schedules):
@@ -98,11 +101,6 @@ def print_schedule(conference_schedules):
 
 
 def main(argv):
-    if CONFIG['config']['schedule-format']:
-        if CONFIG['config']['schedule-format'] == 'pycon':
-            return os.system('python pycon2internal.py')
-        if CONFIG['config']['schedule-format'] == 'veyepar':
-            return os.system('python veyepar2internal.py')
 
     conference_schedules = defaultdict(dict)
 
@@ -111,7 +109,7 @@ def main(argv):
     for channel in CONFIG.groups():
         config = CONFIG.config(channel)
 
-    	if 'schedule' not in config or not config['schedule']:
+        if 'schedule' not in config or not config['schedule']:
             sys.stderr.write("Channel %s doesn't have a schedule.\n" % channel)
             continue
 
@@ -119,42 +117,32 @@ def main(argv):
         if config['schedule-timezone']:
             tzinfo = pytz.timezone(config['schedule-timezone'])
 
-        channel_schedule = get_schedule_json(config['schedule'], tzinfo)
-        if config['schedule-key'] not in channel_schedule:
-            raise IOError("%r not in %r" % (config['schedule-key'], channel_schedule.keys()))
+        channel_schedule = get_schedule_json(config['schedule'], channel, tzinfo)
+        channel_schedule_list = []
+        for e in channel_schedule:
+            channel_schedule_list.append(e['fields'])
 
         conference = config['group']
         if config['conference']:
             conference = config['conference']
 
         schedule = []
-        for schedule_key in [config['schedule-key']] + config['schedule-see-also']:
-            for item in channel_schedule[schedule_key]:
-                if item['title'] in ("miniconf schedules to be determined",):
-                    continue
+        for item in channel_schedule_list:
+            if item['name'] in ("miniconf schedules to be determined",):
+                continue
 
-                data = {
-                    'start': item['start'],
-                    'end': item['end'],
-                    'title': item['title'].strip(),
-                    'abstract': item['abstract'],
-                    'url': '',
-                    }
+            data = {
+                'start': item['start'],
+                'end': item['end'],
+                'title': item['name'].strip(),
+                'abstract': item['description'],
+                'url': item['public_url'],
+                }
 
-                if not data['title']:
-                    continue
+            if not data['title']:
+                continue
 
-                if 'url' in item:
-                    data['url'] = item['url']
-
-                if schedule_key == 'uncatered':
-                    data['via'] = schedule_key
-                    data['title'] = "Lunch Break"
-                elif schedule_key != config['schedule-key']:
-                    data['via'] = schedule_key
-                    data['title'] = "Move to %s for %s" % (schedule_key, item['title'])
-
-                schedule.append(data)
+            schedule.append(data)
 
         schedule.sort(key=lambda i: i['start'])
         conference_schedules[conference][channel] = schedule
