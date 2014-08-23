@@ -22,7 +22,7 @@ if config_path not in sys.path:
 import config as common_config
 CONFIG = common_config.config_load()
 
-ROOM_MAP = dict(plenary="Plenary Room", room3278="Room 327/8", room329="Room 329", room338="Room 329", elsewhere="Elsewhere", example="Example Room")
+ROOM_MAP = dict(plenary="Plenary Room", room3278="Room 327/8", room329="Room 329", room338="Room 329", elsewhere="Elsewhere")
 
 """
 345 - Plenary room
@@ -107,6 +107,9 @@ def main(argv):
     # Download the schedule details for each channel and group into
     # conferences.
     for channel in CONFIG.groups():
+        if channel == 'example':
+            continue
+
         config = CONFIG.config(channel)
 
         if 'schedule' not in config or not config['schedule']:
