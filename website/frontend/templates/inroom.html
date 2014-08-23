@@ -34,8 +34,14 @@ vim: set ts=2 sw=2 et sts=2 ai:
         <div class="options-group container_1">
           Web&nbsp;chat&nbsp;at&nbsp;http://timvideos.us/{{group}}
         </div>
+{% if config.ircnetwork != "none" %}
         <div class="options-group container_1">
-          Join&nbsp;IRC&nbsp;on&nbsp;irc://irc.frenode.net/{{ config.ircchannel }}
+  {% if config.ircnetwork == "freenode" %}
+          Join&nbsp;IRC&nbsp;on&nbsp;irc://irc.freenode.net/{{ config.ircchannel }}
+  {% elif config.ircnetwork == "oftc" %}
+          Join&nbsp;IRC&nbsp;on&nbsp;irc://irc.oftc.net/{{ config.ircchannel }}
+  {% endif %}
+{% endif %}
         </div>
       </th>
     </tr><tr style="height: 60%;">
@@ -46,15 +52,26 @@ vim: set ts=2 sw=2 et sts=2 ai:
           </div>
         </div>
       </td>
+{% if config.ircnetwork != "none" %}
       <td id="chat-cell" style="height: 60%; width: 60%;">
         <div id="chat-container" class="container_3">
           <div id="chat-sizer" class="sizer">
+  {% if config.ircnetwork == "freenode" %}
             {% if screen %}
             <iframe id="chat-frame"
               src="http://webchat.freenode.net?nick=videoscreen-{{group|urlencode}}&channels={{ config.ircchannel|urlencode }}&uio=MTA9dHJ1ZSYxMT0yMzYe4"></iframe>
             {% else %}
             <iframe id="chat-frame" src="http://webchat.freenode.net?channels={{ config.ircchannel|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
             {% endif %}
+  {% elif config.ircnetwork == "oftc" %}
+            {% if screen %}
+            <iframe id="chat-frame"
+              src="https://webchat.oftc.net?nick=videoscreen-{{group|urlencode}}&channels={{ config.ircchannel|urlencode }}&uio=MTA9dHJ1ZSYxMT0yMzYe4"></iframe>
+            {% else %}
+            <iframe id="chat-frame" src="https://webchat.oftc.net?channels={{ config.ircchannel|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
+            {% endif %}
+  {% endif %}
+{% endif %}
           </div>
         </div>
       </td>

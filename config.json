@@ -43,6 +43,8 @@
                 // Communication information
                 "twitter_announce": "@timvideosus",
                 "twitter": "@timvideosus OR #timvideos OR #timvideosus",
+                // IRC networks can be "none", "oftc", "freenode"
+                "ircchannel": "freenode",
                 "ircchannel": "#timvideos",
                 "irclog": "http://logs.timvideos.us/%23timvideos/preview.log.html",
 
