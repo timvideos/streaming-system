@@ -61,10 +61,16 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
           </div>
         </div>
       </td>
+{% if config.ircnetwork != "none" %}
       <td id="chat-cell">
         <div id="chat-container" class="container_3">
           <div id="chat-sizer" class="sizer">
-            <iframe id="chat-frame" src="http://webchat.freenode.net?channels={{ config.ircchannel|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
+  {% if config.ircnetwork == "freenode" %}
+            <iframe id="chat-frame" src="http://webchat.freenode.net/?channels={{ config.ircchannel|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
+  {% elif config.ircnetwork == "oftc" %}
+            <iframe id="chat-frame" src="https://webchat.oftc.net/?channels={{ config.ircchannel|urlencode }}"></iframe>
+  {% endif %}
+{% endif %}
           </div>
         </div>
       </td>
