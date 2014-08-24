@@ -43,6 +43,22 @@
       <clock-master>true</clock-master>
     </component>
 
+    <!-- In CarlFK's setup;
+      * (src0) - The left channel is mixer. We want to use this.
+      * (src1) - The right channel is the camera audio. We want to drop this.
+      -->
+    <component name="change-audio"
+               type="pipeline-converter"
+               label="change-audio"
+               worker="localhost"
+               project="flumotion"
+               version="0.9.0.1">
+      <eater name="default">
+        <feed alias="default">producer-audio-video:audio</feed>
+      </eater>
+      <property name="pipeline">deinterleave name=d  d.src0 ! queue ! audioconvert ! audiopanorama</property>
+    </component>
+
     <component name="encoder-video"
                type="pipeline-converter"
                label="encoder-video"
@@ -62,7 +78,7 @@
                project="flumotion"
                version="0.9.0.1">
       <eater name="default">
-        <feed alias="default">producer-audio-video:audio</feed>
+        <feed alias="default">change-audio:default</feed>
       </eater>
       <property name="bitrate">192000</property>
       <clock-master>false</clock-master>
