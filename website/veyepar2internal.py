@@ -22,7 +22,7 @@ if config_path not in sys.path:
 import config as common_config
 CONFIG = common_config.config_load()
 
-ROOM_MAP = dict(plenary="Plenary Room", room3278="Room 327/8", room329="Room 329", room338="Room 329", elsewhere="Elsewhere")
+ROOM_MAP = dict(plenary="Plenary Room", room3278="Room 327/8", room329="Room 329", room338="Room 338", elsewhere="Elsewhere")
 
 """
 345 - Plenary room
