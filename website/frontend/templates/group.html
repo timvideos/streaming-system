@@ -52,6 +52,11 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
             </ul>
           </form>
         </div>
+        <div id="quality-container" class="options-group container_1">
+             Direct Links - <a id="direct_hd_url" href="">HD</a>
+                              <a id="direct_sd_url" href="">SD</a>
+                              <a id="direct_audio_url" href="">Audio</a>
+        </div>
       </td>
     </tr><tr>
       <td id="player-cell">
@@ -127,6 +132,14 @@ $(document).ready(function() {
     };
     ticker();
   });
+
+  // Get and set URLs for direct links
+  var direct_hd_url = streamer_{{group|safe_js}}.html5_streams.hd[0].file;
+  var direct_sd_url = streamer_{{group|safe_js}}.html5_streams.download;
+  var direct_audio_url = streamer_{{group|safe_js}}.audio_streams.download;
+  $("#direct_hd_url").attr("href", direct_hd_url);
+  $("#direct_sd_url").attr("href", direct_sd_url);
+  $("#direct_audio_url").attr("href", direct_audio_url);
 });
 </script>
 <script type="text/javascript">
