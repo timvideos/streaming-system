@@ -1,0 +1,290 @@
+{% extends "base-bs.html" %}
+{% comment %}
+-*- coding: utf-8 -*-
+vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
+{% endcomment %}
+{% load safe_js %}
+
+{% block head %}
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/third_party/jwplayer/jwplayer.js"></script>
+    <script type="text/javascript" src="/static/js/whats_on.js"></script>
+    <script type="text/javascript" src="/static/js/streams.js"></script>
+    <script type="text/javascript" src="/tracker/{{group|urlencode}}/stream.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.tweet.js"></script>
+    <link href="/static/css/jquery.tweet.css" media="all" rel="stylesheet" type="text/css"/>
+    <style type="text/css">
+      body {
+        padding-top: 50px;
+      }
+      @media (min-width: 992px) {
+        #twitter-container {
+          position: fixed;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          height: 68px;
+        }
+        #player-sizer, #chat-sizer {
+          display:block;
+          width:100%;
+          height:100%;
+          margin: 0 auto;
+        }
+        #chat-frame {
+          display: block;
+          width: 100%;
+          border: 0;
+        }
+      }
+    </style>
+
+    <title>Streaming for {{ config.title }}</title>
+{% endblock %}
+
+{% block navbar %}
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Video Format <span class="caret"></span></a> 
+  <ul class="dropdown-menu" role="menu">
+    <li class="videoButton" data-f="videooff"><a href="#" onclick="format_set('videooff')">Video Off</a></li>
+    <li class="videoButton" data-f="auto"><a href="#" onclick="format_set('auto')">Automatic</a></li>
+    <li class="videoButton" data-f="flash"><a href="#" onclick="format_set('flash')">Flash</a></li>
+    <li class="videoButton" data-f="html5"><a href="#" onclick="format_set('html5')">HTML5</a></li>
+    <li class="videoButton" data-f="justintv"><a href="#" onclick="format_set('justintv')">Justin.tv</a></li>
+    <li class="videoButton" data-f="audio"><a href="#" onclick="format_set('audio')">Audio Only</a></li>
+
+  </ul>
+</li>
+<li class="dropdown" id="quality-container">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Quality <span class="caret"></span></a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="qualButton" data-q="auto"><a href="#" onclick="quality_set('auto')">Automatic</a></li>
+    <li class="qualButton" data-q="hd"><a href="#" onclick="quality_set('hd')">High definition</a></li>
+    <li class="qualButton" data-q="sd"><a href="#" onclick="quality_set('sd')">Low definition</a></li>
+  </ul>
+</li>
+<li><a id="ircToggle" title="Show or hide the IRC side pane">IRC</a></li>
+<li id="now_time"></li>
+<li id="now_title"></li>
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+  <div id="player-container" class="col-md-8">
+    <div id="player-sizer" class="sizer">
+      <a href="" id="player"></a>
+    </div>
+  </div>
+
+        <div id="chat-container" class="col-md-4">
+          <div id="chat-sizer" class="sizer">
+            <iframe id="chat-frame" src="http://webchat.freenode.net?channels={{ config.ircchannel|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
+          </div>
+        </div>
+</div>
+
+        <div id="twitter-container" class="container_3">
+          <div id="twitter-sizer" class="sizer">
+            <div class="related-tweets" style="height: 48px; overflow: hidden;">Searching Twitter...</div>
+            <div id="twitter-search">Search on Twitter:
+              <a class=tag href="https://twitter.com/search?q={{ config.twitter|urlencode }}" rel="tag">{{ config.twitter }}</a>
+            </div>
+          </div>
+        </div>
+
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+
+$(document).ready(function() {
+  $(".related-tweets").tweet({
+    twitter_api_proxy_url: '{% url "switter_tweets" %}',
+
+    query: "{{ config.twitter }}",
+    page: 1,
+    avatar_size: 32,
+    count: 20,
+    loading_text: "Searching Twitter...",
+
+    retweet: false,
+  }).bind("loaded", function() {
+    var ul = $(".related-tweets").find(".tweet_list");
+    ul.css("position", "relative");
+    setInterval(function() {
+      var top = ul.position().top;
+      var h = ul.height();
+      var incr = (h / ul.children().length);
+      var newTop = top - incr;
+      if (h + newTop <= 0) newTop = 0;
+      ul.animate( {top: newTop+"px"}, 500 );
+    }, 5000);
+  });
+});
+</script>
+<script type="text/javascript">
+
+/**
+ * Resize the player to fit the window.
+ */
+function fit_player () {
+  var player_sizer = $("#player-sizer");
+  if (player_jwobject) {
+    player_jwobject.resize(player_sizer.width()-20, window.innerHeight - 118);
+    //player_sizer.height()-20);
+  }
+  $('#chat-frame').css({height: window.innerHeight - 118, width: $('#chat-sizer').width() - 20});
+}
+
+function start_it () {
+  if (player_jwobject) {
+    var state = player_jwobject.getState();
+    if (state == player_jwobject.IDLE) {
+       player_jwobject.play(true);
+    }
+  }
+}
+setInterval(start_it, 1e3);
+
+
+// When the window's size changes, so does ours.
+$(window).resize(fit_player);
+// Universal fix for every layout problem ever, amirite?
+setTimeout(fit_player, 2000);
+
+/**
+ * HD stream options
+ */
+//var quality_option = $('input[name=quality][type=radio]');
+function quality_set(value) {
+  if (player_jwobject) {
+    var format = player_format;
+    //if (value == format)
+    //  return;
+
+    if (player_format == 'auto') {
+      format = player_jwobject.renderingMode;
+    }
+    if (format)
+      player_jwobject.load(streamer_{{group|safe_js}}.levels(format, value));
+  }
+  //var option = $('input[name=quality][type=radio][value='+value+']');
+  //option.attr('checked', true);
+  $('.qualButton').removeClass('active');
+  $('.qualButton[data-q='+value+']').addClass('active');
+}
+/*
+function quality_change(evt) {
+  var value = $('input[name=quality][type=radio]:checked').val();
+  quality_set(value);
+}
+quality_option.change(quality_change);
+*/
+/**
+ * Format of the streaming.
+ */
+var player_jwobject = null;
+var player_format = null;
+var format_option = $('input[name=format][type=radio]');
+function format_set(value) {
+
+  // Clean up the previous player
+  if (player_jwobject) {
+    player_jwobject.remove();
+    player_jwobject = null;
+  }
+  if (player_format == "justintv") {
+    swobject.removeSWF("player");
+  }
+
+  var jwplayer_create = false;
+  if (value == 'novideo') {
+  }
+  if (value == 'justintv') {
+    var flashvars = {
+      "start_volume": 0.5,
+      "backgroundImage": "",
+      "channel": "{{ config.justintv_user }}",
+      "hostname": "www.justin.tv",
+      "auto_play": true
+    };
+    var params = {
+      "allowFullScreen": true,
+      "allowScriptAccess": "always",
+      "allowNetworking": "all",
+      "movie": "http://www.justin.tv/widgets/live_embed_player.swf"
+    };
+
+    var url = "http://www.justin.tv/widgets/live_embed_player.swf?";
+    for (value in flashvars) {
+      url = url + "&" + value + "=" + flashvars[value];
+    }
+    swfobject.embedSWF(url, "player", "100%", "100%", "9.0.0", null, flashvars, params);
+  }
+
+  if (value == 'auto' || value == 'flash' || value == 'html5' || value == 'audio') {
+    // Create the player
+    var jwsettings = {
+      autostart: true,
+      plugins: {
+        'gapro-2': {
+          'trackstarts': true,
+          'trackpercentage': false,
+          'trackseconds': true
+        }
+      },
+      //skin: '/static/third_party/jwplayer/skin/glow.zip',
+      modes: streamer_{{group|safe_js}}.modes(value, 'auto')
+    };
+    player_jwobject = jwplayer("player").setup(jwsettings);
+    fit_player();
+
+    player_jwobject.onPlaylist(start_it);
+    player_jwobject.onPlaylistItem(start_it);
+    player_jwobject.onComplete(start_it);
+
+    // Enable the quality widget
+    $('#quality-container').show();
+  } else {
+    // Disable the quality widget
+    $('#quality-container').hide();
+  }
+
+  player_format = value;
+
+  $('.videoButton').removeClass('active');
+  $('.videoButton[data-f='+value+']').addClass('active');
+
+  var option = $('input[name=format][type=radio][value='+value+']');
+  option.attr('checked', true);
+}
+
+
+format_set('auto');
+quality_set('auto');
+
+$('#ircToggle').click(function() {
+  $('#chat-frame').toggle();
+  $('#player-container').toggleClass('col-md-8 col-md-12');
+  fit_player();
+});
+
+if (location.search.indexOf('noirc') >= 1) {
+  $('#ircToggle').click();
+}
+
+function schedule_callback() {
+  update_schedule($('#now_title'), $('#now_desc'), '{{config.title|escapejs}}', $('#next_title'), $('#next_desc'), $('#next_time'), $('#now_time'), '{{group|escapejs}}');
+  fit_player();
+}
+
+function poll_schedule() {
+  get_schedule(schedule_callback, '{{group|escapejs}}');
+}
+setInterval(poll_schedule, 60e3);
+poll_schedule();
+
+</script>
+{% endblock %}
