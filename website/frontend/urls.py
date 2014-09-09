@@ -13,6 +13,7 @@ urlpatterns = patterns('',
     url(r'^$', views.index),
     url(r'^(monitor)$', views.index),
     url(r'^graphs$', views.overall_stats_graphs),
+    url(r'^test$', views.test),
 
     # Per room things
     url(r'^', include(feeds.urls)),       # room/rss - Schedule as RSS

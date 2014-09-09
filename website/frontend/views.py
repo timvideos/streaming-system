@@ -42,6 +42,10 @@ LOCALIPS = [re.compile(x) for x in CONFIG['config']['localips'] if x]
 from .data import data
 
 
+def test(request):
+    return render_to_response('test.html', '')
+
+
 def group(request, group):
     if not CONFIG.valid(group):
         if settings.DEBUG:
@@ -62,7 +66,7 @@ def group(request, group):
         # Is the request coming from the room?
         for ipregex in LOCALIPS:
             if ipregex.match(request.META['HTTP_X_REAL_IP']):
-                template = 'inroom'
+                template = 'group'#inroom'
                 break
 
     screenstr = request.GET.get('screen', 'False')
