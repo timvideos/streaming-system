@@ -46,6 +46,10 @@ def test(request):
     return render_to_response('test.html', '')
 
 
+def youtube(request):
+    return render_to_response('youtube-embed.html', '')
+
+
 def group(request, group):
     if not CONFIG.valid(group):
         if settings.DEBUG:

@@ -14,6 +14,7 @@ urlpatterns = patterns('',
     url(r'^(monitor)$', views.index),
     url(r'^graphs$', views.overall_stats_graphs),
     url(r'^test$', views.test),
+    url(r'^pytexas$', views.youtube),
 
     # Per room things
     url(r'^', include(feeds.urls)),       # room/rss - Schedule as RSS
