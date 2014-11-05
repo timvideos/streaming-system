@@ -8,7 +8,7 @@ for group in groups:
     url = "http://" + group + ".encoder.timvideos.us:8081/loop.raw"
     print "scanning " + group
     try:
-        r = requests.get(url, stream=True)
+        r = requests.head(url, stream=True)
     except:
         print group + " is down..."
         continue
