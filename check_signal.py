@@ -2,10 +2,12 @@ import requests
 import shutil
 import config
 
-groups = config.config_load().groups()
+loaded_config = config.config_load()
+groups = loaded_config.groups()
 
 for group in groups:
-    url = "http://" + group + ".encoder.timvideos.us:8081/loop.raw"
+    encoder_url = loaded_config.config(group)['flumotion-encoder']
+    url = "http://" + encoder_url + ":8081/loop.raw"
     print "scanning " + group
     try:
         r = requests.head(url, stream=True)
