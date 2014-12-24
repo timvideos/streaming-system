@@ -10,6 +10,7 @@ website/testing.sqlite*
 website/bin/
 website/include/
 website/lib/
+website/lib64
 website/src/
 website/local
 website/build/
