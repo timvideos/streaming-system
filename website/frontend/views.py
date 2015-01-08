@@ -71,7 +71,7 @@ def group(request, group):
     else:
         screen = False
 
-    return render_to_response('%s.html' % template, locals())
+    return render_to_response('%s.html' % template, dict(screen=screen, config=config, group=group))
 
 
 def index(request):
