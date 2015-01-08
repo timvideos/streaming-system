@@ -52,7 +52,10 @@ def utc__repr__(self):
 
 pytz.utc.__class__.__repr__ = utc__repr__
 
-
+BLACKLISTED_EVENTS = [
+    "miniconf schedules to be determined",
+]
+    
 
 url_cache = {}
 def get_schedule_json(url, tzinfo=None):
@@ -63,20 +66,46 @@ def get_schedule_json(url, tzinfo=None):
         url_data = simplejson.loads(url_json)
 
         # Convert the time/date values into datetime objects
-        for room in url_data:
-            for item in url_data[room]:
-                for value in item:
-                    if value not in ('start', 'end',):
-                        continue
+        for item in url_data:
+            for value in item:
+                if value.lower() not in ('start', 'end',):
+                    continue
 
-                    dt = datetime_tz.smartparse(item[value], tzinfo)
-                    item[value] = dt.astimezone(pytz.utc)
+                # TODO: Relpace with isodate
+                dt = datetime_tz.smartparse(item[value], tzinfo)
+                item[value] = dt.astimezone(pytz.utc)
 
-                # If no end time, generate one from start+duration...
+            # If no end time, generate one from start+duration...
 
         url_cache[url] = url_data
 
     return url_cache[url]
+
+def parse_pytimedelta(s):
+    """
+    Parses a str(datetime.timedelta).  Ignores microseconds.
+    """
+    days = 0
+    if 'day' in s:
+        day_index = s.index(' day')
+        # Parse out days first
+        days = int(s[0:day_index])
+        
+        # Drop the bit before there
+        s = s[day_index+4:]
+        
+        # Handle plural
+        if s.startswith('s'):
+            s = s[1:]
+        
+        # Strip out the comma
+        assert s.startswith(', '), 'Unexpected string format'
+        s = s[2:]
+
+    # Parse out the remainder
+    hours, minutes, seconds = (int(x) for x in s.split(':'))
+    return timedelta(days=days, hours=hours, minutes=minutes, seconds=seconds)
+    
 
 
 def print_schedule(conference_schedules):
@@ -120,41 +149,38 @@ def main(argv):
             tzinfo = pytz.timezone(config['schedule-timezone'])
 
         channel_schedule = get_schedule_json(config['schedule'], tzinfo)
-        if config['schedule-key'] not in channel_schedule:
-            raise IOError("%r not in %r" % (config['schedule-key'], channel_schedule.keys()))
 
         conference = config['group']
         if config['conference']:
             conference = config['conference']
 
         schedule = []
-        for schedule_key in [config['schedule-key']] + config['schedule-see-also']:
-            for item in channel_schedule[schedule_key]:
-                if item['title'] in ("miniconf schedules to be determined",):
-                    continue
+        for item in channel_schedule:
+            if 'Title' not in item or not item['Title'] or item['Title'] in BLACKLISTED_EVENTS:
+                continue
+                
+            if item['Room Name'] != config['schedule-key'] and item['Room Name'] != config['schedule-see-also']:
+                # Event is not in this room
+                continue
 
-                data = {
-                    'start': item['start'],
-                    'end': item['end'],
-                    'title': item['title'].strip(),
-                    'abstract': item['abstract'],
-                    'url': '',
-                    }
+            data = {
+                'start': item['Start'],
+                'title': item['Title'].strip(),
+                'abstract': item['Description'],
+                'url': '',
+                }
 
-                if not data['title']:
-                    continue
+            if 'End' in item:
+                data['end'] = item['End']
+            elif 'Duration' in item:
+                data['end'] = data['start'] + parse_pytimedelta(item['Duration'])
+            else:
+                sys.stderr.write('Event %r does not have a End time or Duration, dropped.\n' % item['Title'])
+                continue
+            if 'url' in item:
+                data['url'] = item['URL']
 
-                if 'url' in item:
-                    data['url'] = item['url']
-
-                if schedule_key == 'uncatered':
-                    data['via'] = schedule_key
-                    data['title'] = "Lunch Break"
-                elif schedule_key != config['schedule-key']:
-                    data['via'] = schedule_key
-                    data['title'] = "Move to %s for %s" % (schedule_key, item['title'])
-
-                schedule.append(data)
+            schedule.append(data)
 
         schedule.sort(key=lambda i: i['start'])
         conference_schedules[conference][channel] = schedule
@@ -168,6 +194,10 @@ def main(argv):
             all_events.extend(channel_schedule)
         all_events.sort(key=lambda i: i['start'])
 
+        if len(all_events) == 0:
+            # No events this day
+            sys.stderr.write("There are no events in %r\n" % (conference,))
+            continue
         starting_event = all_events[0]
         ending_event = all_events[-1]
 
@@ -265,6 +295,9 @@ def main(argv):
         for channel in conference_schedules[conference]:
             oldevents = conference_schedules[conference][channel]
 
+            if len(oldevents) == 0:
+                # No events on day
+                continue
             newevents = [oldevents.pop(0)]
             conference_schedules[conference][channel] = newevents
 
