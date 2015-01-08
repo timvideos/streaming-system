@@ -104,7 +104,7 @@ def endpoint_stats(request):
     active_servers = sorted(active_servers, key=lambda x: (x.group, x.overall_bitrate))
     active_overall = funnydict((t, sum([0, getattr(x, t, None)][isinstance(getattr(x, t, None), (int, float))] for x in active_servers)) for t in all_types)
 
-    inactive_servers = sorted(inactive_servers, key=lambda x; (x.group, x.overall_bitrate))
+    inactive_servers = sorted(inactive_servers, key=lambda x: (x.group, x.overall_bitrate))
     inactive_overall = funnydict((t, sum([0, getattr(x, t, None)][isinstance(getattr(x, t, None), (int, float))] for x in inactive_servers)) for t in all_types)
 
     return render(request, 'stats.html', locals(), content_type='text/html',
@@ -434,10 +434,7 @@ def endpoint_register(request):
         assert 'ip' not in data
         assert 'group' not in data
 
-        s = models.Endpoint(
-                group=group,
-                ip=ip,
-                **data)
+        s = models.Endpoint(group=group, ip=ip, **data)
         s.save()
 
         response = http.HttpResponse(content_type='text/plain')
@@ -504,12 +501,12 @@ def flumotion_logging(request):
         return response
 
     s = models.Flumotion(
-            identifier=request.POST['identifier'],
-            recorded_time=request.POST['recorded_time'],
-            type=request.POST.get('type', ''),
-            ip=request.META['HTTP_X_REAL_IP'],
-            data=json.dumps(data),
-            )
+        identifier=request.POST['identifier'],
+        recorded_time=request.POST['recorded_time'],
+        type=request.POST.get('type', ''),
+        ip=request.META['HTTP_X_REAL_IP'],
+        data=json.dumps(data),
+    )
     s.save()
 
     # Write out that everything went okay

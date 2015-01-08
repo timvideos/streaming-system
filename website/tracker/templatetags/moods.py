@@ -16,6 +16,7 @@ BORKED = ['sad']
 # States which are considered fatal
 FATAL = ['lost']
 
+
 @register.filter()
 def mood_style(m):
     if m in HAPPY:

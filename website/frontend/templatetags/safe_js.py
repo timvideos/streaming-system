@@ -9,6 +9,7 @@ from django import template
 
 register = template.Library()
 
+
 @register.filter()
 def safe_js(s):
     return re.sub('[^A-Za-z0-9]', '_', s)

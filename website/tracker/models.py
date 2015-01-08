@@ -44,7 +44,7 @@ class NamesAndValues(models.Model):
     value_int = models.IntegerField(blank=True, null=True, db_index=True)
     value_float = models.FloatField(blank=True, null=True, db_index=True)
     # Strings are stored in another table because they are often expensive.
-    #value_str = models.ForeignKey('ValueString', blank=True, null=True, db_index=True, related_name="values") # Defined in subclass
+    # value_str = models.ForeignKey('ValueString', blank=True, null=True, db_index=True, related_name="values") # Defined in subclass
 
     class Meta:
         abstract = True
@@ -102,7 +102,7 @@ class Stats(models.Model):
             if isinstance(item, dict):
                 self.from_dict(item, key+".")
             else:
-                nav = self.NamesAndValuesModel.objects.get_or_create(
+                self.NamesAndValuesModel.objects.get_or_create(
                     stat=self,
                     name=self.NameModel.objects.get_or_create(
                         name="%s%s" % (prefix, key))[0],
@@ -141,6 +141,7 @@ class %(name)sStats(Stats):
 
 exec(STATS_TABLES % {'name': 'Client'})
 exec(STATS_TABLES % {'name': 'Server'})
+
 
 class Endpoint(models.Model):
     """
@@ -220,18 +221,17 @@ class Endpoint(models.Model):
         """
         # Get all the active streaming severs for this channel
         lastseen_after = datetime.datetime.now() - delta
-        q = cls.objects.order_by('group', 'ip', '-lastseen'
-            ).filter(lastseen__gte=lastseen_after
+        q = cls.objects.filter(lastseen__gte=lastseen_after).order_by(
+            'group', 'ip', '-lastseen'
             )
         if group:
             q = q.filter(group__exact=group)
 
-
-        distinct_support = True
+        # distinct_support = True
         try:
             qd = q.distinct('group', 'ip')
             return list(qd)
-        except NotImplementedError, e:
+        except NotImplementedError:
             distinct_endpoints = {}
             for endpoint in q:
                 key = (endpoint.group, endpoint.ip)
