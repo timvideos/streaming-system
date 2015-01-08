@@ -4,6 +4,7 @@
 # vim: set ts=4 sw=4 et sts=4 ai:
 
 from django.conf.urls.defaults import patterns, include, url
+from django.views.generic.base import RedirectView
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -21,6 +22,7 @@ urlpatterns = patterns('',
 
     url(r'^switter', include('switter.urls')),
 
+    url(r'^favicon\.ico$', RedirectView.as_view(url='static/favicon.ico')),
     url(r'', include('frontend.urls')),
 )
 
