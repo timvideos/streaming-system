@@ -11,7 +11,7 @@ from . import feeds
 urlpatterns = patterns('',
     # Site wide pages
     url(r'^$', views.index),
-    url(r'^(monitor)$', views.index),
+    url(r'^monitor$', views.monitor),
     url(r'^graphs$', views.overall_stats_graphs),
 
     # Per room things

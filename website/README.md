@@ -87,6 +87,33 @@ have write permissions, so the tracker won't be able to write to sqlite
 database.
 
 
+Setting up groups
+=================================
+
+Groups in the streaming system are one per "room" where you are streaming from.
+
+The following options are available to each group.
+
+* `channel`: The IRC channel to use.
+* `irclog`: A URL to a HTML log of the IRC channel, to be shown on the overview.
+* `preview`: A URL to an image containing a recent frame of the video stream.
+* `twitter`: Twitter search parameters to use for the Twitter feed.
+* `logo`: Logo to be displayed in some context
+* `title`: Title of the stream.
+
+Schedule options:
+* `link`: Link to a HTML version of the schedule for the conference.
+* `schedule`: Reference to a computer-readable version of the conference programme.  Supports a few different format, default is `eventfeed` (Zookeepr).
+* `schedule-timezone`: Olsen timezone identifier to interpret the conference programme with.
+
+Flumotion (stream) options:
+* `flumotion-mixer`:
+* `flumotion-encoder`:
+* `flumotion-collector`:
+
+YouTube options:
+* `youtube`: Video ID of where the stream is being broadcast.  For the URI `http://www.youtube.com/watch?v=dQw4w9WgXcQ`, you should enter `dQw4w9WgXcQ` here.  If not specified, YouTube playback will be disabled.
+
 
 Setting up a new instance of the system
 =================================

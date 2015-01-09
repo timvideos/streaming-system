@@ -7,7 +7,6 @@ vim: set ts=2 sw=2 et sts=2 ai:
 
 {% block head %}
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-    <script type="text/javascript" src="/static/third_party/jquery-extra/jquery.juitter-1.0.0.js"></script>
     <script type="text/javascript" src="/static/third_party/jwplayer/jwplayer.js"></script>
 
     <script type="text/javascript" src="/static/js/streams.js"></script>
@@ -17,7 +16,6 @@ vim: set ts=2 sw=2 et sts=2 ai:
     <script type="text/javascript" src="/tracker/{{group}}/stream.js"></script>
   {% endfor %}
 
-    <link rel="stylesheet" type="text/css" href="/static/third_party/jquery-extra/jquery.juitter-1.0.0.css">
     <title>Stream Time for Linux.conf.au!</title>
 {% endblock %}
 
@@ -79,12 +77,12 @@ function jwplayers() {
 
 {% for group in groups %}
 function jwplayer_{{group|safe_js}}() {
-    try {
+  try {
     var jwsettings = {
       autostart: true,
       mute: true,
       //skin: '/static/third_party/jwplayer/skin/glow.zip',
-      modes: streamer_{{group|safe_js}}.modes('flash', 'sd'),
+      modes: streamer_{{group|safe_js}}.modes('auto', 'sd'),
       'width': '250', 'height': '200'
     };
     {{group|safe_js}}_player_jwobject = jwplayer('{{group}}').setup(jwsettings);
@@ -92,28 +90,18 @@ function jwplayer_{{group|safe_js}}() {
       var player_sizer = $("#{{group}}");
       {{group|safe_js}}_player_jwobject.resize(player_sizer.width(), player_sizer.height());
     });
-    } catch (e) {
-      if(window.console) window.console.log([e,' likely stream not registered.']);
+  } catch (e) {
+    if (window.console) {
+      window.console.log([e,' likely stream not registered.']);
     }
+  }
 }
 {% endfor %}
 
-function resize_twitter() {
- $("#twitter-juitter").height(5);
- $("#twitter-juitter").height($("#twitter-cell").innerHeight()-5);
-}
-$.Juitter.onUpdate = resize_twitter;
 
-function ready() {
-  $.Juitter.start({
-    live:"live-5",
-    total: 20,
-    searchType: "searchWord",
-    searchObject: encodeURIComponent("{{default.twitter}}"),
-    });
+$(function() {
   jwplayers();
-}
-$(document).ready(ready);
+});
 
 </script>
 {% endblock %}

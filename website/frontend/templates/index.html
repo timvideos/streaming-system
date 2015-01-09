@@ -171,7 +171,7 @@ function update_video() {
 //----------------------------------------------------------------------------/
 var update_chat_for = {};
 {% for group, details in groups.items %}
-update_chat_for['{{group}}'] = function() {
+update_chat_for['{{group|escapejs}}'] = function() {
  $('#chat-preview-{{group|escapejs}}').attr(
   'src', "{{details.irclog}}"
   );

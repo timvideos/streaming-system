@@ -52,7 +52,7 @@ def group(request, group):
     config = CONFIG.config(group)
 
     template = request.GET.get('template', 'default')
-    if not re.match('[a-z]+', template):
+    if not re.match(r'^[-a-z]+$', template):
         if settings.DEBUG:
             raise Exception("Unknown template: %s" % template)
         else:
@@ -71,17 +71,27 @@ def group(request, group):
     else:
         screen = False
 
-    return render_to_response('%s.html' % template, locals())
+    return render_to_response('%s.html' % template, dict(screen=screen, config=config, group=group))
 
 
-def index(request, template="index"):
+def index(request):
     groups = ordereddict.OrderedDict()
     for group in sorted(CONFIG.groups()):
         groups[group] = CONFIG.config(group)
 
     config = CONFIG['config']
     default = CONFIG['default']
-    return render_to_response('%s.html' % template, locals())
+    return render_to_response('index.html', dict(groups=groups, config=config, default=default))
+
+def monitor(request):
+    groups = ordereddict.OrderedDict()
+    for group in sorted(CONFIG.groups()):
+        groups[group] = CONFIG.config(group)
+
+    config = CONFIG['config']
+    default = CONFIG['default']
+    return render_to_response('monitor.html', dict(groups=groups, config=config, default=default))
+
 
 
 def get_current_next(group, howmany=2, delta=datetime_tz.timedelta()):
@@ -125,6 +135,6 @@ def overall_stats_graphs(request):
     actual data is sent by overall_stats_json, so that the graphs can refresh
     themselves without a page reload."""
 
-    return render(request, 'graphs.html', locals(), content_type='text/html',
+    return render(request, 'graphs.html', content_type='text/html',
                   context_instance=template.RequestContext(request))
 

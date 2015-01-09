@@ -27,11 +27,19 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/">Tim Videos</a>
+          <a class="navbar-brand" href="/" title="Tim Videos">
+            <img alt="Tim Videos" src="/static/img/tv20.png" />
+          </a>
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
           {% block navbar %}{% endblock %}
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            {% block navbar-right %}{% endblock %}
+            <li><a href="https://twitter.com/search?q={{ config.twitter|urlencode }}" title="Search Twitter for {{ config.twitter }}">Twitter</a></li>
+            <li><a href="http://code.timvideos.us" title="This is open source! Go to the project page.">Project</a></li>
+            {% block navbar-righter %}{% endblock %}
           </ul>
         </div><!--/.nav-collapse -->
       </div>
