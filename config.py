@@ -7,7 +7,11 @@ import cStringIO as StringIO
 import os
 import re
 import simplejson as json
+import string
 import warnings
+
+
+VALID_GROUP_CHARACTERS = string.letters + string.digits + '_'
 
 def _config_merge_into(dicta, dictb):
     for nameb, valueb in dictb.iteritems():
@@ -80,6 +84,11 @@ def config_load():
         assert group_keys.issubset(all_keys), \
             'Group %s has invalid keys: %s' % (
                 group_name, group_keys.difference(all_keys))
+        for c in group_name:
+            if c not in VALID_GROUP_CHARACTERS:
+                # non-JS-safe group name, fail
+                # This causes strange bugs otherwise.
+                raise IOError("Non-letter/digit/_ character in group name: %r" % (group_name,))
 
     return ConfigWrapper(config)
 
