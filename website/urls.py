@@ -22,7 +22,7 @@ urlpatterns = patterns('',
 
     url(r'^switter', include('switter.urls')),
 
-    url(r'^favicon\.ico$', RedirectView.as_view(url='static/favicon.ico')),
+    url(r'^favicon\.ico$', RedirectView.as_view(url='static/img/favicon.ico')),
     url(r'', include('frontend.urls')),
 )
 

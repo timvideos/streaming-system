@@ -44,9 +44,16 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
 {% endblock %}
 
 {% block navbar %}
+<li><p class="navbar-text" id="now_title"></li>
+<li><p class="navbar-text" id="now_time"></p></li>
+{% endblock %}
+{% block navbar-right %}
 <li class="dropdown" id="settingsDropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Settings <span class="caret"></span></a> 
   <ul class="dropdown-menu" role="menu">
+    <li role="presentation" class="dropdown-header">Presentation</li>
+    <li><a id="ircToggle" title="Toggle the IRC side pane" href="#">IRC display</a></li>
+    
     <li role="presentation" class="dropdown-header">Video format</li>
     <li class="videoButton" data-f="videooff"><a href="#" onclick="format_set('videooff')">Video Off</a></li>
     <li class="videoButton" data-f="auto"><a href="#" onclick="format_set('auto')">Automatic</a></li>
@@ -60,12 +67,9 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
     <li role="presentation" class="dropdown-header">Quality</li>
     <li class="qualButton" data-q="auto"><a href="#" onclick="quality_set('auto')">Automatic</a></li>
     <li class="qualButton" data-q="hd"><a href="#" onclick="quality_set('hd')">High definition</a></li>
-    <li class="qualButton" data-q="sd"><a href="#" onclick="quality_set('sd')">Low definition</a></li>
+    <li class="qualButton" data-q="sd"><a href="#" onclick="quality_set('sd')">Low definition</a></li>    
   </ul>
 </li>
-<li><a id="ircToggle" title="Show or hide the IRC side pane" href="#">IRC</a></li>
-<li id="now_time"></li>
-<li id="now_title"></li>
 {% endblock %}
 
 {% block content %}
