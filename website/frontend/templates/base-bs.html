@@ -33,6 +33,10 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
           <ul class="nav navbar-nav">
           {% block navbar %}{% endblock %}
           </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="https://twitter.com/search?q={{ config.twitter|urlencode }}" title="Search Twitter for {{ config.twitter }}">Twitter</a></li>
+            <li><a href="http://code.timvideos.us" title="This is open source! Go to the project page.">Project</a></li>
+          </ul>
         </div><!--/.nav-collapse -->
       </div>
     </div>
