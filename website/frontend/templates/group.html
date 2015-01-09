@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base-bs.html" %}
 {% comment %}
 -*- coding: utf-8 -*-
 vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
@@ -10,118 +10,94 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script type="text/javascript" src="/static/third_party/jwplayer/jwplayer.js"></script>
     <script type="text/javascript" src="/static/js/whats_on.js"></script>
-    <script type="text/javascript" src="/static/js/bugreport.js"></script>
     <script type="text/javascript" src="/static/js/streams.js"></script>
-    <script type="text/javascript" src="/tracker/{{group}}/stream.js"></script>
-
+    <script type="text/javascript" src="/tracker/{{group|urlencode}}/stream.js"></script>
     <script type="text/javascript" src="/static/js/jquery.tweet.js"></script>
     <link href="/static/css/jquery.tweet.css" media="all" rel="stylesheet" type="text/css"/>
+    <style type="text/css">
+      body {
+        padding-top: 50px;
+      }
+      @media (min-width: 992px) {
+        #twitter-container {
+          position: fixed;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          height: 46px;
+        }
+        #player-sizer, #chat-sizer {
+          display:block;
+          width:100%;
+          height:100%;
+          margin: 0 auto;
+        }
+        #chat-frame {
+          display: block;
+          width: 100%;
+          border: 0;
+        }
+      }
+    </style>
 
     <title>Streaming for {{ config.title }}</title>
 {% endblock %}
 
-{% block content %}
-      <td id="now_cell now_cell_group" colspan=2 style="height: 1px;">
-        <div id="showing" class='now_div now_div_group'>
-          <div id='now_info' class='now_info now_info_group' onclick='$(".now_desc").fadeToggle();'>(More info)</div>
-          <div id='now_time' class='now_time now_time_group'></div>
-          <div id='now_title' class='now_title now_title_group'></div>
-          <div id='now_desc' class='now_desc now_desc_group'></div>
-        </div>
-      </td>
-    </tr><tr>
-      <td id="options" colspan=2>
-        <div class="options-group container_1">
-          Video Format:
-          <form id="format">
-            <ul>
-              <li><input type="radio" name="format" value="videooff">Video Off
-              <li><input type="radio" name="format" value="auto" checked>Auto
-              <li><input type="radio" name="format" value="flash">Flash
-              <li><input type="radio" name="format" value="html5">HTML5
-              <li><input type="radio" name="format" value="audio">Audio Only
-            </ul>
-          </form>
-        </div>
-        <div id="quality-container" class="options-group container_1">
-          Quality:
-          <form id="quality">
-            <ul>
-              <li><input type="radio" name="quality" value="auto" checked>Auto
-              <li><input type="radio" name="quality" value="hd">HD on
-              <li><input type="radio" name="quality" value="sd">HD off
-            </ul>
-          </form>
-        </div>
-        <div id="quality-container" class="options-group container_1">
-             Direct Links - <a id="direct_hd_url" href="">HD</a>
-                              <a id="direct_sd_url" href="">SD</a>
-                              <a id="direct_audio_url" href="">Audio</a>
-        </div>
-        <div id="sidebar-container" class="options-group container_1">
-          sidebar:
-          <form id="sidebar">
-            <ul>
-              <li><input type="radio" name="sidebar" value="irc" checked>IRC
-              <li><input type="radio" name="sidebar" value="twitter">Twitter
-            </ul>
-          </form>
-        </div>
-      </td>
-    </tr><tr>
-      <td id="player-cell">
-        <div id="player-container" class="container_2">
-          <div id="player-sizer" class="sizer">
-            <a href="" id="player"></a>
-          </div>
-        </div>
-      </td>
-{% if config.ircnetwork != "none" %}
-      <td id="chat-cell">
-        <div id="chat-container" class="container_3">
-          <div id="chat-sizer" class="sizer">
-  {% if config.ircnetwork == "freenode" %}
-            <iframe id="chat-frame" src="http://webchat.freenode.net/?channels={{ config.ircchannel|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
-  {% elif config.ircnetwork == "oftc" %}
-            <iframe id="chat-frame" src="https://webchat.oftc.net/?channels={{ config.ircchannel|urlencode }}"></iframe>
-  {% endif %}
+{% block navbar %}
+<li><p class="navbar-text" id="now_title"></li>
+<li><p class="navbar-text" id="now_time"></p></li>
+{% endblock %}
+{% block navbar-right %}
+<li class="dropdown" id="settingsDropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Settings <span class="caret"></span></a> 
+  <ul class="dropdown-menu" role="menu">
+    <li role="presentation" class="dropdown-header">Presentation</li>
+    <li><a id="ircToggle" title="Toggle the IRC side pane" href="#">IRC display</a></li>
+    
+    <li role="presentation" class="dropdown-header">Video format</li>
+    <li class="videoButton" data-f="videooff"><a href="#" onclick="format_set('videooff')">Video Off</a></li>
+    <li class="videoButton" data-f="auto"><a href="#" onclick="format_set('auto')">Automatic</a></li>
+    <li class="videoButton" data-f="flash"><a href="#" onclick="format_set('flash')">Flash</a></li>
+    <li class="videoButton" data-f="html5"><a href="#" onclick="format_set('html5')">HTML5</a></li>
+{% if config.youtube %}
+    <li class="videoButton" data-f="yt"><a href="#" onclick="format_set('yt')">YouTube</a></li>
 {% endif %}
+    <li class="videoButton" data-f="audio"><a href="#" onclick="format_set('audio')">Audio Only</a></li>
+
+    <li role="presentation" class="dropdown-header">Quality</li>
+    <li class="qualButton" data-q="auto"><a href="#" onclick="quality_set('auto')">Automatic</a></li>
+    <li class="qualButton" data-q="hd"><a href="#" onclick="quality_set('hd')">High definition</a></li>
+    <li class="qualButton" data-q="sd"><a href="#" onclick="quality_set('sd')">Low definition</a></li>    
+  </ul>
+</li>
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+  <div id="player-container" class="col-md-8">
+    <div id="player-sizer" class="sizer">
+      <a href="" id="player"></a>
+    </div>
+  </div>
+
+        <div id="chat-container" class="col-md-4">
+          <div id="chat-sizer" class="sizer">
+            <iframe id="chat-frame" src="http://webchat.freenode.net?channels={{ config.ircchannel|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
           </div>
         </div>
-        <div id="twittersb-container" class="container_3" style="height: 100%; overflow: hidden; display:none">
-          <div id="twitter-sizer" class="sizer">
-            <div class="related-tweets">Searching Twitter...</div>
-            <div id="twitter-search">Search on Twitter:
-              <a class=tag href="https://twitter.com/search?q={{ config.twitter|urlencode }}" rel="tag">{{ config.twitter }}</a>
-            </div>
-          </div>
-        </div>
-      </td>
-    </tr><tr>
-      <td id="twitter-cell" colspan=2>
+</div>
+
         <div id="twitter-container" class="container_3">
           <div id="twitter-sizer" class="sizer">
             <div class="related-tweets" style="height: 48px; overflow: hidden;">Searching Twitter...</div>
-            <div id="twitter-search">Search on Twitter:
-              <a class=tag href="https://twitter.com/search?q={{ config.twitter|urlencode }}" rel="tag">{{ config.twitter }}</a>
-            </div>
           </div>
         </div>
-      </td>
-    </tr><tr>
-      <td id="next_cell next_cell_group" colspan=2 style="height: 1px;">
-        <div id="showing" class='next_div next_div_group'>
-          <div id='next_info' class='next_info next_info_group' onclick='$(".next_desc").fadeToggle();'>(More info)</div>
-          <div id='next_time' class='next_time next_time_group'></div>
-          <div id='next_title' class='next_title next_title_group'></div>
-          <div id='next_desc' class='next_desc next_desc_group'></div>
-        </div>
-      </td>
+
 {% endblock %}
 
 {% block script %}
 <script type="text/javascript">
-
 $(document).ready(function() {
   $(".related-tweets").tweet({
     twitter_api_proxy_url: '{% url "switter_tweets" %}',
@@ -131,33 +107,20 @@ $(document).ready(function() {
     avatar_size: 32,
     count: 20,
     loading_text: "Searching Twitter...",
-    refresh_interval: 30,
 
     retweet: false,
   }).bind("loaded", function() {
     var ul = $(".related-tweets").find(".tweet_list");
     ul.css("position", "relative");
-    var ticker = function() {
-      setTimeout(function() {
-        var top = ul.position().top;
-        var h = ul.height();
-        var incr = (h / ul.children().length);
-        var newTop = top - incr;
-        if (h + newTop <= 0) newTop = 0;
-        ul.animate( {top: newTop+"px"}, 500 );
-        ticker();
-      }, 5000);
-    };
-    ticker();
+    setInterval(function() {
+      var top = ul.position().top;
+      var h = ul.height();
+      var incr = (h / ul.children().length);
+      var newTop = top - incr;
+      if (h + newTop <= 0) newTop = 0;
+      ul.animate( {top: newTop+"px"}, 500 );
+    }, 5000);
   });
-
-  // Get and set URLs for direct links
-  var direct_hd_url = streamer_{{group|safe_js}}.html5_streams.hd[0].file;
-  var direct_sd_url = streamer_{{group|safe_js}}.html5_streams.download;
-  var direct_audio_url = streamer_{{group|safe_js}}.audio_streams.download;
-  $("#direct_hd_url").attr("href", direct_hd_url);
-  $("#direct_sd_url").attr("href", direct_sd_url);
-  $("#direct_audio_url").attr("href", direct_audio_url);
 });
 </script>
 <script type="text/javascript">
@@ -166,10 +129,14 @@ $(document).ready(function() {
  * Resize the player to fit the window.
  */
 function fit_player () {
-  var player_sizer = $("#player-cell");
+  var player_sizer = $("#player-sizer");
   if (player_jwobject) {
-    player_jwobject.resize(player_sizer.width()-20, player_sizer.height()-20);
+    player_jwobject.resize(player_sizer.width()-20, window.innerHeight - 96);
+    //player_sizer.height()-20);
+  } else {
+    $('#yt-live').attr('height', window.innerHeight - 96);
   }
+  $('#chat-frame').css({height: window.innerHeight - 96, width: $('#chat-sizer').width() - 20});
 }
 
 function start_it () {
@@ -191,12 +158,12 @@ setTimeout(fit_player, 2000);
 /**
  * HD stream options
  */
-var quality_option = $('input[name=quality][type=radio]');
+//var quality_option = $('input[name=quality][type=radio]');
 function quality_set(value) {
   if (player_jwobject) {
     var format = player_format;
-    if (value == format)
-      return;
+    //if (value == format)
+    //  return;
 
     if (player_format == 'auto') {
       format = player_jwobject.renderingMode;
@@ -204,57 +171,50 @@ function quality_set(value) {
     if (format)
       player_jwobject.load(streamer_{{group|safe_js}}.levels(format, value));
   }
-  var option = $('input[name=quality][type=radio][value='+value+']');
-  option.attr('checked', true);
+  //var option = $('input[name=quality][type=radio][value='+value+']');
+  //option.attr('checked', true);
+  $('.qualButton').removeClass('active');
+  $('.qualButton[data-q='+value+']').addClass('active');
 }
+/*
 function quality_change(evt) {
   var value = $('input[name=quality][type=radio]:checked').val();
   quality_set(value);
 }
 quality_option.change(quality_change);
-/**
-* Sidebar options for IRC and twitter
 */
-var sidebar_option = $('input[name=sidebar][type=radio]');
-function sidebar_set(value) {
-  if (value == 'irc') {
-    console.log ('IRC selected');
-    $('#twitter-cell').parent().show();
-    $('#chat-container').show();
-    $('#twittersb-container').hide();
-
-  }
- if (value == 'twitter') {
-    console.log ('Twitter selected');
-    $('#twitter-cell').parent().hide();
-    $('#chat-container').hide();
-    $('#twittersb-container').show();
-    ;
-
-  }
-}
-function sidebar_change(evt) {
-  var value = $('input[name=sidebar][type=radio]:checked').val();
-  sidebar_set(value);
-}
-sidebar_option.change(sidebar_change);
-
-
 /**
  * Format of the streaming.
  */
 var player_jwobject = null;
 var player_format = null;
-var format_option = $('input[name=format][type=radio]');
 function format_set(value) {
-
+  $('#player').hide();
   // Clean up the previous player
   if (player_jwobject) {
     player_jwobject.remove();
     player_jwobject = null;
   }
+  if (player_format == "yt") {
+    $('#yt-live').remove();
+  }
+
   var jwplayer_create = false;
   if (value == 'novideo') {
+  }
+
+  if (value == 'yt') {
+{% if config.youtube %}
+    $('#player-sizer').append($('<iframe>')
+        .attr({
+            id: 'yt-live',
+            width: '100%',
+            height: '100%',
+            frameborder: '0',
+            allowfullscreen: 'allowfullscreen',
+            src: '//www.youtube-nocookie.com/embed/{{ config.youtube }}?rel=0&amp;showinfo=0&amp;autoplay=1'
+        }));
+{% endif %}
   }
 
   if (value == 'auto' || value == 'flash' || value == 'html5' || value == 'audio') {
@@ -272,34 +232,49 @@ function format_set(value) {
       modes: streamer_{{group|safe_js}}.modes(value, 'auto')
     };
     player_jwobject = jwplayer("player").setup(jwsettings);
+
     fit_player();
 
     player_jwobject.onPlaylist(start_it);
     player_jwobject.onPlaylistItem(start_it);
     player_jwobject.onComplete(start_it);
+    $('#player').show();
 
     // Enable the quality widget
-    $('#quality-container').show();
+    $('.qualButton').removeClass('disabled');
   } else {
     // Disable the quality widget
-    $('#quality-container').hide();
+    $('.qualButton').addClass('disabled');
   }
 
   player_format = value;
 
+  $('.videoButton').removeClass('active');
+  $('.videoButton[data-f='+value+']').addClass('active');
+
   var option = $('input[name=format][type=radio][value='+value+']');
   option.attr('checked', true);
+  fit_player();
 }
-function format_change(evt) {
-  var value = $('input[name=format][type=radio]:checked').val();
-  format_set(value);
-}
-format_option.change(format_change);
 
-format_change();
-quality_change();
-</script>
-<script type="text/javascript">
+if (streamer_{{group|safe_js}} == null) {
+    $('#player-sizer').text('Streaming server currently unavailable, please try again later.  Sorry about that. :(');
+    $('#settingsDropdown').hide();
+} else {
+    format_set('auto');
+    quality_set('auto');
+}
+
+$('#ircToggle').click(function() {
+  $('#chat-frame').toggle();
+  $('#player-container').toggleClass('col-md-8 col-md-12');
+  fit_player();
+});
+
+if (location.search.indexOf('noirc') >= 1) {
+  $('#ircToggle').click();
+}
+
 function schedule_callback() {
   update_schedule($('#now_title'), $('#now_desc'), '{{config.title|escapejs}}', $('#next_title'), $('#next_desc'), $('#next_time'), $('#now_time'), '{{group|escapejs}}');
   fit_player();
