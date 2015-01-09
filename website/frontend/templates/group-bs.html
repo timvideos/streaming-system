@@ -52,7 +52,9 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
     <li class="videoButton" data-f="auto"><a href="#" onclick="format_set('auto')">Automatic</a></li>
     <li class="videoButton" data-f="flash"><a href="#" onclick="format_set('flash')">Flash</a></li>
     <li class="videoButton" data-f="html5"><a href="#" onclick="format_set('html5')">HTML5</a></li>
-    <li class="videoButton" data-f="justintv"><a href="#" onclick="format_set('justintv')">Justin.tv</a></li>
+{% if config.youtube %}
+    <li class="videoButton" data-f="yt"><a href="#" onclick="format_set('yt')">YouTube</a></li>
+{% endif %}
     <li class="videoButton" data-f="audio"><a href="#" onclick="format_set('audio')">Audio Only</a></li>
 
     <li role="presentation" class="dropdown-header">Quality</li>
@@ -125,10 +127,12 @@ $(document).ready(function() {
 function fit_player () {
   var player_sizer = $("#player-sizer");
   if (player_jwobject) {
-    player_jwobject.resize(player_sizer.width()-20, window.innerHeight - 118);
+    player_jwobject.resize(player_sizer.width()-20, window.innerHeight - 96);
     //player_sizer.height()-20);
+  } else {
+    $('#yt-live').attr('height', window.innerHeight - 96);
   }
-  $('#chat-frame').css({height: window.innerHeight - 118, width: $('#chat-sizer').width() - 20});
+  $('#chat-frame').css({height: window.innerHeight - 96, width: $('#chat-sizer').width() - 20});
 }
 
 function start_it () {
@@ -181,39 +185,32 @@ quality_option.change(quality_change);
 var player_jwobject = null;
 var player_format = null;
 function format_set(value) {
-
+  $('#player').hide();
   // Clean up the previous player
   if (player_jwobject) {
     player_jwobject.remove();
     player_jwobject = null;
   }
-  if (player_format == "justintv") {
-    swobject.removeSWF("player");
+  if (player_format == "yt") {
+    $('#yt-live').remove();
   }
 
   var jwplayer_create = false;
   if (value == 'novideo') {
   }
-  if (value == 'justintv') {
-    var flashvars = {
-      "start_volume": 0.5,
-      "backgroundImage": "",
-      "channel": "{{ config.justintv_user }}",
-      "hostname": "www.justin.tv",
-      "auto_play": true
-    };
-    var params = {
-      "allowFullScreen": true,
-      "allowScriptAccess": "always",
-      "allowNetworking": "all",
-      "movie": "http://www.justin.tv/widgets/live_embed_player.swf"
-    };
 
-    var url = "http://www.justin.tv/widgets/live_embed_player.swf?";
-    for (value in flashvars) {
-      url = url + "&" + value + "=" + flashvars[value];
-    }
-    swfobject.embedSWF(url, "player", "100%", "100%", "9.0.0", null, flashvars, params);
+  if (value == 'yt') {
+{% if config.youtube %}
+    $('#player-sizer').append($('<iframe>')
+        .attr({
+            id: 'yt-live',
+            width: '100%',
+            height: '100%',
+            frameborder: '0',
+            allowfullscreen: 'allowfullscreen',
+            src: '//www.youtube-nocookie.com/embed/{{ config.youtube }}?rel=0&amp;showinfo=0'
+        }));
+{% endif %}
   }
 
   if (value == 'auto' || value == 'flash' || value == 'html5' || value == 'audio') {
@@ -231,17 +228,19 @@ function format_set(value) {
       modes: streamer_{{group|safe_js}}.modes(value, 'auto')
     };
     player_jwobject = jwplayer("player").setup(jwsettings);
+
     fit_player();
 
     player_jwobject.onPlaylist(start_it);
     player_jwobject.onPlaylistItem(start_it);
     player_jwobject.onComplete(start_it);
+    $('#player').show();
 
     // Enable the quality widget
-    $('#quality-container').show();
+    $('.qualButton').removeClass('disabled');
   } else {
     // Disable the quality widget
-    $('#quality-container').hide();
+    $('.qualButton').addClass('disabled');
   }
 
   player_format = value;
@@ -251,6 +250,7 @@ function format_set(value) {
 
   var option = $('input[name=format][type=radio][value='+value+']');
   option.attr('checked', true);
+  fit_player();
 }
 
 if (streamer_{{group|safe_js}} == null) {
