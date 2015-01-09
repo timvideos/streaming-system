@@ -63,7 +63,7 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
     <li class="qualButton" data-q="sd"><a href="#" onclick="quality_set('sd')">Low definition</a></li>
   </ul>
 </li>
-<li><a id="ircToggle" title="Show or hide the IRC side pane">IRC</a></li>
+<li><a id="ircToggle" title="Show or hide the IRC side pane" href="#">IRC</a></li>
 <li id="now_time"></li>
 <li id="now_title"></li>
 {% endblock %}
@@ -208,7 +208,7 @@ function format_set(value) {
             height: '100%',
             frameborder: '0',
             allowfullscreen: 'allowfullscreen',
-            src: '//www.youtube-nocookie.com/embed/{{ config.youtube }}?rel=0&amp;showinfo=0'
+            src: '//www.youtube-nocookie.com/embed/{{ config.youtube }}?rel=0&amp;showinfo=0&amp;autoplay=1'
         }));
 {% endif %}
   }
