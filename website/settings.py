@@ -182,6 +182,13 @@ LOGGING = {
 
 TEST_RUNNER = "django_testing_fixes.suite.TestSuiteRunner"
 
+# This is the field that is used to check the remote IP of a user.
+#  - Set to 'REMOTE_ADDR' if you want to use the IP of the host you're
+#    connecting from.
+#  - Set to 'HTTP_X_FORWARDED_FOR' if you have a reverse proxy.
+#
+HTTP_REMOTE_ADDR_META = 'REMOTE_ADDR'
+
 try:
     from private.settings import *
 except ImportError:

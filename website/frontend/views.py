@@ -61,7 +61,7 @@ def group(request, group):
         template = "group"
         # Is the request coming from the room?
         for ipregex in LOCALIPS:
-            if ipregex.match(request.META['HTTP_X_REAL_IP']):
+            if ipregex.match(request.META[settings.HTTP_REMOTE_ADDR_META]):
                 template = 'inroom'
                 break
 
