@@ -52,41 +52,74 @@ function get_schedule(callback, group) {
   });
 }
 
-function update_schedule(widget_title, widget_desc, group, next_title, next_desc, next_time, now_time, group_key) {
+function update_schedule(widget_title, widget_desc, group, next_title, next_desc, next_time, now_time, group_key, now_url, next_url) {
   var talk = schedule;
   if(group_key) talk = schedules[group_key];
+  var url = null, generated = false;
 
   var title = "", description = "";
   if (talk && talk.length) {
     title = talk[0]['title'];
-    if(talk[0]['url']){
-      title = '<a href="' + talk[0]['url'] + ' "onClick="return confirm(\'Leave the video?\');">' + title + '</a>';
+    if(talk[0]['url']) {
+        url = talk[0]['url'];
     }
     if(talk[0]['abstract']) description = talk[0]['abstract'];
+    if(talk[0]['generated']) {
+      generated = true;
+    }
   } else {
     title = "Unknown Talk";
     description = 'Cannot get talk title and description.';
   }
 
-  widget_title.html(title);
-  widget_desc.html("<br>" + description.replace("\n", '<br><br>'));
+  widget_title.text(title);
+  widget_desc.text(description);
+  if (url == null) {
+    now_url.hide();
+  } else {
+    now_url.show();
+    now_url.attr('href', url);
+  }
+  if (generated) {
+    widget_title.addClass('event-generated');
+  } else {
+    widget_title.removeClass('event-generated');
+  } 
 
   title = "";
   description = "";
+  url = null;
+  generated = false;
 
   if (talk && talk.length > 1 && next_title) {
     if(talk[1] && talk[1]['title']) {
       title = talk[1]['title'];
       if(talk[1]['url']){
-        title = '<a href="' + talk[1]['url'] + ' "onClick="return confirm(\'Leave the video?\');">' + title + '</a>';
+        url = talk[0]['url'];
       }
       if(talk[1]['abstract']) description = talk[1]['abstract'];
+      if(talk[0]['generated']) {
+        generated = true;
+      }
+
     }
-    next_title.html(title);
-    if(next_desc) next_desc.html("<br>" + description.replace("\n", '<br><br>'));
-    if(next_time) next_time.html(talk[1].start.substring(11, 16));
-    if(now_time) {
-      now_time.attr('raw', talk[0].end);
+    next_title.text(title);
+    if(next_desc) next_desc.text(description);
+    if(next_time) { 
+      next_time.text((new Date(talk[1].start)).toLocaleTimeString());
+      next_time.attr('raw', talk[0].start);
     }
+    if (url == null) {
+      next_url.hide();
+    } else {
+      next_url.show();
+      next_url.attr('href', url);
+    }
+    if (generated) {
+      next_title.addClass('event-generated');
+    } else {
+      next_title.removeClass('event-generated');
+    } 
+
   }
 }

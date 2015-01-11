@@ -44,8 +44,18 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
 {% endblock %}
 
 {% block navbar %}
-<li><p class="navbar-text" id="now_title"></li>
-<li><p class="navbar-text now_time" id="now_time"></p></li>
+<li>
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="About the current talk, and what's up next."><span id="now_title"></span> <span id="now_time" class="now_time"></span> <span class="caret"></span></a>
+  <ul class="dropdown-menu" role="menu">
+    <li role="presentation" class="dropdown-header">Right now</li>
+	<li><div id="now_desc" class="abstract-dropdown"></div></li>
+    <li><a href="#" id="now_url" target="_blank"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Read more about this talk</a></li>
+    <li role="presentation" class="dropdown-header">Up next (<span id="next_time"></span>)</li>
+    <li><a href="#" id="next_title"></a></li>
+    
+  </ul>
+</li>
+
 {% endblock %}
 {% block navbar-right %}
 <li class="dropdown" id="settingsDropdown">
@@ -131,12 +141,12 @@ $(document).ready(function() {
 function fit_player () {
   var player_sizer = $("#player-sizer");
   if (player_jwobject) {
-    player_jwobject.resize(player_sizer.width()-20, window.innerHeight - 96);
+    player_jwobject.resize(player_sizer.width(), window.innerHeight - 96);
     //player_sizer.height()-20);
   } else {
     $('#yt-live').attr('height', window.innerHeight - 96);
   }
-  $('#chat-frame').css({height: window.innerHeight - 96, width: $('#chat-sizer').width() - 20});
+  $('#chat-frame').css({height: window.innerHeight - 96, width: $('#chat-sizer').width()});
 }
 
 function start_it () {
@@ -276,7 +286,7 @@ if (location.search.indexOf('noirc') >= 1) {
 }
 
 function schedule_callback() {
-  update_schedule($('#now_title'), $('#now_desc'), '{{config.title|escapejs}}', $('#next_title'), $('#next_desc'), $('#next_time'), $('#now_time'), '{{group|escapejs}}');
+  update_schedule($('#now_title'), $('#now_desc'), '{{config.title|escapejs}}', $('#next_title'), $('#next_desc'), $('#next_time'), $('#now_time'), '{{group|escapejs}}', $('#now_url'), $('next_url'));
   fit_player();
 }
 

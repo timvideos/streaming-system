@@ -108,7 +108,7 @@ if __name__ == "__main__":
             outitem['url'] = str(time.time())
 
         if item[namekey] == 'Keynote':
-            outitem['title'] = "%s: <b>%s</b>" % (item[namekey], item['authors'][0])
+            outitem['title'] = "%s: %s" % (item[namekey], item['authors'][0])
         else:
             outitem['title'] = item[namekey]
 
@@ -130,8 +130,9 @@ if __name__ == "__main__":
         newdata = {
             'start': datetime.fromtimestamp(0, defaulttime.tzinfo),
             'end': channel_data[0][0][0],
-            'title': '<i>Not Yet Started</i>',
+            'title': 'Not Yet Started',
             'abstract': '',
+            'generated': True,
             }
         final_data[channel].append(newdata)
 
@@ -144,18 +145,20 @@ if __name__ == "__main__":
                 newdata = {
                     'start': end,
                     'end': end.replace(hour=23, minute=59, second=59),
-                    'title': '<i>Finished for the day</i>',
+                    'title': 'Finished for the day',
                     'abstract': '',
                     'guid': hashlib.md5(str(end)+channel).hexdigest(),
+                    'generated': True,
                     }
                 final_data[channel].append(newdata)
 
                 newdata = {
                     'start': start.replace(hour=0, minute=0, second=0),
                     'end': start,
-                    'title': '<i>Not yet started</i>',
+                    'title': 'Not yet started',
                     'abstract': '',
                     'guid': hashlib.md5(str(start)+channel).hexdigest(),
+                    'generated': True,
                     }
                 final_data[channel].append(newdata)
 
@@ -171,9 +174,10 @@ if __name__ == "__main__":
                     newdata = {
                         'start': end,
                         'end': start,
-                        'title': "<i>%s</i>" % title,
+                        'title': "%s" % title,
                         'abstract': '',
                         'guid': hashlib.md5(str(start)+channel).hexdigest(),
+                        'generated': True,
                         }
                     final_data[channel].append(newdata)
             final_data[channel].append(data)
@@ -182,9 +186,10 @@ if __name__ == "__main__":
         newdata = {
             'start': end,
             'end': end.replace(year=2100),
-            'title': '<i>Conference Finished :(</i>',
+            'title': 'Conference Finished :(',
             'abstract': '',
             'guid': hashlib.md5(str(end)+channel).hexdigest(),
+            'generated': True,
             }
         final_data[channel].append(newdata)
 

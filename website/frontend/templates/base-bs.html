@@ -10,6 +10,7 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/static/css/bstweak.css" />
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 {% block head %}
@@ -27,8 +28,8 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/" title="Tim Videos">
-            <img alt="Tim Videos" src="/static/img/tv20.png" />
+          <a class="navbar-brand" href="/">
+            <img alt="{{ config.conference }}" src="{{ config.logobar }}" />
           </a>
         </div>
         <div class="collapse navbar-collapse">
@@ -37,8 +38,8 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
           </ul>
           <ul class="nav navbar-nav navbar-right">
             {% block navbar-right %}{% endblock %}
-            <li><a href="https://twitter.com/search?q={{ config.twitter|urlencode }}" title="Search Twitter for {{ config.twitter }}">Twitter</a></li>
-            <li><a href="http://code.timvideos.us" title="This is open source! Go to the project page.">Project</a></li>
+            <li><a href="https://twitter.com/search?q={{ config.twitter|urlencode }}" title="Search Twitter for {{ config.twitter }}" target="_blank">Twitter</a></li>
+            <li><a href="http://code.timvideos.us" title="This is open source! Go to the project page." target="_blank">Project</a></li>
             {% block navbar-righter %}{% endblock %}
           </ul>
         </div><!--/.nav-collapse -->
