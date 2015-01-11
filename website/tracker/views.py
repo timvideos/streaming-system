@@ -276,7 +276,7 @@ def user_key(request, salt=None):
 
     in_data = [salt]
     in_data.append(request.META['HTTP_USER_AGENT'])
-    in_data.append(request.META['HTTP_X_REAL_IP'])
+    in_data.append(request.META[settings.HTTP_REMOTE_ADDR_META])
     return '%s:%s' % (salt, hashlib.sha224("".join(in_data)).hexdigest())
 
 
@@ -367,7 +367,7 @@ def client_stats(request, group, _now=None):
         return response
 
     data['user-agent'] = request.META['HTTP_USER_AGENT']
-    data['ip'] = request.META['HTTP_X_REAL_IP']
+    data['ip'] = request.META[settings.HTTP_REMOTE_ADDR_META]
     if 'HTTP_REFERER' in request.META:
         data['referrer'] = request.META['HTTP_REFERER']
 
@@ -417,7 +417,7 @@ def endpoint_common(request, check_group=True):
     else:
         group = None
 
-    ip = request.META['HTTP_X_REAL_IP']
+    ip = request.META[settings.HTTP_REMOTE_ADDR_META]
 
     return None, group, ip
 
@@ -514,7 +514,7 @@ def flumotion_logging(request):
             identifier=request.POST['identifier'],
             recorded_time=request.POST['recorded_time'],
             type=request.POST.get('type', ''),
-            ip=request.META['HTTP_X_REAL_IP'],
+            ip=request.META[settings.HTTP_REMOTE_ADDR_META],
             data=simplejson.dumps(data),
             )
     s.save()
