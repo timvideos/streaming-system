@@ -3,16 +3,11 @@
 ------------------------------------------------------------*/
 
 @font-face {
-  font-family: 'LeagueGothicRegular';
-/*
-  src: url('https://us.pycon.org/2012/site_media/static/fonts/league_gothic-webfont.eot');
-  src: url('https://us.pycon.org/2012/site_media/static/fonts/league_gothic-webfont.eot?#iefix') format('embedded-opentype'),
-       url('https://us.pycon.org/2012/site_media/static/fonts/league_gothic-webfont.woff') format('woff'),
-       url('https://us.pycon.org/2012/site_media/static/fonts/league_gothic-webfont.ttf') format('truetype'),
-       url('https://us.pycon.org/2012/site_media/static/fonts/league_gothic-webfont.svg#LeagueGothicRegular') format('svg');
-*/
-  font-weight: normal;
-  font-style: normal;
+    font-family: 'HHSamuelRegular';
+    src: url('http://linux.conf.au/fonts/H.H.Samuel-font-defharo.eot'); /* IE 9 Compatibility Mode */
+    src: url('http://linux.conf.au/fonts/H.H.Samuel-font-defharo.eot?#iefix') format('embedded-opentype'), /* IE < 9 */
+         url('http://linux.conf.au/fonts/H.H.Samuel-font-defharo.woff') format('woff'), /* Firefox >= 3.6, any other modern browser */
+         url('http://linux.conf.au/fonts/H.H.Samuel-font-defharo.ttf') format('truetype'); /* Safari, Android, iOS */
 }
 
 body {
@@ -32,7 +27,7 @@ div.container_3 {
 }
 
 h1 a {
-  font-family: LeagueGothicRegular, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: HHSamuelRegular, "Helvetica Neue", Helvetica, Arial, sans-serif;
   letter-spacing: 0.04em;
   color: #006E91;
   font-variant: small-caps;
@@ -70,7 +65,7 @@ hr {
 .now_div {
   color: #F9F2E6;
   text-shadow: 0 1px 0 #222;
-  background: #006e91;
+  background: #617980;
   min-height: 1em;
   height: 100%;
 }
@@ -87,7 +82,7 @@ hr {
 .next_div {
   color: #F9F2E6;
   text-shadow: 0 1px 0 #222;
-  background: #006e91;
+  background: #617980;
   min-height: 1em;
   height: 100%;
 }
@@ -148,7 +143,7 @@ body {
 	width: 100%;
 	height: 100%;
 	margin: 0;
-	font-family: "Century Gothic",Arial, Helvetica, Sans-Serif;
+	font-family: HHSamuelRegular, "Helvetica Neue", Helvetica, Arial, sans-serif;
 	text-align:center;
 	padding: 1px;
 }
