@@ -21,6 +21,7 @@ import time
 import traceback
 
 from django import http
+from django.conf import settings
 from django.db import transaction
 from django.db import models as django_models
 from django.shortcuts import render
