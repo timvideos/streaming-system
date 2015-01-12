@@ -53,9 +53,9 @@ function fit_player (group) {
 
 function start_it () {
 {% for group in groups %}
-  if ({{group|safe_js}}_player_jwobject) {
-    var state = {{group|safe_js}}_player_jwobject.getState();
-    if (state == {{group|safe_js}}_player_jwobject.IDLE) {
+  if (x{{group|safe_js}}_player_jwobject) {
+    var state = x{{group|safe_js}}_player_jwobject.getState();
+    if (state == x{{group|safe_js}}_player_jwobject.IDLE) {
         jwplayer_{{group|safe_js}}();
     }
   }
@@ -66,7 +66,7 @@ setInterval(start_it, 1e3);
 
 
 {% for group in groups %}
-var {{group|safe_js}}_player_jwobject = null;
+var x{{group|safe_js}}_player_jwobject = null;
 {% endfor %}
 
 function jwplayers() {
@@ -85,10 +85,10 @@ function jwplayer_{{group|safe_js}}() {
       modes: streamer_{{group|safe_js}}.modes('auto', 'sd'),
       'width': '250', 'height': '200'
     };
-    {{group|safe_js}}_player_jwobject = jwplayer('{{group}}').setup(jwsettings);
-    {{group|safe_js}}_player_jwobject.onReady(function() {
+    x{{group|safe_js}}_player_jwobject = jwplayer('{{group}}').setup(jwsettings);
+    x{{group|safe_js}}_player_jwobject.onReady(function() {
       var player_sizer = $("#{{group}}");
-      {{group|safe_js}}_player_jwobject.resize(player_sizer.width(), player_sizer.height());
+      x{{group|safe_js}}_player_jwobject.resize(player_sizer.width(), player_sizer.height());
     });
   } catch (e) {
     if (window.console) {
