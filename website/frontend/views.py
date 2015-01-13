@@ -96,7 +96,7 @@ def monitor(request):
 
 def get_current_next(group, howmany=2, delta=datetime_tz.timedelta()):
     if group in data:
-        now = datetime_tz.datetime_tz.utcnow()
+        now = datetime_tz.datetime_tz.utcnow()#+ datetime_tz.timedelta(days=2)
         return islice(
             ifilter(
                 lambda x: x['end'] > now,

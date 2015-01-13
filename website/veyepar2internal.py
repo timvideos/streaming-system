@@ -199,7 +199,7 @@ def main(argv):
                     day_skipped_event = {
                         'start': datetime_tz.combine(day, datetime_tz.min.time(), tzinfo).astimezone(pytz.utc),
                         'end': datetime_tz.combine(day, datetime_tz.max.time(), tzinfo).astimezone(pytz.utc),
-                        'title': '<i>Nothing in %s today</i>' % config['title'],
+                        'title': 'Nothing in %s today' % config['title'],
                         'abstract': '',
                         'generated': True,
                         }
@@ -212,7 +212,7 @@ def main(argv):
                     events.insert(0, {
                         'start': datetime_tz.combine(day, datetime_tz.min.time(), tzinfo).astimezone(pytz.utc),
                         'end': events[0]['start'],
-                        'title': '<i>Not yet started in %s</i>' % config['title'],
+                        'title': 'Not yet started in %s' % config['title'],
                         'abstract': '',
                         'generated': True,
                         })
@@ -221,7 +221,7 @@ def main(argv):
                     events.append({
                         'start': events[-1]['end'],
                         'end': datetime_tz.combine(day, datetime_tz.max.time(), tzinfo).astimezone(pytz.utc),
-                        'title': '<i>Finished for the day in %s</i>' % config['title'],
+                        'title': 'Finished for the day in %s' % config['title'],
                         'abstract': '',
                         'generated': True,
                         })
@@ -230,7 +230,7 @@ def main(argv):
             before_event = {
                 'start': datetime_tz(datetime_tz.min.asdatetime(naive=True), tzinfo).astimezone(pytz.utc),
                 'end': starting_event['start'],
-                'title': '<i>%s not yet started</i>' % conference,
+                'title': '%s not yet started' % conference,
                 'abstract': '',
                 'generated': True,
                 }
@@ -238,7 +238,7 @@ def main(argv):
             after_event = {
                 'start': ending_event['end'],
                 'end': datetime_tz(datetime_tz.max.asdatetime(naive=True), tzinfo).astimezone(pytz.utc),
-                'title': '<i>%s finished :(</i>' % conference,
+                'title': '%s finished :(' % conference,
                 'abstract': '',
                 'generated': True,
                 }
@@ -269,7 +269,7 @@ def main(argv):
                         'abstract': '',
                         'generated': True,
                         }
-                    unknown_event['title'] = '<i>%i minute break</i>' % ((unknown_event['end'] - unknown_event['start']).seconds/60)
+                    unknown_event['title'] = '%i minute break' % ((unknown_event['end'] - unknown_event['start']).seconds/60)
                     newevents.append(unknown_event)
                 newevents.append(oldevents.pop(0))
 
