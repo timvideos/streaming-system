@@ -74,11 +74,13 @@ function update_schedule(widget_title, widget_desc, group, next_title, next_desc
 
   widget_title.text(title);
   widget_desc.text(description);
-  if (url == null) {
-    now_url.hide();
-  } else {
-    now_url.show();
-    now_url.attr('href', url);
+  if (now_url) {
+    if (url == null) {
+      now_url.hide();
+    } else {
+      now_url.show();
+      now_url.attr('href', url);
+    }
   }
   if (generated) {
     widget_title.addClass('event-generated');
@@ -109,11 +111,13 @@ function update_schedule(widget_title, widget_desc, group, next_title, next_desc
       next_time.text((new Date(talk[1].start)).toLocaleTimeString());
       next_time.attr('raw', talk[0].start);
     }
-    if (url == null) {
-      next_url.hide();
-    } else {
-      next_url.show();
-      next_url.attr('href', url);
+    if (next_url) {
+      if (url == null) {
+        next_url.hide();
+      } else {
+        next_url.show();
+        next_url.attr('href', url);
+      }
     }
     if (generated) {
       next_title.addClass('event-generated');
