@@ -1,7 +1,12 @@
 import os
+import sys
 import errno
 import requests
 import shutil
+import subprocess
+config_path = os.path.realpath(os.path.dirname(__file__)+"../..")
+if config_path not in sys.path:
+    sys.path.append(config_path)
 import config
 from gi.repository import Gst
 
@@ -55,4 +60,4 @@ for channel in channels:
     else:
         os.chdir("/srv/%s" % channel)
         generate_thumb(channel, url)
-        # TODO: Compress PNG (pngcrush replacement)
+        subprocess.check_call(["pngcrush", "-q", "snapshot.png", "latest.png"])
