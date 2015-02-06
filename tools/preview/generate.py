@@ -29,6 +29,7 @@ def generate_thumb(channel, url):
     pipeline.set_state(Gst.State.PLAYING)
     bus.poll(Gst.MessageType.EOS, Gst.CLOCK_TIME_NONE)
     pipeline.set_state(Gst.State.NULL)
+    #FIXME: This should return true if the preview was generated
     print "%s snapshot generated" % channel
 
 for channel in channels:
