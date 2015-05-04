@@ -64,6 +64,21 @@ groups like Sydney Linux User Group and Sydney Python User Group.
 
     * **youtube** - Upload recorded videos to YouTube channel.
 
+## License
+
+Unless specified otherwise, code is licensed under the
+[Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+
+This project makes extensive use of third party code from external projects.
+For this code either LICENSE of COPYING file in the top level directory or the
+file header for more information.
+
+The website part of this system does use one non-free software component.
+jwplayer (found in website/frontend/static/third_party/jwplayer/) is under a
+CC-BY-NC 3.0 license. Work is underway to replace this dependency with a fully
+open solution, see 
+[Issue #60](https://github.com/timvideos/streaming-system/issues/60).
+
 ## Related Projects
 
 ### gst-switch
