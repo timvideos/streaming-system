@@ -37,10 +37,10 @@ bin/activate:
 freeze:
 	$(ACTIVATE) && pip freeze > requirements.txt
 
-lib/python2.6/site-packages/distribute-0.6.24-py2.6.egg-info: lib
+lib/python2.7/site-packages/distribute-0.6.24-py2.7.egg-info: lib
 	$(ACTIVATE) && pip install -U distribute
 
-lib/python2.6/site-packages/ez_setup.py: lib
+lib/python2.7/site-packages/ez_setup.py: lib
 	$(ACTIVATE) && pip install ez_setup
 
 third_party:
@@ -51,7 +51,7 @@ src/pip-delete-this-directory.txt: requirements.txt
 	$(ACTIVATE) && [ -f private/requirements.txt ] && pip install -r private/requirements.txt || true
 	touch -r requirements.txt src/pip-delete-this-directory.txt
 
-install: lib/python2.6/site-packages/ez_setup.py lib/python2.6/site-packages/distribute-0.6.24-py2.6.egg-info src/pip-delete-this-directory.txt frontend/data.py
+install: lib/python2.7/site-packages/ez_setup.py lib/python2.7/site-packages/distribute-0.6.24-py2.7.egg-info src/pip-delete-this-directory.txt frontend/data.py
 
 frontend/data.py: eventfeed2internal.py pycon2internal.py
 	$(ACTIVATE) && python eventfeed2internal.py > frontend/data.py
