@@ -98,11 +98,16 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
         </div>
 </div>
 
+<div class="row">
+  <div class="col-md-12">
+ 
         <div id="twitter-container" class="container_3">
           <div id="twitter-sizer" class="sizer">
             <div class="related-tweets" style="height: 48px; overflow: hidden;">Searching Twitter...</div>
           </div>
         </div>
+  </div>
+</div>
 
 {% endblock %}
 
@@ -112,7 +117,10 @@ $(document).ready(function() {
   $(".related-tweets").tweet({
     twitter_api_proxy_url: '{% url "switter_tweets" %}',
 
-    query: "{{ config.twitter }}",
+    query: "{{ config.twitter|escapejs }}",
+    {% if config.twitter_geo %}
+    geocode: "{{ config.twitter_geo|escapejs }}",
+    {% endif %}
     page: 1,
     avatar_size: 32,
     count: 20,

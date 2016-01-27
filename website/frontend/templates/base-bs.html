@@ -19,7 +19,7 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
   </head>
 <body>
 
-    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -29,7 +29,11 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
             <span class="icon-bar"></span>
           </button>
           <a class="navbar-brand" href="/">
-            <img alt="{{ config.conference }}" src="{{ config.logobar }}" />
+            {% if config.conference %}
+              <img alt="{{ config.conference }}" src="{{ config.logobar }}" />
+	    {% else %}
+	      <img alt="{{ default.conference }}" src="{{ default.logobar }}" />
+	    {% endif %}
           </a>
         </div>
         <div class="collapse navbar-collapse">
@@ -38,7 +42,12 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
           </ul>
           <ul class="nav navbar-nav navbar-right">
             {% block navbar-right %}{% endblock %}
-            <li><a href="https://twitter.com/search?q={{ config.twitter|urlencode }}" title="Search Twitter for {{ config.twitter }}" target="_blank">Twitter</a></li>
+	    {% if config.twitter %}
+	      <li><a href="https://twitter.com/search?q={{ config.twitter|urlencode }}" title="Search Twitter for {{ config.twitter }}" target="_blank">Twitter</a></li>
+	    {% else %}
+	      <li><a href="https://twitter.com/search?q={{ default.twitter|urlencode }}" title="Search Twitter for {{ default.twitter }}" target="_blank">Twitter</a></li>
+
+	    {% endif %}
             <li><a href="http://code.timvideos.us" title="This is open source! Go to the project page." target="_blank">Project</a></li>
             {% block navbar-righter %}{% endblock %}
           </ul>

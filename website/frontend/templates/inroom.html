@@ -1,121 +1,150 @@
-{% extends "base.html" %}
+{% extends "base-bs.html" %}
 {% comment %}
 -*- coding: utf-8 -*-
-vim: set ts=2 sw=2 et sts=2 ai:
+vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
 {% endcomment %}
+{% load safe_js %}
 
 {% block head %}
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script type="text/javascript" src="/static/js/whats_on.js"></script>
-	<script type="text/javascript" src="/static/js/bugreport.js"></script>
     <script type="text/javascript" src="/static/js/jquery.tweet.js"></script>
     <link href="/static/css/jquery.tweet.css" media="all" rel="stylesheet" type="text/css"/>
+    <style type="text/css">
+      body {
+        padding-top: 50px;
+      }
+      @media (min-width: 992px) {
+        #twitter-container {
+          position: fixed;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          height: 46px;
+        }
+        #chat-frame {
+          display: block;
+          width: 100%;
+          border: 0;
+        }
+      }
+    </style>
 
     <title>Streaming for {{ config.title }}</title>
 {% endblock %}
 
+{% block navbar %}
+<li>
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="About the current talk, and what's up next."><span id="now_title"></span> <span id="now_time" class="now_time"></span> <span class="caret"></span></a>
+  <ul class="dropdown-menu" role="menu">
+    <li role="presentation" class="dropdown-header">Right now</li>
+	<li><div id="now_desc" class="abstract-dropdown"></div></li>
+    <li><a href="#" id="now_url" target="_blank"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Read more about this talk</a></li>
+    <li role="presentation" class="dropdown-header">Up next (<span id="next_time"></span>)</li>
+    <li><a href="#" id="next_title"></a></li>
+    
+  </ul>
+</li>
+
+{% endblock %}
+{% block navbar-right %}
+<li class="dropdown" id="settingsDropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Settings <span class="caret"></span></a> 
+  <ul class="dropdown-menu" role="menu">
+    <li role="presentation" class="dropdown-header">Presentation</li>
+    <li><a id="ircToggle" title="Toggle the IRC side pane" href="#">IRC display</a></li>
+  </ul>
+</li>
+{% endblock %}
+
 {% block content %}
-      <th colspan=2 style="text-align: center;">
-        <h1>Sorry the video streaming is not avaliable inside the venue.</h1>
-      </th>
-    </tr><tr>
-      <td id="now_cell now_cell_group" colspan=2 style="height: 1px;">
-        <div id="showing" class='now_div now_div_group'>
-          <div id='now_info' class='now_info now_info_group' onclick='$(".now_desc").fadeToggle();'>(More info)</div>
-          <div id='now_time' class='now_time now_time_group'></div>
-          <div id='now_title' class='now_title now_title_group'></div>
-          <div id='now_desc' class='now_desc now_desc_group'></div>
-        </div>
-      </td>
-    </tr><tr>
-      <th id="options" colspan=2>
-        <div class="options-group container_1">
-          Tweet&nbsp;with&nbsp;hashtag:&nbsp;{{ config.twitter }}
-        </div>
-        <div class="options-group container_1">
-          Web&nbsp;chat&nbsp;at&nbsp;http://timvideos.us/{{group}}
-        </div>
-{% if config.ircnetwork != "none" %}
-        <div class="options-group container_1">
-  {% if config.ircnetwork == "freenode" %}
-          Join&nbsp;IRC&nbsp;on&nbsp;irc://irc.freenode.net/{{ config.ircchannel }}
-  {% elif config.ircnetwork == "oftc" %}
-          Join&nbsp;IRC&nbsp;on&nbsp;irc://irc.oftc.net/{{ config.ircchannel }}
-  {% endif %}
-{% endif %}
-        </div>
-      </th>
-    </tr><tr style="height: 60%;">
-      <td id="twitter-cell" style="vertical-align: top; overflow: hidden;">
-        <div id="twitter-container" class="container_3" style="height: 1px;">
-          <div id="twitter-sizer" class="sizer">
-            <div id="twitter">Searching Twitter...</div>
-          </div>
-        </div>
-      </td>
-{% if config.ircnetwork != "none" %}
-      <td id="chat-cell" style="height: 60%; width: 60%;">
-        <div id="chat-container" class="container_3">
+
+<div class="row">
+	<div id="novideo" class="col-md-12">
+		<p class="lead">Sorry, video streaming is not permitted from within the venue.</p>
+		<p>You can always attend the talk in person, or if it is full, catch the videos later when we have published them on the event's website.</p>
+	</div>
+<div>
+
+<div class="row">
+        <div id="chat-container" class="col-md-12">
           <div id="chat-sizer" class="sizer">
-  {% if config.ircnetwork == "freenode" %}
-            {% if screen %}
-            <iframe id="chat-frame"
-              src="http://webchat.freenode.net?nick=videoscreen-{{group|urlencode}}&channels={{ config.ircchannel|urlencode }}&uio=MTA9dHJ1ZSYxMT0yMzYe4"></iframe>
-            {% else %}
             <iframe id="chat-frame" src="http://webchat.freenode.net?channels={{ config.ircchannel|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
-            {% endif %}
-  {% elif config.ircnetwork == "oftc" %}
-            {% if screen %}
-            <iframe id="chat-frame"
-              src="https://webchat.oftc.net?nick=videoscreen-{{group|urlencode}}&channels={{ config.ircchannel|urlencode }}&uio=MTA9dHJ1ZSYxMT0yMzYe4"></iframe>
-            {% else %}
-            <iframe id="chat-frame" src="https://webchat.oftc.net?channels={{ config.ircchannel|urlencode }}&uio=MTA9dHJ1ZQ49"></iframe>
-            {% endif %}
-  {% endif %}
-{% endif %}
           </div>
         </div>
-      </td>
-    </tr><tr>
-      <td id="next_cell next_cell_group" colspan=2 style="height: 1px;">
-        <div id="showing" class='next_div next_div_group'>
-          <div id='next_info' class='next_info next_info_group' onclick='$(".next_desc").fadeToggle();'>(More info)</div>
-          <div id='next_time' class='next_time next_time_group'></div>
-          <div id='next_title' class='next_title next_title_group'></div>
-          <div id='next_desc' class='next_desc next_desc_group'></div>
+</div>
+
+        <div id="twitter-container" class="container_3">
+          <div id="twitter-sizer" class="sizer">
+            <div class="related-tweets" style="height: 48px; overflow: hidden;">Searching Twitter...</div>
+          </div>
         </div>
-      </td>
+
 {% endblock %}
 
 {% block script %}
 <script type="text/javascript">
-
 $(document).ready(function() {
-  $("#twitter").tweet({
+  $(".related-tweets").tweet({
     twitter_api_proxy_url: '{% url "switter_tweets" %}',
 
-    query: "{{ config.twitter }}",
+    query: "{{ config.twitter|escapejs }}",
+    {% if config.twitter_geo %}
+    geocode: "{{ config.twitter_geo|escapejs }}",
+    {% endif %}
     page: 1,
     avatar_size: 32,
-    count: 100,
+    count: 20,
     loading_text: "Searching Twitter...",
-    retweet: false,
-    refresh_interval: 30,
 
+    retweet: false,
+  }).bind("loaded", function() {
+    var ul = $(".related-tweets").find(".tweet_list");
+    ul.css("position", "relative");
+    setInterval(function() {
+      var top = ul.position().top;
+      var h = ul.height();
+      var incr = (h / ul.children().length);
+      var newTop = top - incr;
+      if (h + newTop <= 0) newTop = 0;
+      ul.animate( {top: newTop+"px"}, 500 );
+    }, 5000);
   });
 });
 </script>
 <script type="text/javascript">
 
-function schedule_callback() {
-  get_schedule(function() {
-      update_schedule(
-        $('#now_title'), $('#now_desc'), '{{config.title|escapejs}}',
-        $('#next_title'), $('#next_desc'), $('#next_time'), $('#now_time'),
-        '{{group|escapejs}}');
-    }, '{{group|escapejs}}');
-  setTimeout(schedule_callback, 60e3);
+/**
+ * Resize the player to fit the window.
+ */
+function fit_player () {
+  $('#chat-frame').css({height: window.innerHeight - 96, width: $('#chat-sizer').width()});
 }
-setTimeout(schedule_callback, 0);
+
+// When the window's size changes, so does ours.
+$(window).resize(fit_player);
+// Universal fix for every layout problem ever, amirite?
+setTimeout(fit_player, 2000);
+
+$('#ircToggle').click(function() {
+  $('#chat-frame').toggle();
+  fit_player();
+});
+
+if (location.search.indexOf('noirc') >= 1) {
+  $('#ircToggle').click();
+}
+
+function schedule_callback() {
+  update_schedule($('#now_title'), $('#now_desc'), '{{config.title|escapejs}}', $('#next_title'), $('#next_desc'), $('#next_time'), $('#now_time'), '{{group|escapejs}}', $('#now_url'), $('next_url'));
+  fit_player();
+}
+
+function poll_schedule() {
+  get_schedule(schedule_callback, '{{group|escapejs}}');
+}
+setInterval(poll_schedule, 60e3);
+poll_schedule();
 
 </script>
 {% endblock %}

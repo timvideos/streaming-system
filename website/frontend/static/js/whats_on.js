@@ -73,9 +73,11 @@ function update_schedule(widget_title, widget_desc, group, next_title, next_desc
   }
 
   widget_title.text(title);
-  widget_desc.text(description);
+  if (widget_desc) {
+    widget_desc.text(description);
+  }
   if (now_url) {
-    if (url == null) {
+    if (!url) {
       now_url.hide();
     } else {
       now_url.show();
@@ -97,7 +99,7 @@ function update_schedule(widget_title, widget_desc, group, next_title, next_desc
     if(talk[1] && talk[1]['title']) {
       title = talk[1]['title'];
       if(talk[1]['url']){
-        url = talk[0]['url'];
+        url = talk[1]['url'];
       }
       if(talk[1]['abstract']) description = talk[1]['abstract'];
       if(talk[0]['generated']) {
@@ -106,17 +108,20 @@ function update_schedule(widget_title, widget_desc, group, next_title, next_desc
 
     }
     next_title.text(title);
-    if(next_desc) next_desc.text(description);
+    if (next_desc) {
+      next_desc.text(description);
+    }
     if(next_time) { 
       next_time.text((new Date(talk[1].start)).toLocaleTimeString());
       next_time.attr('raw', talk[0].start);
     }
     if (next_url) {
-      if (url == null) {
+      if (!url) {
         next_url.hide();
       } else {
         next_url.show();
         next_url.attr('href', url);
+	console.log('update_schedule: ' + url);
       }
     }
     if (generated) {

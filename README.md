@@ -34,7 +34,7 @@ groups like Sydney Linux User Group and Sydney Python User Group.
  * **tools** - Mish mash of parts of the streaming system.
 
     * **flumotion**, **flumotion-ugly** and **flumotion-fragmented-streaming**
-      oftware which does the actual streaming.
+      software which does the actual streaming.
 
     * **flumotion-config** - Example flumotion configuration files and some
       tools to push the configurations out to systems. Useful for conferences

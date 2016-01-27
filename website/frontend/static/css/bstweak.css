@@ -24,3 +24,20 @@
 .navbar-brand, #player-container, #chat-container {
 	padding: 0;
 }
+
+#announce.navbar-text {
+	margin-top: 8px;
+	margin-bottom: 8px;
+}
+
+body { padding-top: 70px; }
+
+.chat-preview {
+  overflow: hidden;
+}
+
+img.video_preload {
+  width: 1px;
+  height: 1px;
+}
+
