@@ -54,8 +54,14 @@
                 "schedule-see-also": [],
                 "schedule-timezone": "US/Eastern",
 
-                // Flumotion IP addresses and configuration
+                // Preview image used for the channel display
                 "preview": "http://preview.timvideos.us/%23timvideos/latest.png",
+
+                // Flumotion IP addresses and configuration
+                // If "flumotion" == False, then Flumotion support will be disabled.
+                // Flumotion+jwplayer streaming will be used by default if it is
+                // present.
+                "flumotion": true,
                 "flumotion-collector": false,
                 "flumotion-encoder": false,
                 "flumotion-mixer": false,
@@ -64,6 +70,12 @@
                 "flumotion-user": false,
                 "flumotion-password": false,
                 "flumotion-salt": false,
+
+		// YouTube
+		// This takes one parameter, a video ID (v=) of the YouTube
+		// Live Channel to play.
+		// If "youtube" == null, then YouTube support will be disabled.
+		"youtube": null,
 
                 // Terminator
                 "": ""
