@@ -8,7 +8,9 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
 {% block head %}
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    {% if config.flumotion %}
     <script type="text/javascript" src="/static/third_party/jwplayer/jwplayer.js"></script>
+    {% endif %}
     <script type="text/javascript" src="/static/js/whats_on.js"></script>
     <script type="text/javascript" src="/static/js/streams.js"></script>
     <script type="text/javascript" src="/tracker/{{group|urlencode}}/stream.js"></script>
@@ -66,18 +68,21 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
     
     <li role="presentation" class="dropdown-header">Video format</li>
     <li class="videoButton" data-f="videooff"><a href="#" onclick="format_set('videooff')">Video Off</a></li>
+{% if config.flumotion %}
     <li class="videoButton" data-f="auto"><a href="#" onclick="format_set('auto')">Automatic</a></li>
     <li class="videoButton" data-f="flash"><a href="#" onclick="format_set('flash')">Flash</a></li>
     <li class="videoButton" data-f="html5"><a href="#" onclick="format_set('html5')">HTML5</a></li>
+{% endif %}
 {% if config.youtube %}
     <li class="videoButton" data-f="yt"><a href="#" onclick="format_set('yt')">YouTube</a></li>
 {% endif %}
+{% if config.flumotion %}
     <li class="videoButton" data-f="audio"><a href="#" onclick="format_set('audio')">Audio Only</a></li>
-
     <li role="presentation" class="dropdown-header">Quality</li>
     <li class="qualButton" data-q="auto"><a href="#" onclick="quality_set('auto')">Automatic</a></li>
     <li class="qualButton" data-q="hd"><a href="#" onclick="quality_set('hd')">High definition</a></li>
-    <li class="qualButton" data-q="sd"><a href="#" onclick="quality_set('sd')">Low definition</a></li>    
+    <li class="qualButton" data-q="sd"><a href="#" onclick="quality_set('sd')">Low definition</a></li>
+{% endif %}
   </ul>
 </li>
 {% endblock %}
@@ -235,6 +240,7 @@ function format_set(value) {
 {% endif %}
   }
 
+{% if config.flumotion %}
   if (value == 'auto' || value == 'flash' || value == 'html5' || value == 'audio') {
     // Create the player
     var jwsettings = {
@@ -249,8 +255,7 @@ function format_set(value) {
       //skin: '/static/third_party/jwplayer/skin/glow.zip',
       modes: streamer_{{group|safe_js}}.modes(value, 'auto')
     };
-    player_jwobject = jwplayer("player").setup(jwsettings);
-
+    player_jwobject = jwplayer("player").setup(jwsettings); 
     fit_player();
 
     player_jwobject.onPlaylist(start_it);
@@ -264,6 +269,7 @@ function format_set(value) {
     // Disable the quality widget
     $('.qualButton').addClass('disabled');
   }
+{% endif %}   
 
   player_format = value;
 
@@ -279,8 +285,12 @@ if (streamer_{{group|safe_js}} == null) {
     $('#player-sizer').text('Streaming server currently unavailable, please try again later.  Sorry about that. :(');
     $('#settingsDropdown').hide();
 } else {
+{% if config.flumotion %}
     format_set('auto');
     quality_set('auto');
+{% elif config.youtube %}
+    format_set('yt');
+{% endif %}
 }
 
 $('#ircToggle').click(function() {
