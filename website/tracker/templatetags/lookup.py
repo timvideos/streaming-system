@@ -7,6 +7,7 @@ from django import template
 
 register = template.Library()
 
+
 @register.filter(name="lookup")
 def lookup_filter(o, key):
     try:

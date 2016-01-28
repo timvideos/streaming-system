@@ -7,6 +7,7 @@ from django import template
 
 register = template.Library()
 
+
 @register.filter(name="getattr")
 def getattr_filter(o, key):
     return getattr(o, key)

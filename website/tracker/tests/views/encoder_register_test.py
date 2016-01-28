@@ -3,10 +3,6 @@
 # -*- coding: utf-8 -*-
 # vim: set ts=4 sw=4 et sts=4 ai:
 
-import simplejson
-import datetime
-
-from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase
 from django.test.client import RequestFactory
 
@@ -21,7 +17,7 @@ class EncoderRegisterTest(TestCase):
             'config': {
                 'secret': 's',
             },
-            'default' : {
+            'default': {
             },
             'a': {},
         })

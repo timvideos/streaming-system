@@ -1,4 +1,4 @@
-{% extends "base-bs.html" %}
+{% extends "base-bs.html" %}{% load staticfiles %}
 {% comment %}
 -*- coding: utf-8 -*-
 vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
@@ -7,12 +7,12 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
 
 {% block head %}
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
-    <script type="text/javascript" src="/static/third_party/jwplayer/jwplayer.js"></script>
-    <script type="text/javascript" src="/static/js/whats_on.js"></script>
-    <script type="text/javascript" src="/static/js/streams.js"></script>
+    <script type="text/javascript" src="{% static 'third_party/jwplayer/jwplayer.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/whats_on.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/streams.js' %}"></script>
     <script type="text/javascript" src="/tracker/{{group|urlencode}}/stream.js"></script>
-    <script type="text/javascript" src="/static/js/jquery.tweet.js"></script>
-    <link href="/static/css/jquery.tweet.css" media="all" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="{% static 'js/jquery.tweet.js' %}"></script>
+    <link href="{% static 'css/jquery.tweet.css' %}" media="all" rel="stylesheet" type="text/css"/>
     <style type="text/css">
       body {
         padding-top: 50px;

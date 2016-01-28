@@ -8,12 +8,14 @@ from django.template import defaultfilters
 
 register = template.Library()
 
+
 @register.filter(name="bitrate")
 def bitrate_filter(bits):
     try:
         return defaultfilters.filesizeformat(bits).replace('B', 'bits')
     except:
         return 0
+
 
 @register.filter(name="byterate")
 def byterate_filter(bits):

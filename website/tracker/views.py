@@ -6,15 +6,13 @@
 """Simple pages."""
 
 # Python imports
-import ConfigParser
 import datetime
+import fcntl
 import hashlib
-import logging
+import json
 import ordereddict
 import os
 import random
-import re
-import simplejson
 import string
 import sys
 import time
@@ -23,14 +21,13 @@ import traceback
 from django import http
 from django.conf import settings
 from django.db import transaction
-from django.db import models as django_models
 from django.shortcuts import render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 from django import template
 
 # Our App imports
-from common.views.simple import NeverCacheRedirectView
+from common.views import NeverCacheRedirectView
 from tracker import models
 
 
@@ -42,6 +39,7 @@ CONFIG = common_config.config_load()
 
 # IP Address which are considered "In Room"
 LOCALIPS = CONFIG['config']['localips']
+
 
 class funnydict(dict):
     def __getattr__(self, key):
@@ -56,7 +54,7 @@ def stream(request, group):
     """
     if not CONFIG.valid(group):
         response = http.HttpResponse()
-        response.write("window.src = '/';\n");
+        response.write("window.src = '/';\n")
         return response
 
     # Get all the active streaming severs for this channel
@@ -64,7 +62,7 @@ def stream(request, group):
 
     # Pick a server
     if active_servers:
-        your_server = sorted(active_servers, cmp=lambda a, b: cmp(a.overall_bitrate, b.overall_bitrate))[0]
+        your_server = sorted(active_servers, key=lambda x: x.overall_bitrate)[0]
     else:
         your_server = None
 
@@ -104,10 +102,10 @@ def endpoint_stats(request):
     types = list(sorted([x for x in dir(models.Endpoint()) if x.endswith('_clients')]))
     all_types = list(sorted([x for x in dir(models.Endpoint()) if not x.startswith('_')]))
 
-    active_servers = sorted(active_servers, cmp=lambda a, b: cmp((a.group, a.overall_bitrate), (b.group, b.overall_bitrate)))
+    active_servers = sorted(active_servers, key=lambda x: (x.group, x.overall_bitrate))
     active_overall = funnydict((t, sum([0, getattr(x, t, None)][isinstance(getattr(x, t, None), (int, float))] for x in active_servers)) for t in all_types)
 
-    inactive_servers = sorted(inactive_servers, cmp=lambda a, b: cmp((a.group, a.overall_bitrate), (b.group, b.overall_bitrate)))
+    inactive_servers = sorted(inactive_servers, key=lambda x: (x.group, x.overall_bitrate))
     inactive_overall = funnydict((t, sum([0, getattr(x, t, None)][isinstance(getattr(x, t, None), (int, float))] for x in inactive_servers)) for t in all_types)
 
     return render(request, 'stats.html', locals(), content_type='text/html',
@@ -162,10 +160,10 @@ def overall_stats_json(request):
     graphs = []
     annotations = []
 
-    DEFAULT_RANGE = 120 # minutes
+    DEFAULT_RANGE = 120  # minutes
 
     # Get the requested time range for the data, in minutes.
-    view_range = request.GET.get('range',DEFAULT_RANGE)
+    view_range = request.GET.get('range', DEFAULT_RANGE)
 
     # Ensure the range is an int, falling back to the default if it's not.
     try:
@@ -206,7 +204,7 @@ def overall_stats_json(request):
 
         # Send time as a unix timestamp.
         endpoint_data = {
-            'lastseen' : int(endpoint.lastseen.strftime('%s')) * 1000,
+            'lastseen': int(endpoint.lastseen.strftime('%s')) * 1000,
         }
         for attr in raw_attrs:
             endpoint_data[attr] = getattr(endpoint, attr)
@@ -230,7 +228,6 @@ def overall_stats_json(request):
     graphs.append(bitrate_graph)
     graphs.append(client_graph)
 
-
     # SAMPLE GRAPH AND ANNOTATION GENERATION
     # Uncomment these to see sample graphs and annotations using data generated
     # based on the current time.
@@ -252,10 +249,9 @@ def overall_stats_json(request):
     #     'label': 'Chow!'
     # })
 
-
     # Send the data back as JSON data.
     response = http.HttpResponse(content_type='application/json')
-    response.write(simplejson.dumps({
+    response.write(json.dumps({
         'graphs': graphs,
         'annotations': annotations,
     }))
@@ -264,6 +260,7 @@ def overall_stats_json(request):
 ###########################################################################################
 # Code which collects the client side system reporting.
 ###########################################################################################
+
 
 def generate_salt():
     """Generate a suitable ASCII alpha salt."""
@@ -301,7 +298,7 @@ def client_common(request, group):
     response = http.HttpResponse(content_type='application/javascript')
 
     if not CONFIG.valid(group):
-        response.write(simplejson.dumps({
+        response.write(json.dumps({
             'code': error.ERROR_GROUP,
             'error': 'Unknown group',
             'next': -1,
@@ -311,7 +308,7 @@ def client_common(request, group):
     # Check the cookie value exists
     if 'user' not in request.COOKIES:
         response.set_cookie('user', value=user_key(request))
-        response.write(simplejson.dumps({
+        response.write(json.dumps({
             'code': error.WARNING_COOKIE,
             'error': 'No cookie set',
             'next': 0,
@@ -322,7 +319,7 @@ def client_common(request, group):
     salt, digest = request.COOKIES['user'].split(':')
     if user_key(request, salt) != request.COOKIES['user']:
         response.delete_cookie('user')
-        response.write(simplejson.dumps({
+        response.write(json.dumps({
             'code': error.WARNING_COOKIE,
             'error': 'Cookie was invalid?',
             'next': 0,
@@ -330,10 +327,6 @@ def client_common(request, group):
         return (response, None, None)
 
     return (None, group, request.COOKIES['user'])
-
-
-def dump_request_headers(request):
-    return dump
 
 
 @csrf_exempt
@@ -357,10 +350,10 @@ def client_stats(request, group, _now=None):
         return response
 
     try:
-        data = simplejson.loads(request.POST.get('data', "{}"))
-    except simplejson.JSONDecodeError, e:
+        data = json.loads(request.POST.get('data', "{}"))
+    except json.JSONDecodeError, e:
         response = http.HttpResponse(content_type='application/javascript')
-        response.write(simplejson.dumps({
+        response.write(json.dumps({
             'code': error.ERROR_JSON,
             'error': 'Invalid JSON: %s' % e,
             'next': -1,
@@ -383,7 +376,7 @@ def client_stats(request, group, _now=None):
 
     # Return success
     response = http.HttpResponse(content_type='application/javascript')
-    response.write(simplejson.dumps({
+    response.write(json.dumps({
         'code': error.SUCCESS,
         'next': 5,
         }))
@@ -437,15 +430,12 @@ def endpoint_register(request):
         return response
 
     try:
-        data = simplejson.loads(request.POST.get('data', '{}'))
+        data = json.loads(request.POST.get('data', '{}'))
         # Check that the data doesn't override these two important values
         assert 'ip' not in data
         assert 'group' not in data
 
-        s = models.Endpoint(
-                group=group,
-                ip=ip,
-                **data)
+        s = models.Endpoint(group=group, ip=ip, **data)
         s.save()
 
         response = http.HttpResponse(content_type='text/plain')
@@ -474,7 +464,7 @@ def endpoint_logs(request):
         logfile = file(os.path.join(CONFIG['config']['logdir'], "access-%s-%s.log" % (group, ip)), 'a')
         try:
             fcntl.lockf(logfile, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except IOError, e:
+        except IOError:
             time.sleep(1)
         else:
             break
@@ -505,19 +495,19 @@ def flumotion_logging(request):
         return response
 
     try:
-        data = simplejson.loads(request.POST.get('data', "{}"))
-    except simplejson.JSONDecodeError, e:
+        data = json.loads(request.POST.get('data', "{}"))
+    except json.JSONDecodeError, e:
         response = http.HttpResponse(content_type='text/plain')
         response.write('ERROR %s' % e)
         return response
 
     s = models.Flumotion(
-            identifier=request.POST['identifier'],
-            recorded_time=request.POST['recorded_time'],
-            type=request.POST.get('type', ''),
-            ip=request.META[settings.HTTP_REMOTE_ADDR_META],
-            data=simplejson.dumps(data),
-            )
+        identifier=request.POST['identifier'],
+        recorded_time=request.POST['recorded_time'],
+        type=request.POST.get('type', ''),
+        ip=request.META[settings.HTTP_REMOTE_ADDR_META],
+        data=json.dumps(data),
+    )
     s.save()
 
     # Write out that everything went okay
@@ -532,7 +522,7 @@ def flumotion_stats(request):
 
     flumotion = models.Flumotion.objects.order_by(
         'type', 'identifier', 'ip', '-lastseen'
-        ).filter(lastseen__gte = ten_mins_ago)
+        ).filter(lastseen__gte=ten_mins_ago)
 
     [(x.identifier, x.lastseen, x.type) for x in flumotion]
 
@@ -548,13 +538,13 @@ def flumotion_stats(request):
         key = '%s-%s' % (server.identifier, server.ip)
 
         # Format the data a bit nicer
-        server.full_data = simplejson.loads(server.data)
+        server.full_data = json.loads(server.data)
 
         # Append to the list of components
         for k in server.full_data['current'].keys():
             keys[server.type].add(k)
 
-        if not key in active_servers:
+        if key not in active_servers:
             active_servers[key] = server
         else:
             # Append history

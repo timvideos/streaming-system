@@ -10,6 +10,7 @@ from django.template import defaultfilters
 
 register = template.Library()
 
+
 @register.filter(name="udate")
 def udate(s, date):
     try:
@@ -17,6 +18,7 @@ def udate(s, date):
         return defaultfilters.date(d, date)
     except:
         return None
+
 
 @register.filter(name="timedelta")
 def timedelta(a, b):
@@ -26,4 +28,4 @@ def timedelta(a, b):
         b = datetime.datetime.fromtimestamp(b)
 
     delta = b-a
-    return "%im%2is" % (delta.seconds/60, delta.seconds%60)
+    return "%im%2is" % (delta.seconds / 60, delta.seconds % 60)

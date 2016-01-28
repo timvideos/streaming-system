@@ -42,6 +42,7 @@ class ClientStatsHelpersTest(TestCase):
             'user_key should generate thhe *same* keys for same input when'
             ' a salt is given.')
 
+
 class ClientStatsTest(TestCase):
     maxDiff = None
 
@@ -88,7 +89,7 @@ class ClientStatsTest(TestCase):
     def setUp(self):
         views.CONFIG = views.CONFIG.__class__({
             'config': {},
-            'default' : {},
+            'default': {},
             'a': {}})
 
     def test_client_common_error_on_get(self):
