@@ -7,10 +7,7 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
 
 {% block head %}
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    {% if config.flumotion %}
     <script type="text/javascript" src="/static/third_party/jwplayer/jwplayer.js"></script>
-    {% endif %}
     <script type="text/javascript" src="/static/js/whats_on.js"></script>
     <script type="text/javascript" src="/static/js/streams.js"></script>
     <script type="text/javascript" src="/tracker/{{group|urlencode}}/stream.js"></script>
@@ -235,7 +232,7 @@ function format_set(value) {
             height: '100%',
             frameborder: '0',
             allowfullscreen: 'allowfullscreen',
-            src: '//www.youtube-nocookie.com/embed/{{ config.youtube }}?rel=0&amp;showinfo=0&amp;autoplay=1'
+            src: '//www.youtube-nocookie.com/embed/{{ config.youtube|urlencode }}?rel=0&amp;showinfo=0&amp;autoplay=1'
         }));
 {% endif %}
   }
