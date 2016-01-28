@@ -1,7 +1,7 @@
 -e git+https://github.com/mithro/django-testing-fixes.git#egg=django-testing-fixes
 -e git+https://bitbucket.org/mithro/django-switter.git#egg=django-switter
 -e git+https://github.com/mithro/python-datetime-tz.git#egg=python-datetime-tz
-django>=1.6
+django>=1.6,<1.7
 BeautifulSoup4
 django-live-server
 gunicorn
