@@ -98,7 +98,7 @@ class ClientStatsTest(TestCase):
         response = views.client_common(request, 'a')
         self.assertNotEqual(response, None)
         self.assertEqual(response.status_code, 302)
-        #self.assertRedirects(response, '/', status_code=302)
+        # self.assertRedirects(response, '/', status_code=302)
 
     def test_client_common_error_on_missing_cookie(self):
         factory = RequestFactory()
@@ -173,8 +173,11 @@ class ClientStatsTest(TestCase):
         self.assertGreater(content['next'], 0)
 
         # Assert some stuff is in the database
-        stats = models.ClientStats.objects.get(created_by=user, created_on=self.NOW)
-        # FIXME: This changes everytime the list of default saved values changes.
+        stats = models.ClientStats.objects.get(created_by=user,
+                                               created_on=self.NOW)
+
+        # FIXME: This changes everytime the list of default
+        # saved values changes.
         self.assertListEqual(
             ['ip', 'user-agent'],
             list(str(x) for x in stats.name_and_values.all()))
