@@ -331,7 +331,7 @@ def client_common(request, group):
 
 @csrf_exempt
 @never_cache
-@transaction.commit_on_success
+@transaction.atomic
 def client_stats(request, group, _now=None):
     """
     Save stats about a client.
@@ -418,7 +418,7 @@ def endpoint_common(request, check_group=True):
 
 @csrf_exempt
 @never_cache
-@transaction.commit_on_success
+@transaction.atomic
 def endpoint_register(request):
     """Registers an endpoint server.
 
