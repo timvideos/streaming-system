@@ -95,9 +95,10 @@ class ClientStatsTest(TestCase):
     def test_client_common_error_on_get(self):
         factory = RequestFactory()
         request = factory.get('/clientstats')
-        response, group, key = views.client_common(request, 'a')
+        response = views.client_common(request, 'a')
         self.assertNotEqual(response, None)
-        #self.assertRedirects(response, '/', status_code=301)
+        self.assertEqual(response.status_code, 302)
+        #self.assertRedirects(response, '/', status_code=302)
 
     def test_client_common_error_on_missing_cookie(self):
         factory = RequestFactory()

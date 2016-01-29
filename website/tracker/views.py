@@ -351,7 +351,7 @@ def client_stats(request, group, _now=None):
 
     try:
         data = json.loads(request.POST.get('data', "{}"))
-    except json.JSONDecodeError, e:
+    except ValueError, e:
         response = http.HttpResponse(content_type='application/javascript')
         response.write(json.dumps({
             'code': error.ERROR_JSON,
@@ -496,7 +496,7 @@ def flumotion_logging(request):
 
     try:
         data = json.loads(request.POST.get('data', "{}"))
-    except json.JSONDecodeError, e:
+    except ValueError, e:
         response = http.HttpResponse(content_type='text/plain')
         response.write('ERROR %s' % e)
         return response

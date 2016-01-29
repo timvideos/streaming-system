@@ -9,7 +9,7 @@ from django.test.client import RequestFactory
 from tracker import views, models
 
 
-class EncoderRegisterTest(TestCase):
+class EndpointRegisterTest(TestCase):
     maxDiff = None
 
     def setUp(self):
@@ -28,71 +28,71 @@ class EncoderRegisterTest(TestCase):
             response.content.startswith(text),
             "%s != %s" % (text, response.content))
 
-    def test_encoder_common_invalid_group(self):
+    def test_endpoint_common_invalid_group(self):
         factory = RequestFactory()
         request = factory.post(
-            '/encoder/register',
+            '/endpoint/register',
             {'group': 'b', 'secret': 's'})
-        response, group, ip = views.encoder_common(request)
+        response, group, ip = views.endpoint_common(request)
         self.assertNotEqual(response, None)
 
-    def test_encoder_common_invalid_secret(self):
+    def test_endpoint_common_invalid_secret(self):
         factory = RequestFactory()
         request = factory.post(
-            '/encoder/register',
+            '/endpoint/register',
             {'group': 'a', 'secret': 'b'})
-        response, group, ip = views.encoder_common(request)
+        response, group, ip = views.endpoint_common(request)
         self.assertNotEqual(response, None)
 
-    def test_encoder_register_bad_json(self):
+    def test_endpoint_register_bad_json(self):
         factory = RequestFactory()
         request = factory.post(
-            '/encoder/register',
+            '/endpoint/register',
             {'group': 'a', 'secret': 's', 'data': '{'})
 
-        response = views.encoder_register(request)
+        response = views.endpoint_register(request)
         self.assertPlainText(response, "ERROR")
 
-    def test_encoder_register_bad_data_ip(self):
+    def test_endpoint_register_bad_data_ip(self):
         factory = RequestFactory()
         request = factory.post(
-            '/encoder/register',
+            '/endpoint/register',
             {'group': 'a', 'secret': 's', 'data': """{"ip": "10.1.1.1"}"""})
 
-        response = views.encoder_register(request)
+        response = views.endpoint_register(request)
         self.assertPlainText(response, "ERROR Assert")
 
-    def test_encoder_register_bad_data_group(self):
+    def test_endpoint_register_bad_data_group(self):
         factory = RequestFactory()
         request = factory.post(
-            '/encoder/register',
+            '/endpoint/register',
             {'group': 'a', 'secret': 's', 'data': """{"group": "a"}"""})
 
-        response = views.encoder_register(request)
+        response = views.endpoint_register(request)
         self.assertPlainText(response, "ERROR Assert")
 
-    def test_encoder_register_good(self):
+    def test_endpoint_register_good(self):
         factory = RequestFactory()
         request = factory.post(
-            '/encoder/register',
+            '/endpoint/register',
             {'group': 'a', 'secret': 's', 'data': """
 {
     "overall_bitrate": 1,
     "overall_clients": 2
 }
 """})
-        response = views.encoder_register(request)
+        response = views.endpoint_register(request)
         self.assertPlainText(response, "OK")
 
-        encoders = models.Encoder.objects.all()
-        self.assertEqual(1, len(encoders))
-        self.assertEqual(1, encoders[0].overall_bitrate)
-        self.assertEqual(2, encoders[0].overall_clients)
+        endpoints = models.Endpoint.objects.all()
+        self.assertEqual(1, len(endpoints))
+        self.assertEqual(1, endpoints[0].overall_bitrate)
+        self.assertEqual(2, endpoints[0].overall_clients)
 
-    def test_encoder_register_good_extended(self):
+    def test_endpoint_register_good_extended(self):
         factory = RequestFactory()
         request = factory.post(
-            '/encoder/register',
+            '/endpoint/register',
             {'group': 'a', 'secret': 's', 'data': """
 {
     "overall_bitrate": 1,
@@ -115,16 +115,16 @@ class EncoderRegisterTest(TestCase):
     "mp3_high_clients": 18
 }
 """})
-        response = views.encoder_register(request)
+        response = views.endpoint_register(request)
         self.assertPlainText(response, "OK")
 
-        encoders = models.Encoder.objects.all()
-        self.assertEqual(1, len(encoders))
-        self.assertEqual(1, encoders[0].overall_bitrate)
-        self.assertEqual(2, encoders[0].overall_clients)
-        self.assertEqual(3, encoders[0].loop_bitrate)
-        self.assertEqual(4, encoders[0].loop_clients)
-        self.assertEqual(5, encoders[0].webm_high_bitrate)
-        self.assertEqual(6, encoders[0].webm_high_clients)
-        self.assertEqual(7, encoders[0].webm_low_bitrate)
-        self.assertEqual(8, encoders[0].webm_low_clients)
+        endpoints = models.Endpoint.objects.all()
+        self.assertEqual(1, len(endpoints))
+        self.assertEqual(1, endpoints[0].overall_bitrate)
+        self.assertEqual(2, endpoints[0].overall_clients)
+        self.assertEqual(3, endpoints[0].loop_bitrate)
+        self.assertEqual(4, endpoints[0].loop_clients)
+        self.assertEqual(5, endpoints[0].webm_high_bitrate)
+        self.assertEqual(6, endpoints[0].webm_high_clients)
+        self.assertEqual(7, endpoints[0].webm_low_bitrate)
+        self.assertEqual(8, endpoints[0].webm_low_clients)
