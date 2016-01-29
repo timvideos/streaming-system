@@ -29,10 +29,10 @@ This file is in the following format:
 
 import cStringIO as StringIO
 import hashlib
+import json
 import os
 import pprint
 import pytz
-import simplejson
 import sys
 import urllib2
 
@@ -65,7 +65,7 @@ def get_schedule_json(url, tzinfo=None):
         sys.stderr.write("Downloading %s\n" % url)
         url_json = urllib2.urlopen(url).read()
 
-        url_data = simplejson.loads(url_json)
+        url_data = json.loads(url_json)
 
         # Convert the time/date values into datetime objects
         for item in url_data:

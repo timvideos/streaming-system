@@ -3,8 +3,8 @@
 # -*- coding: utf-8 -*-
 # vim: set ts=4 sw=4 et sts=4 ai:
 
-import simplejson
 import datetime
+import json
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase
@@ -65,7 +65,7 @@ class ClientStatsTest(TestCase):
 
     def assertJSON(self, response):
         self.assertEqual(response['Content-Type'], 'application/javascript')
-        return simplejson.loads(response.content)
+        return json.loads(response.content)
 
     def assertErrorCode(self, content):
         # This should be a error, hence between 0 and 1024
@@ -109,7 +109,7 @@ class ClientStatsTest(TestCase):
         self.assertNotEqual(response, None)
         self.assertEqual(response.status_code, 200)
 
-        content = simplejson.loads(response.content)
+        content = json.loads(response.content)
         self.assertWarningCode(content)
         self.assertRetry(content)
         self.assertCookie(response, 'user', 'key')
@@ -156,7 +156,7 @@ class ClientStatsTest(TestCase):
 
     def test_client_success(self):
         factory = RequestFactory()
-        request = factory.post('/clientstats/a', {'data': simplejson.dumps({})})
+        request = factory.post('/clientstats/a', {'data': json.dumps({})})
         request.META['HTTP_USER_AGENT'] = 'Testing'
         request.META['REMOTE_ADDR'] = '127.0.0.1'
 

@@ -1,7 +1,7 @@
 #! /usr/bin/python
 # vim: set ts=4 sw=4 et sts=4 ai:
 
-import simplejson
+import json
 import pprint
 import sys
 import hashlib
@@ -70,7 +70,7 @@ def parse_duration(s):
 
 if __name__ == "__main__":
     incoming_json = urllib2.urlopen(URL).read()
-    incoming_data = simplejson.loads(incoming_json)
+    incoming_data = json.loads(incoming_json)
 
     # Resort into
     # <room>: (start, end) : <data>

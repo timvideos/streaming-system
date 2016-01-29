@@ -6,10 +6,10 @@
 """Simple pages."""
 
 # Python imports
+import collections
 import datetime_tz
 from itertools import ifilter, islice
 import json
-import ordereddict
 import os
 import pytz
 import re
@@ -67,7 +67,7 @@ def group(request, group):
 
 
 def index(request):
-    groups = ordereddict.OrderedDict()
+    groups = collections.OrderedDict()
     for group in sorted(CONFIG.groups()):
         groups[group] = CONFIG.config(group)
 
@@ -81,7 +81,7 @@ def index(request):
 
 
 def monitor(request):
-    groups = ordereddict.OrderedDict()
+    groups = collections.OrderedDict()
     for group in sorted(CONFIG.groups()):
         groups[group] = CONFIG.config(group)
 

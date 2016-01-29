@@ -4,9 +4,9 @@
 # vim: set ts=4 sw=4 et sts=4 ai:
 
 import cStringIO as StringIO
+import json
 import os
 import re
-import simplejson as json
 import string
 import warnings
 

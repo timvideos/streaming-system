@@ -6,11 +6,11 @@
 """Simple pages."""
 
 # Python imports
+import collections
 import datetime
 import fcntl
 import hashlib
 import json
-import ordereddict
 import os
 import random
 import string
@@ -529,7 +529,7 @@ def flumotion_stats(request):
     types = set()
     keys = {}
 
-    active_servers = ordereddict.OrderedDict()
+    active_servers = collections.OrderedDict()
     for server in flumotion:
         types.add(server.type)
         if server.type not in keys:
