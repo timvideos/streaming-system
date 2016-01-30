@@ -8,7 +8,7 @@
 __author__ = "mithro@mithis.com (Tim 'mithro' Ansell)"
 
 import datetime
-import simplejson
+import json
 import time
 import urllib
 import urllib2
@@ -54,7 +54,7 @@ if __name__ == "__main__":
                     urllib.urlencode((
                         ('secret', args.secret),
                         ('group', group),
-                        ('data', simplejson.dumps(data)),
+                        ('data', json.dumps(data)),
                         ('REMOTE_ADDR', args.ip),
                         )))
                 r = urllib2.urlopen(req)

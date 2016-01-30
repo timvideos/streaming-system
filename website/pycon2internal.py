@@ -1,7 +1,7 @@
 #! /usr/bin/python
 # vim: set ts=4 sw=4 et sts=4 ai:
 
-import simplejson
+import json
 import pprint
 import sys
 import hashlib
@@ -40,6 +40,7 @@ BREAK_NAMES = {
 assert CONFIG['config']['schedule-format'] == 'pycon'
 URL = CONFIG['config']['schedule-url']
 
+
 # Make pretty-print output a valid python string for UTC timezone object.
 def utc__repr__(self):
     return "pytz.utc"
@@ -48,6 +49,7 @@ pytz.utc.__class__.__repr__ = utc__repr__
 
 defaulttime = datetime.now(pytz.timezone(CONFIG['config']['schedule-timezone']))
 convert = markdown.Markdown().convert
+
 
 def tolower(d):
     newd = {}
@@ -68,7 +70,7 @@ def parse_duration(s):
 
 if __name__ == "__main__":
     incoming_json = urllib2.urlopen(URL).read()
-    incoming_data = simplejson.loads(incoming_json)
+    incoming_data = json.loads(incoming_json)
 
     # Resort into
     # <room>: (start, end) : <data>

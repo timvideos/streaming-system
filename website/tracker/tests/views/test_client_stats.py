@@ -3,8 +3,8 @@
 # -*- coding: utf-8 -*-
 # vim: set ts=4 sw=4 et sts=4 ai:
 
-import simplejson
 import datetime
+import json
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase
@@ -42,6 +42,7 @@ class ClientStatsHelpersTest(TestCase):
             'user_key should generate thhe *same* keys for same input when'
             ' a salt is given.')
 
+
 class ClientStatsTest(TestCase):
     maxDiff = None
 
@@ -64,7 +65,7 @@ class ClientStatsTest(TestCase):
 
     def assertJSON(self, response):
         self.assertEqual(response['Content-Type'], 'application/javascript')
-        return simplejson.loads(response.content)
+        return json.loads(response.content)
 
     def assertErrorCode(self, content):
         # This should be a error, hence between 0 and 1024
@@ -88,15 +89,16 @@ class ClientStatsTest(TestCase):
     def setUp(self):
         views.CONFIG = views.CONFIG.__class__({
             'config': {},
-            'default' : {},
+            'default': {},
             'a': {}})
 
     def test_client_common_error_on_get(self):
         factory = RequestFactory()
         request = factory.get('/clientstats')
-        response, group, key = views.client_common(request, 'a')
+        response = views.client_common(request, 'a')
         self.assertNotEqual(response, None)
-        #self.assertRedirects(response, '/', status_code=301)
+        self.assertEqual(response.status_code, 302)
+        # self.assertRedirects(response, '/', status_code=302)
 
     def test_client_common_error_on_missing_cookie(self):
         factory = RequestFactory()
@@ -108,7 +110,7 @@ class ClientStatsTest(TestCase):
         self.assertNotEqual(response, None)
         self.assertEqual(response.status_code, 200)
 
-        content = simplejson.loads(response.content)
+        content = json.loads(response.content)
         self.assertWarningCode(content)
         self.assertRetry(content)
         self.assertCookie(response, 'user', 'key')
@@ -155,7 +157,7 @@ class ClientStatsTest(TestCase):
 
     def test_client_success(self):
         factory = RequestFactory()
-        request = factory.post('/clientstats/a', {'data': simplejson.dumps({})})
+        request = factory.post('/clientstats/a', {'data': json.dumps({})})
         request.META['HTTP_USER_AGENT'] = 'Testing'
         request.META['REMOTE_ADDR'] = '127.0.0.1'
 
@@ -171,8 +173,11 @@ class ClientStatsTest(TestCase):
         self.assertGreater(content['next'], 0)
 
         # Assert some stuff is in the database
-        stats = models.ClientStats.objects.get(created_by=user, created_on=self.NOW)
-        # FIXME: This changes everytime the list of default saved values changes.
+        stats = models.ClientStats.objects.get(created_by=user,
+                                               created_on=self.NOW)
+
+        # FIXME: This changes everytime the list of default
+        # saved values changes.
         self.assertListEqual(
             ['ip', 'user-agent'],
             list(str(x) for x in stats.name_and_values.all()))

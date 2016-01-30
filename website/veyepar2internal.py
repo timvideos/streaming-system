@@ -3,10 +3,10 @@
 
 import cStringIO as StringIO
 import hashlib
+import json
 import os
 import pprint
 import pytz
-import simplejson
 import sys
 import sys
 import urllib2
@@ -53,7 +53,7 @@ def get_schedule_json(url, channel, tzinfo=None):
         sys.stderr.write("Downloading %s\n" % url)
         url_json = urllib2.urlopen(url).read()
 
-        url_data = simplejson.loads(url_json)
+        url_data = json.loads(url_json)
 
         # Convert the time/date values into datetime objects
         channel_url_data = []

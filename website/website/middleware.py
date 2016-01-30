@@ -5,6 +5,7 @@
 
 from django.conf import settings
 
+
 class SetHttpRealIp(object):
     def process_request(self, request):
         if not settings.DEBUG:

@@ -8,7 +8,7 @@
 __author__ = "mithro@mithis.com (Tim 'mithro' Ansell)"
 
 import datetime
-import simplejson
+import json
 import time
 import urllib
 import urllib2
@@ -129,7 +129,7 @@ class Register(common.AdminCommand):
                 urllib.urlencode((
                     ('secret', self.secret),
                     ('group', self.group),
-                    ('data', simplejson.dumps(data)),
+                    ('data', json.dumps(data)),
                     ))
                 )
         except urllib2.HTTPError, e:

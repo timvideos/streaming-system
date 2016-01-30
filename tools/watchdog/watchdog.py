@@ -10,10 +10,10 @@ __author__ = "mithro@mithis.com (Tim 'mithro' Ansell)"
 import cStringIO as StringIO
 import datetime
 import getpass
+import json
 import logging
 import os
 import pprint
-import simplejson
 import subprocess
 import sys
 import time
@@ -415,7 +415,7 @@ class WatchDog(common.AdminCommand):
                     'identifier': self.identifier,
                     'type': self.type,
                     'secret': self.secret,
-                    'data': simplejson.dumps(self.flumotion_state.state()),
+                    'data': json.dumps(self.flumotion_state.state()),
                     }
                 logging.debug("%s %s", self.register, data)
                 try:

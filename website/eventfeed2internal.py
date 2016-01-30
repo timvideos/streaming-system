@@ -29,22 +29,22 @@ This file is in the following format:
 
 import cStringIO as StringIO
 import hashlib
+import json
 import os
 import pprint
 import pytz
-import simplejson
-import sys
 import sys
 import urllib2
 
 from collections import defaultdict
-from datetime_tz import datetime_tz, timedelta, iterate as dt_iterate
+from datetime_tz import datetime_tz, iterate as dt_iterate
 
 config_path = os.path.realpath(os.path.dirname(__file__)+"..")
 if config_path not in sys.path:
     sys.path.append(config_path)
 import config as common_config
 CONFIG = common_config.config_load()
+
 
 # Make pretty-print output a valid python string for UTC timezone object.
 def utc__repr__(self):
@@ -55,15 +55,17 @@ pytz.utc.__class__.__repr__ = utc__repr__
 BLACKLISTED_EVENTS = [
     "miniconf schedules to be determined",
 ]
-    
+
 
 url_cache = {}
+
+
 def get_schedule_json(url, tzinfo=None):
-    if not url in url_cache:
+    if url not in url_cache:
         sys.stderr.write("Downloading %s\n" % url)
         url_json = urllib2.urlopen(url).read()
 
-        url_data = simplejson.loads(url_json)
+        url_data = json.loads(url_json)
 
         # Convert the time/date values into datetime objects
         for item in url_data:
@@ -81,6 +83,7 @@ def get_schedule_json(url, tzinfo=None):
 
     return url_cache[url]
 
+
 def parse_pytimedelta(s):
     """
     Parses a str(datetime.timedelta).  Ignores microseconds.
@@ -90,14 +93,14 @@ def parse_pytimedelta(s):
         day_index = s.index(' day')
         # Parse out days first
         days = int(s[0:day_index])
-        
+
         # Drop the bit before there
         s = s[day_index+4:]
-        
+
         # Handle plural
         if s.startswith('s'):
             s = s[1:]
-        
+
         # Strip out the comma
         assert s.startswith(', '), 'Unexpected string format'
         s = s[2:]
@@ -105,7 +108,6 @@ def parse_pytimedelta(s):
     # Parse out the remainder
     hours, minutes, seconds = (int(x) for x in s.split(':'))
     return timedelta(days=days, hours=hours, minutes=minutes, seconds=seconds)
-    
 
 
 def print_schedule(conference_schedules):
@@ -117,7 +119,7 @@ def print_schedule(conference_schedules):
 
             tzinfo = pytz.utc
             if config['schedule-timezone']:
-               tzinfo = pytz.timezone(config['schedule-timezone'])
+                tzinfo = pytz.timezone(config['schedule-timezone'])
 
             sys.stderr.write('\n%s\n' % channel)
             for item in conference_schedules[conference][channel]:
@@ -140,7 +142,7 @@ def main(argv):
     for channel in CONFIG.groups():
         config = CONFIG.config(channel)
 
-    	if 'schedule' not in config or not config['schedule']:
+        if 'schedule' not in config or not config['schedule']:
             sys.stderr.write("Channel %s doesn't have a schedule.\n" % channel)
             continue
 
@@ -158,7 +160,7 @@ def main(argv):
         for item in channel_schedule:
             if 'Title' not in item or not item['Title'] or item['Title'] in BLACKLISTED_EVENTS:
                 continue
-                
+
             if item['Room Name'] != config['schedule-key'] and item['Room Name'] != config['schedule-see-also']:
                 # Event is not in this room
                 continue

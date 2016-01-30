@@ -47,30 +47,30 @@ class StatsTest(TestCase):
 
         self.assertListEqual(
             list(str(x) for x in models.ClientName.objects.all().order_by('name')), [
-            "stat01.stat02",
-            "stat01.stat03",
-            "stat01.stat04",
-            "stat01.stat05",
-            "stat01.stat06",
-            "stat07",
-            "stat08",
-            "stat09",
-            "stat10",
-            "stat11",
+                "stat01.stat02",
+                "stat01.stat03",
+                "stat01.stat04",
+                "stat01.stat05",
+                "stat01.stat06",
+                "stat07",
+                "stat08",
+                "stat09",
+                "stat10",
+                "stat11",
             ])
 
         self.assertListEqual(
             list(str(x) for x in s.clientnamesandvalues_set.all()), [
-            '127.0.0.1@1330308683.0[stat01.stat02] = str',
-            '127.0.0.1@1330308683.0[stat01.stat03] = str',
-            '127.0.0.1@1330308683.0[stat01.stat04] = 1',
-            '127.0.0.1@1330308683.0[stat01.stat05] = 1',
-            '127.0.0.1@1330308683.0[stat01.stat06] = 1.0',
-            '127.0.0.1@1330308683.0[stat07] = str',
-            '127.0.0.1@1330308683.0[stat08] = str',
-            '127.0.0.1@1330308683.0[stat09] = 1',
-            '127.0.0.1@1330308683.0[stat11] = 1.0',
-            '127.0.0.1@1330308683.0[stat10] = 1',
+                '127.0.0.1@1330308683.0[stat01.stat02] = str',
+                '127.0.0.1@1330308683.0[stat01.stat03] = str',
+                '127.0.0.1@1330308683.0[stat01.stat04] = 1',
+                '127.0.0.1@1330308683.0[stat01.stat05] = 1',
+                '127.0.0.1@1330308683.0[stat01.stat06] = 1.0',
+                '127.0.0.1@1330308683.0[stat07] = str',
+                '127.0.0.1@1330308683.0[stat08] = str',
+                '127.0.0.1@1330308683.0[stat09] = 1',
+                '127.0.0.1@1330308683.0[stat11] = 1.0',
+                '127.0.0.1@1330308683.0[stat10] = 1',
             ])
 
     def test_unique_strings(self):
