@@ -28,6 +28,7 @@ This file is in the following format:
 """
 
 import cStringIO as StringIO
+from datetime import timedelta
 import hashlib
 import json
 import os
