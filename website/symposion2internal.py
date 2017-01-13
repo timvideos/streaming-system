@@ -59,15 +59,8 @@ if __name__ == "__main__":
         if 'kind' in item and item['kind'] not in ('plenary', 'talk'):
             continue
 
-        roomkey = 'room'
-        if roomkey not in item:
-            roomkey = 'room name'
 
-        namekey = 'name'
-        if namekey not in item:
-            namekey = 'title'
-
-        room = item[roomkey].strip()
+        room = item['room'].strip()
         channel = ROOM_MAP.get(room, None)
         if not channel:
             continue
@@ -86,10 +79,22 @@ if __name__ == "__main__":
         else:
             outitem['url'] = None
 
-        if item[namekey] == 'Keynote':
-            outitem['title'] = "%s: %s" % (item[namekey], item['authors'][0])
+        name = '%s - %s' % (item['kind'], item['name'])
+        
+        if item['kind'] in ('talk', 'tutorial'):
+            if item['name'] == 'Slot':
+                # Empty position in the schedule
+                continue
+            # Only show the name
+            name = item['name']
+        
+        if item['name'] == 'Slot':
+            name = item['kind']
+            
+        if name == 'Keynote':
+            outitem['title'] = "%s: %s" % (name, ', '.join(item['authors']))
         else:
-            outitem['title'] = item[namekey]
+            outitem['title'] = name
 
         if 'abstract' in item:
             outitem['abstract'] = convert(item['abstract'])
