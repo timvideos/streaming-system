@@ -44,6 +44,8 @@ defaulttime = datetime.now(pytz.timezone(CONFIG['config']['schedule-timezone']))
 convert = markdown.Markdown().convert
 
 
+ONE_DAY = timedelta(days=1)
+
 if __name__ == "__main__":
     req = requests.get(URL)
     if req.status_code != 200:
@@ -124,7 +126,7 @@ if __name__ == "__main__":
         while len(channel_data) > 0:
             (start, _), data = channel_data.pop(0)
 
-            if end.day != start.day:
+            if end.date() != start.date():
                 # Insert start / end time
                 newdata = {
                     'start': end,
@@ -136,6 +138,20 @@ if __name__ == "__main__":
                     }
                 final_data[channel].append(newdata)
 
+                # Fill in blank days
+                current = end + ONE_DAY
+                while current.date() != start.date():
+                    newdata = {
+                        'start': current.replace(hour=0, minute=0, second=0),
+                        'end': current.replace(hour=23, minute=59, second=59),
+                        'title': 'Nothing scheduled',
+                        'abstract': '',
+                        'guid': hashlib.md5(str(current)+channel).hexdigest(),
+                        'generated': True,
+                        }
+                    final_data[channel].append(newdata)
+                    current = current + ONE_DAY
+
                 newdata = {
                     'start': start.replace(hour=0, minute=0, second=0),
                     'end': start,
@@ -145,8 +161,9 @@ if __name__ == "__main__":
                     'generated': True,
                     }
                 final_data[channel].append(newdata)
+                end = newdata['end']
 
-            delta = (start - end).seconds/60
+            delta = (start - end).total_seconds()/60
             if delta and delta <= 10:
                 final_data[channel][-1]['end'] = final_data[channel][-1]['end']+timedelta(seconds=delta*60)
             elif delta:
@@ -164,6 +181,7 @@ if __name__ == "__main__":
                         'generated': True,
                         }
                     final_data[channel].append(newdata)
+
             final_data[channel].append(data)
             end = data['end']
 
