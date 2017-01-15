@@ -134,13 +134,13 @@ def main(args):
     # Check the json files
     print "config.json"
     print "="*80
-    if os.system("cat config.json | grep -v '^\s*//' | python -m simplejson.tool") != 0:
+    if os.system("cat config.json | grep -v '^\s*//' | python -m json.tool") != 0:
         return -1
     print "="*80
     print
     print "config.private.json"
     print "="*80
-    if os.system("cat config.private.json | grep -v '^\s*//' | python -m simplejson.tool") != 0:
+    if os.system("cat config.private.json | grep -v '^\s*//' | python -m json.tool") != 0:
         return -1
     print "="*80
     print
