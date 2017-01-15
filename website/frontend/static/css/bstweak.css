@@ -41,3 +41,7 @@ img.video_preload {
   height: 1px;
 }
 
+.navbar-brand img {
+  max-height: 50px;
+  padding: 3px 0 3px 3px;
+}
