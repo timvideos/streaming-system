@@ -135,6 +135,8 @@ def main(argv):
             return os.system('python pycon2internal.py')
         if CONFIG['config']['schedule-format'] == 'veyepar':
             return os.system('python veyepar2internal.py')
+        if CONFIG['config']['schedule-format'] == 'symposion':
+            return os.system('python symposion2internal.py')
 
     conference_schedules = defaultdict(dict)
 
