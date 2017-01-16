@@ -390,7 +390,7 @@ def client_stats(request, group, _now=None):
 def endpoint_common(request, check_group=True):
     """Check the common information for an endpoint request."""
     if request.method != 'POST':
-        return NeverCacheRedirectView.as_view(url="/")(request)
+        return (NeverCacheRedirectView.as_view(url="/")(request), None, None)
 
     response = http.HttpResponse(content_type='text/plain')
 
