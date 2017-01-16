@@ -103,7 +103,7 @@ if __name__ == "__main__":
         else:
             outitem['abstract'] = ''
 
-        outitem['guid'] = item['conf_key']
+        outitem['guid'] = str(item['conf_key'])
 
         outgoing_data[channel][(outitem['start'], outitem['end'])] = outitem
 
