@@ -23,8 +23,14 @@ import config as common_config
 CONFIG = common_config.config_load()
 
 ROOM_MAP = dict((CONFIG.config(g)['schedule-key'], g) for g in CONFIG.groups() if CONFIG.config(g)['schedule-key'])
+ROOM_MAP['Plenary Hall, Wellington Room 1, Wellington Room 2, Tasman Hall A, Tasman Hall B/C, Boardwalk Gallery'] = 'plenary'
+ROOM_MAP['Plenary Hall, Tasman Hall A, Tasman Hall B/C, Boardwalk Gallery, Wellington Room 2, Wellington Room 1'] = 'plenary'
+ROOM_MAP['Tasman Hall A'] = 'tasa'
+ROOM_MAP['Tasman Hall B'] = 'tasb'
 BREAK_NAMES = {
     10: None,
+    40: ('Morning Tea', 'Afternoon Tea'),
+    60: 'Lunch',
 }
 
 if CONFIG['config']['schedule-format'] != 'symposion':
@@ -57,10 +63,10 @@ if __name__ == "__main__":
     # <room>: (start, end) : <data>
 
     outgoing_data = {}
-    for item in incoming_data['schedule']:
-        if 'kind' in item and item['kind'] not in ('plenary', 'talk'):
-            continue
 
+    for item in incoming_data['schedule']:
+        #if 'kind' in item and item['kind'] not in ('plenary', 'talk'):
+        #    continue
 
         room = item['room'].strip()
         channel = ROOM_MAP.get(room, None)
@@ -91,11 +97,18 @@ if __name__ == "__main__":
             name = item['name']
         
         if item['name'] == 'Slot':
+            if item['kind'] == 'shortbreak':
+                continue
             name = item['kind']
             
         if name == 'Keynote':
             outitem['title'] = "%s: %s" % (name, ', '.join(item['authors']))
         else:
+            name = name.split('\r\n')[0]
+            name = name.replace(u'\u2013', '-')
+            name = name.replace(' - Catered','')
+            name = name.replace(' - Fully Catered','')
+
             outitem['title'] = name
 
         if 'abstract' in item:
@@ -198,7 +211,7 @@ if __name__ == "__main__":
     for channel in final_data.keys():
         sys.stderr.write('\n%s\n' % channel)
         for value in final_data[channel]:
-            sys.stderr.write("%s | %s | %s\n" % (str(value['start']), str(value['end']), value['title']))
+            sys.stderr.write("%s | %s | %s\n" % (str(value['start']), str(value['end']), value['title'].encode('utf-8')))
             value['start'] = value['start'].astimezone(pytz.utc)
             value['end'] = value['end'].astimezone(pytz.utc)
 
