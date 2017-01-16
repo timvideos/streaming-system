@@ -9,7 +9,7 @@ function current_time() {
 var schedule = [], schedules = [];
 var interval = function(){
   $('.now_time').each(function(ind, ele){
-    var raw = $(ele).attr('raw');
+    var raw = $(ele).attr('rawend');
     var rawD = Date.parse(raw);
     var diff = Date.parse(raw) - (new Date()).valueOf(), msg = "Ends in ";
     var days = 0, hours = 0, minutes = 0, seconds = 0;
@@ -88,7 +88,11 @@ function update_schedule(widget_title, widget_desc, group, next_title, next_desc
     widget_title.addClass('event-generated');
   } else {
     widget_title.removeClass('event-generated');
-  } 
+  }
+  if (now_time) {
+    now_time.attr('rawstart', talk[0].start);
+    now_time.attr('rawend', talk[0].end);
+  }
 
   title = "";
   description = "";
@@ -113,7 +117,8 @@ function update_schedule(widget_title, widget_desc, group, next_title, next_desc
     }
     if(next_time) { 
       next_time.text((new Date(talk[1].start)).toLocaleTimeString());
-      next_time.attr('raw', talk[0].start);
+      next_time.attr('rawstart', talk[1].start);
+      next_time.attr('rawend', talk[1].end);
     }
     if (next_url) {
       if (!url) {
@@ -121,14 +126,12 @@ function update_schedule(widget_title, widget_desc, group, next_title, next_desc
       } else {
         next_url.show();
         next_url.attr('href', url);
-	console.log('update_schedule: ' + url);
       }
     }
     if (generated) {
       next_title.addClass('event-generated');
     } else {
       next_title.removeClass('event-generated');
-    } 
-
+    }
   }
 }
