@@ -67,6 +67,12 @@ function update_schedule(widget_title, widget_desc, group, next_title, next_desc
     if(talk[0]['generated']) {
       generated = true;
     }
+    if (now_time && talk[0]['start']) {
+      now_time.attr('rawstart', talk[0].start);
+    }
+    if (now_time && talk[0]['end']) {
+      now_time.attr('rawend', talk[0].end);
+    }
   } else {
     title = "Unknown Talk";
     description = 'Cannot get talk title and description.';
@@ -88,10 +94,6 @@ function update_schedule(widget_title, widget_desc, group, next_title, next_desc
     widget_title.addClass('event-generated');
   } else {
     widget_title.removeClass('event-generated');
-  }
-  if (now_time) {
-    now_time.attr('rawstart', talk[0].start);
-    now_time.attr('rawend', talk[0].end);
   }
 
   title = "";
