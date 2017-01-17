@@ -2,6 +2,7 @@ import errno
 import os
 import requests
 import shutil
+import signal
 import subprocess
 import sys
 import time
@@ -29,11 +30,14 @@ def generate_thumb(dst, url):
                 ! pngenc snapshot=true \
                 ! filesink location=%s" % (url, dst)
     assert not os.path.exists(dst)
-    p = subprocess.Popen("gst-launch-1.0 "+pipeline, shell=True)
+    p = subprocess.Popen("gst-launch-1.0 "+pipeline, shell=True, preexec_fn=os.setsid)
 
     start = time.time()
     while p.poll() == None and (time.time()-start) < 5.0:
         print "Waiting for cmd..."
+        time.sleep(1)
+    if p.poll() == None:
+        os.killpg(os.getpgid(p.pid), signal.SIGTERM)
         time.sleep(1)
     while p.poll() == None:
         p.kill()
