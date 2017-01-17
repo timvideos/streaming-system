@@ -1,7 +1,6 @@
 // -*- coding: utf-8 -*-
 // vim: set ts=2 sw=2 et sts=2 ai:
 
-var time_local = Date.now();
 function current_time() {
   return Date.now() - 18000*1e3;
 }
@@ -10,33 +9,22 @@ var schedule = [], schedules = [];
 var interval = function(){
   $('.now_time').each(function(ind, ele){
     var raw = $(ele).attr('rawend');
-    var rawD = Date.parse(raw);
-    var diff = Date.parse(raw) - (new Date()).valueOf(), msg = "Ends in ";
-    var days = 0, hours = 0, minutes = 0, seconds = 0;
-    if(diff > 24 * 60 * 60e3) {
-      days = parseInt(diff / (24 * 60 * 60e3));
-      diff -= days * 24 * 60 * 60e3;
-    }
-    if(diff > 60 * 60e3) {
-      hours = parseInt(diff / (60 * 60e3));
-      diff -= hours * 60 * 60e3;
-    }
-    if(diff > 60e3) {
-        minutes = parseInt(diff / 60e3);
-        diff -= minutes * 60e3;
-    }
-    if(diff > 1e3)
-        seconds = parseInt(diff / 1e3);
-    //msg = 'Ends in '+days+':'+hours+':'+minutes+':'+seconds;
-    var m = '000' + minutes;
-    msg = hours + ':' + m.substr(m.length-2);
 
-    //window.console.log([diff, raw, rawD, (new Date()).valueOf()]);
-    $(ele).html(msg);
+    var endTime = moment(raw);
+    var diff = moment.duration(endTime.diff(moment()));
+
+    var str = "ends in ";
+
+    if(diff.days() > 1) str = str + Math.floor(diff.days()) + "d "
+    if(diff.hours() > 1) str = str + Math.floor(diff.hours()) + "h "
+    if(diff.minutes() > 1) str = str + Math.floor(diff.minutes()) + "m "
+    if(diff.seconds() > 1) str = str + Math.floor(diff.seconds()) + "s"
+
+    $(ele).html(str);
   });
 }
 
-setInterval(interval , 60e3);
+setInterval(interval, 60e3);
 setTimeout(interval, 2e3);
 function get_schedule(callback, group) {
   $.ajax({
@@ -80,7 +68,7 @@ function update_schedule(widget_title, widget_desc, group, next_title, next_desc
 
   widget_title.text(title);
   if (widget_desc) {
-    widget_desc.text(description);
+    widget_desc.html(description);
   }
   if (now_url) {
     if (!url) {
@@ -108,17 +96,22 @@ function update_schedule(widget_title, widget_desc, group, next_title, next_desc
         url = talk[1]['url'];
       }
       if(talk[1]['abstract']) description = talk[1]['abstract'];
-      if(talk[0]['generated']) {
+      if(talk[1]['generated']) {
         generated = true;
       }
-
     }
     next_title.text(title);
     if (next_desc) {
-      next_desc.text(description);
+      next_desc.html(description);
     }
-    if(next_time) { 
-      next_time.text((new Date(talk[1].start)).toLocaleTimeString());
+    if(next_time) {
+      var next_talk_start = moment(talk[1].start);
+      next_talk_start.local();
+      if (next_talk_start.isSame(moment(), 'day')) {
+        next_time.text('starts at ' + next_talk_start.format('HH:mm'));
+      } else {
+        next_time.text('starts at ' + next_talk_start.format('llll'));
+      }
       next_time.attr('rawstart', talk[1].start);
       next_time.attr('rawend', talk[1].end);
     }

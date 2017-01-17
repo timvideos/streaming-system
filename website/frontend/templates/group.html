@@ -44,25 +44,29 @@ vim: set ts=2 sw=2 et sts=2 ai ft=htmldjango:
 
 {% block navbar %}
 <li>
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="About the current talk, and what's up next."><span id="now_title"></span> <span id="now_time" class="now_time"></span> <span class="caret"></span></a>
+    <p class="navbar-text" style="font-weight: bold;">{{ config.title }}</p>
+</li>
+<li>
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="About the current talk, and what's up next.">
+      Up now: <span id="now_title"></span> <span class="caret"></span>
+  </a>
   <ul class="dropdown-menu" role="menu">
-    <li role="presentation" class="dropdown-header">Right now</li>
-	<li><div id="now_desc" class="abstract-dropdown"></div></li>
-    <li><a href="#" id="now_url" target="_blank"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Read more about this talk</a></li>
-    <li role="presentation" class="dropdown-header">Up next (<span id="next_time"></span>)</li>
+    <li role="presentation" class="dropdown-header">Right now - <span id="now_time" class="now_time"></span></li>
+    <li><div id="now_desc" class="abstract-dropdown"></div></li>
+    <li><a href="#" id="now_url" target="_blank"><span class="glyphicon glyphicon-link" aria-hidden="true"></span>Read more about this talk</a></li>
+    <li role="presentation" class="dropdown-header">Up next - <span id="next_time"></span></li>
     <li><a href="#" id="next_title"></a></li>
-    
   </ul>
 </li>
-
 {% endblock %}
+
 {% block navbar-right %}
 <li class="dropdown" id="settingsDropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Settings <span class="caret"></span></a> 
   <ul class="dropdown-menu" role="menu">
     <li role="presentation" class="dropdown-header">Presentation</li>
     <li><a id="ircToggle" title="Toggle the IRC side pane" href="#">IRC display</a></li>
-    
+
     <li role="presentation" class="dropdown-header">Video format</li>
     <li class="videoButton" data-f="videooff"><a href="#" onclick="format_set('videooff')">Video Off</a></li>
 {% if config.flumotion %}

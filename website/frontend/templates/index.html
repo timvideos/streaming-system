@@ -64,57 +64,61 @@ vim: set ts=2 sw=2 et sts=2 ai:
 </li>
 {% endblock %}
 
-
 {% block content %}
 <div class="row">
   <div class="col-md-12">
-    <table class="table"><tr>
-    {% for group, details in groups.items %}
-      <td class="{{group}}_td" style="display: none;">
-        <div id="{{group}}_title" class="title">
-          <h1>
-	    <a href="/{{group|urlencode}}">{{details.title}}</a>
-          </h1>
-        </div>
-      </td>
-    {% endfor %}
-    </tr><tr>
-    {% for group, details in groups.items %}
-      <td class="{{group}}_td" style="display: none;">
-        <div id="{{group}}_now_div" class="now_div">
-          <div id='{{group}}_now_time' class='now_time'></div>
-          <div id='{{group}}_now_title' class='now_title'></div>
-	  <div><a id='{{group}}_now_url' class='now_url'>More info...</a></div>
-	</div>
-      </td>
-    {% endfor %}
-    </tr><tr>
-    {% for group, details in groups.items %}
-      <td id="{{group}}_preview" class="preview {{group}}_td" style="display: none;">
-        <div class="container_2" onClick="window.location='/{{group}}'">
-          <img id="video-preview-{{group}}" class="video_preview">
-        </div>
-      </td>
-    {% endfor %}
-    </tr><tr>
-    {% for group, details in groups.items %}
-      <td class="{{group}}_td" style="display: none;">
-        <div id="{{group}}_next_div" class="next_div">
-          <div id='{{group}}_next_time' class='next_time'></div>
-          <div id='{{group}}_next_title' class='next_title'></div>
-          <div><a id='{{group}}_next_url' class='now_url'>More info...</a></div>
-        </div>
-      </td>
-    {% endfor %}
-    </tr><tr>
-    {% for group, details in groups.items %}
-      <td class="{{group}}_td" style="display: none;">
-        <div id="{{group}}_chat" class="chat" onClick="window.location='/{{group}}'">
-          <iframe id="chat-preview-{{group}}" class="chat_preview"></iframe>
-        </div>
-      </td>
-    {% endfor %}
-    </tr>
+    <table class="table">
+      <tr>
+      {% for group, details in groups.items %}
+        <td class="{{group}}_td" style="display: none;">
+          <div id="{{group}}_title" class="title">
+            <h1>
+	      <a href="/{{group|urlencode}}">{{details.title}}</a>
+            </h1>
+          </div>
+        </td>
+      {% endfor %}
+      </tr>
+      <tr>
+      {% for group, details in groups.items %}
+        <td class="{{group}}_td" style="display: none;">
+          <div id="{{group}}_now_div" class="now_div">
+            <div>Now - <span id="{{group}}_now_time" class='now_time'></span></div>
+            <div id='{{group}}_now_title' class='now_title'></div>
+	    <div><a id='{{group}}_now_url' class='now_url'>More info...</a></div>
+          </div>
+        </td>
+      {% endfor %}
+      </tr>
+      <tr>
+      {% for group, details in groups.items %}
+        <td id="{{group}}_preview" class="preview {{group}}_td" style="display: none;">
+          <div class="container_2" onClick="window.location='/{{group}}'">
+            <img id="video-preview-{{group}}" class="video_preview">
+          </div>
+        </td>
+      {% endfor %}
+      </tr>
+      <tr>
+      {% for group, details in groups.items %}
+        <td class="{{group}}_td" style="display: none;">
+          <div id="{{group}}_next_div" class="next_div">
+            <div>Next - <span id='{{group}}_next_time' class='next_time'></span></div>
+            <div id='{{group}}_next_title' class='next_title'></div>
+            <div><a id='{{group}}_next_url' class='next_url'>More info...</a></div>
+          </div>
+        </td>
+      {% endfor %}
+      </tr>
+      <tr>
+      {% for group, details in groups.items %}
+        <td class="{{group}}_td" style="display: none;">
+          <div id="{{group}}_chat" class="chat" onClick="window.location='/{{group}}'">
+            <iframe id="chat-preview-{{group}}" class="chat_preview"></iframe>
+          </div>
+        </td>
+      {% endfor %}
+      </tr>
     </table>
   </div>
 </div>
@@ -133,16 +137,14 @@ vim: set ts=2 sw=2 et sts=2 ai:
 
 <div class="row">
   <div class="col-md-12">
-               
-	      <div id="twitter-container" class="container_3">
-                <div id="twitter-sizer" class="sizer">
-                  <div id="twitter">Searching twitter...</div>
-                </div>
-              </div>
+    <div id="twitter-container" class="container_3">
+      <div id="twitter-sizer" class="sizer">
+        <div id="twitter">Searching twitter...</div>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}
-
 
 {% block footer %}
   <div id=preload>
