@@ -45,3 +45,16 @@ img.video_preload {
   max-height: 50px;
   padding: 3px 0 3px 3px;
 }
+
+.now_title {
+  min-height: 3em;
+}
+
+.next_div {
+  margin-top: 0.5em;
+  border-top: 1px solid #ccc;
+}
+
+.next_title {
+  min-height: 3em;
+}

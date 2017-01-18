@@ -66,61 +66,33 @@ vim: set ts=2 sw=2 et sts=2 ai:
 
 {% block content %}
 <div class="row">
-  <div class="col-md-12">
-    <table class="table">
-      <tr>
-      {% for group, details in groups.items %}
-        <td class="{{group}}_td" style="display: none;">
-          <div id="{{group}}_title" class="title">
-            <h1>
-	      <a href="/{{group|urlencode}}">{{details.title}}</a>
-            </h1>
-          </div>
-        </td>
-      {% endfor %}
-      </tr>
-      <tr>
-      {% for group, details in groups.items %}
-        <td class="{{group}}_td" style="display: none;">
-          <div id="{{group}}_now_div" class="now_div">
-            <div>Now - <span id="{{group}}_now_time" class='now_time'></span></div>
-            <div id='{{group}}_now_title' class='now_title'></div>
-	    <div><a id='{{group}}_now_url' class='now_url'>More info...</a></div>
-          </div>
-        </td>
-      {% endfor %}
-      </tr>
-      <tr>
-      {% for group, details in groups.items %}
-        <td id="{{group}}_preview" class="preview {{group}}_td" style="display: none;">
-          <div class="container_2" onClick="window.location='/{{group}}'">
-            <img id="video-preview-{{group}}" class="video_preview">
-          </div>
-        </td>
-      {% endfor %}
-      </tr>
-      <tr>
-      {% for group, details in groups.items %}
-        <td class="{{group}}_td" style="display: none;">
-          <div id="{{group}}_next_div" class="next_div">
-            <div>Next - <span id='{{group}}_next_time' class='next_time'></span></div>
-            <div id='{{group}}_next_title' class='next_title'></div>
-            <div><a id='{{group}}_next_url' class='next_url'>More info...</a></div>
-          </div>
-        </td>
-      {% endfor %}
-      </tr>
-      <tr>
-      {% for group, details in groups.items %}
-        <td class="{{group}}_td" style="display: none;">
-          <div id="{{group}}_chat" class="chat" onClick="window.location='/{{group}}'">
-            <iframe id="chat-preview-{{group}}" class="chat_preview"></iframe>
-          </div>
-        </td>
-      {% endfor %}
-      </tr>
-    </table>
+  {% for group, details in groups.items %}
+  <div class="col-lg-3 col-md-4 col-sm-6 col-sm-12 {{group}}_td" style="display: none;">
+    <div id="{{group}}_title" class="title">
+      <h1>
+        <a href="/{{group|urlencode}}">{{details.title}}</a>
+      </h1>
+    </div>
+    <div id="{{group}}_now_div" class="now_div">
+      <div><strong>Now</strong> - <span id="{{group}}_now_time" class='now_time'></span></div>
+      <div id='{{group}}_now_title' class='now_title'></div>
+      <div><a id='{{group}}_now_url' class='now_url'>More info...</a></div>
+    </div>
+    <div id="{{group}}_preview" class="preview {{group}}_td" style="display: none;">
+      <div class="container_2" onClick="window.location='/{{group}}'">
+        <img id="video-preview-{{group}}" class="video_preview">
+      </div>
+    </div>
+    <div id="{{group}}_next_div" class="next_div">
+      <div><strong>Next</strong> - <span id='{{group}}_next_time' class='next_time'></span></div>
+      <div id='{{group}}_next_title' class='next_title'></div>
+      <div><a id='{{group}}_next_url' class='next_url'>More info...</a></div>
+    </div>
+    <div id="{{group}}_chat" class="chat" onClick="window.location='/{{group}}'">
+      <iframe id="chat-preview-{{group}}" class="chat_preview"></iframe>
+    </div>
   </div>
+  {% endfor %}
 </div>
 
 {% comment %}
