@@ -1,7 +1,7 @@
 Layout
 =====================
 
-The website is split two **independent** parts. 
+The website is split two **independent** parts.
 (Which if needed could run on two different machines.)
 
 The **Frontend** is the UI which provides the tool and feel of the system, this
@@ -39,6 +39,9 @@ sudo pip install virtualenv
 Running a test server
 =====================
 
+Start by setting the ``STATIC_ROOT`` within ``website/settings.py`` to be the
+absolute path to the ``frontend/static`` directory.
+
 Run ``make serve``; this will configure a virtualenv, download and install
 dependencies (inside the virtualenv; your system will not be touched); and a
 test server will be started.
@@ -54,6 +57,9 @@ represents your desired listening IP and port.
 
 This test server **should NOT be used in production** (see relevant section below).
 
+Note: DO NOT run ``make serve`` as root. If you do, virtualenv folders won't
+have write permissions, so the tracker won't be able to write to sqlite
+database.
 
 
 Registering a (fake) flumotion encoder server onto tracker
@@ -82,9 +88,8 @@ This keeps on going.
 
 Open http://127.0.0.1:8000/example to view the page
 
-Note: DO NOT run ``make serve`` as root. If you do, virtualenv folders won't
-have write permissions, so the tracker won't be able to write to sqlite
-database.
+Note: Groups using YouTube will always be available in the frontend
+without having an endpoint registered.
 
 
 Setting up groups
