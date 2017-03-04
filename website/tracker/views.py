@@ -46,6 +46,10 @@ class funnydict(dict):
         return self[key]
 
 
+def youtube_endpoint(group):
+    return models.Endpoint(group=group, ip='127.0.0.1')
+
+
 @never_cache
 def stream(request, group):
     """Gives an end user a streaming server for a group.
@@ -57,14 +61,21 @@ def stream(request, group):
         response.write("window.src = '/';\n")
         return response
 
-    # Get all the active streaming severs for this channel
-    active_servers = models.Endpoint.active(group=group)
-
-    # Pick a server
-    if active_servers:
-        your_server = sorted(active_servers, key=lambda x: x.overall_bitrate)[0]
+    group_config = CONFIG.config(group)
+    if group_config['youtube'] is not None:
+        # Assume that YouTube is always up, so we don't need to look for endpoints.
+        s = youtube_endpoint(group)
+        active_servers = [s]
+        your_server = s
     else:
-        your_server = None
+        # Get all the active streaming severs for this channel
+        active_servers = models.Endpoint.active(group=group)
+
+        # Pick a server
+        if active_servers:
+            your_server = sorted(active_servers, key=lambda x: x.overall_bitrate)[0]
+        else:
+            your_server = None
 
     # Make sure this page isn't cached, otherwise the server load balancing won't work.
     return render(request, 'stream.js', locals(), content_type='text/javascript',
@@ -76,6 +87,13 @@ def streams(request):
     """Renders the streams.js file which contains a list of active streams."""
     # Get all the active streaming severs for this channel
     active_servers = models.Endpoint.active()
+
+    # Assume all groups using YouTube are active
+    for group in sorted(CONFIG.groups()):
+        group_config = CONFIG.config(group)
+        if group_config['youtube'] is not None:
+            s = youtube_endpoint(group)
+            active_servers.append(s)
 
     # Make sure this page isn't cached, otherwise the server load balancing won't work.
     return render(request, 'streams.js', locals(), content_type='text/javascript',
