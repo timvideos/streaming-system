@@ -15,7 +15,7 @@ For how the streaming system overall looks at the following diagram;
 
 Tim Video's is a collection of tools for live streaming conferences and user
 groups. It includes both software and hardware for both the recording and
-viewing sides.
+viewing slides.
 
 It has been used with conferences like PyCon US and Linux.conf.au and at user
 groups like Sydney Linux User Group and Sydney Python User Group.
